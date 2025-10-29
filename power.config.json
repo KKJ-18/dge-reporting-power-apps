@@ -1,0 +1,12 @@
+{
+  "appId": "f2efbd49-a1d4-4236-ba66-a3b223964848",
+  "appDisplayName": "Reporting Activités DGE",
+  "description": null,
+  "environmentId": "e78a17af-caf0-e888-989b-beca000173f8",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "logoPath": "Default",
+  "localAppUrl": "http://localhost:5173/",
+  "connectionReferences": {},
+  "databaseReferences": {}
+}

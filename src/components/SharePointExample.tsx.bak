@@ -1,0 +1,361 @@
+import { useState, useEffect } from 'react';
+import { SharePointService } from '../generated';
+
+/**
+ * Exemple de composant utilisant SharePoint
+ * Ce composant démontre comment:
+ * - Lister les sites SharePoint
+ * - Récupérer des listes
+ * - Créer, lire, mettre à jour et supprimer des éléments
+ */
+
+interface SharePointSite {
+  id: string;
+  name: string;
+  url: string;
+}
+
+interface SharePointList {
+  id: string;
+  title: string;
+  itemCount: number;
+}
+
+export default function SharePointExample() {
+  const [sites, setSites] = useState<SharePointSite[]>([]);
+  const [lists, setLists] = useState<SharePointList[]>([]);
+  const [selectedSite, setSelectedSite] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+
+  // Charger les sites au démarrage
+  useEffect(() => {
+    loadSites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /**
+   * Charger la liste des sites SharePoint
+   */
+  const loadSites = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      // Récupérer les métadonnées des sites (datasets)
+      const result = await SharePointService.GetDataSetsMetadata();
+      
+      if (result.success && result.data) {
+        // Pour l'instant, on crée un site d'exemple
+        // Dans un vrai scénario, vous devrez spécifier l'URL de votre site SharePoint
+        const sitesData = [{
+          id: 'https://votreorganisation.sharepoint.com/sites/VotreSite',
+          name: 'Site SharePoint Principal',
+          url: 'https://votreorganisation.sharepoint.com/sites/VotreSite'
+        }];
+        setSites(sitesData);
+      } else {
+        setError('Impossible de charger les sites SharePoint');
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des sites:', err);
+      setError('Erreur lors du chargement des sites');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Charger les listes d'un site sélectionné
+   */
+  const loadLists = async (siteId: string) => {
+    if (!siteId) return;
+    
+    setLoading(true);
+    setError('');
+    try {
+      // Récupérer les listes (tables) du site
+      const result = await SharePointService.GetTables(siteId);
+      
+      if (result.success && result.data?.value) {
+        const listsData = result.data.value.map((list: any) => ({
+          id: list.id || list.Name,
+          title: list.displayName || list.DisplayName || list.Title,
+          itemCount: list.itemCount || 0
+        }));
+        setLists(listsData);
+      } else {
+        setError('Impossible de charger les listes');
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des listes:', err);
+      setError('Erreur lors du chargement des listes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Créer un nouvel élément dans une liste
+   * Exemple d'utilisation dans votre code:
+   * await createItem(siteId, listId, { Title: "Nouveau rapport", Description: "..." })
+   */
+  const createItem = async (siteId: string, listId: string, itemData: Record<string, unknown>) => {
+    try {
+      const result = await SharePointService.PostItem(siteId, listId, itemData);
+      
+      if (result.success) {
+        console.log('✅ Élément créé avec succès:', result.data);
+        return result.data;
+      } else {
+        console.error('❌ Erreur lors de la création:', result.error);
+        return null;
+      }
+    } catch (err) {
+      console.error('Erreur lors de la création de l\'élément:', err);
+      return null;
+    }
+  };
+
+  /**
+   * Lire les éléments d'une liste
+   * Exemple: await getItems(siteId, listId)
+   */
+  const getItems = async (siteId: string, listId: string) => {
+    try {
+      const result = await SharePointService.GetItems(siteId, listId);
+      
+      if (result.success && result.data?.value) {
+        console.log(`✅ ${result.data.value.length} éléments récupérés`);
+        return result.data.value;
+      } else {
+        console.error('❌ Erreur lors de la lecture:', result.error);
+        return [];
+      }
+    } catch (err) {
+      console.error('Erreur lors de la lecture des éléments:', err);
+      return [];
+    }
+  };
+
+  /**
+   * Mettre à jour un élément
+   * Exemple: await updateItem(siteId, listId, itemId, { Title: "Titre modifié" })
+   */
+  const updateItem = async (siteId: string, listId: string, itemId: number, itemData: Record<string, unknown>) => {
+    try {
+      const result = await SharePointService.PatchItem(siteId, listId, itemId, itemData);
+      
+      if (result.success) {
+        console.log('✅ Élément mis à jour avec succès');
+        return true;
+      } else {
+        console.error('❌ Erreur lors de la mise à jour:', result.error);
+        return false;
+      }
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour de l\'élément:', err);
+      return false;
+    }
+  };
+
+  /**
+   * Supprimer un élément
+   * Exemple: await deleteItem(siteId, listId, itemId)
+   */
+  const deleteItem = async (siteId: string, listId: string, itemId: number) => {
+    try {
+      const result = await SharePointService.DeleteItem(siteId, listId, itemId);
+      
+      if (result.success) {
+        console.log('✅ Élément supprimé avec succès');
+        return true;
+      } else {
+        console.error('❌ Erreur lors de la suppression:', result.error);
+        return false;
+      }
+    } catch (err) {
+      console.error('Erreur lors de la suppression de l\'élément:', err);
+      return false;
+    }
+  };
+
+  // Expose les fonctions pour utilisation dans la console
+  (window as any).sharePointDemo = {
+    createItem,
+    getItems,
+    updateItem,
+    deleteItem
+  };
+
+  // Gestionnaire de changement de site
+  const handleSiteChange = (siteId: string) => {
+    setSelectedSite(siteId);
+    setLists([]);
+    if (siteId) {
+      loadLists(siteId);
+    }
+  };
+
+  return (
+    <div className="sharepoint-example" style={{ padding: '2rem' }}>
+      <div className="card">
+        <div className="card-header">
+          <h2 className="card-title">📁 Intégration SharePoint</h2>
+          <p className="page-subtitle">
+            Connectez-vous à vos sites et listes SharePoint
+          </p>
+        </div>
+
+        <div className="card-content">
+          {/* Sélection du site */}
+          <div className="form-group">
+            <label className="form-label">Site SharePoint</label>
+            <select
+              className="form-select"
+              value={selectedSite}
+              onChange={(e) => handleSiteChange(e.target.value)}
+              disabled={loading}
+            >
+              <option value="">-- Sélectionnez un site --</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id}>
+                  {site.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Affichage des erreurs */}
+          {error && (
+            <div className="error-message" style={{
+              padding: '1rem',
+              marginTop: '1rem',
+              backgroundColor: '#FEE2E2',
+              color: '#DC2626',
+              borderRadius: '6px',
+              fontSize: '0.875rem'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Indicateur de chargement */}
+          {loading && (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '2rem',
+              color: 'var(--dge-gray-600)'
+            }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⏳</div>
+              <div>Chargement...</div>
+            </div>
+          )}
+
+          {/* Liste des listes SharePoint */}
+          {!loading && selectedSite && lists.length > 0 && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <h3 style={{ 
+                fontSize: '1rem', 
+                fontWeight: 600,
+                marginBottom: '1rem',
+                color: 'var(--dge-gray-900)'
+              }}>
+                Listes disponibles ({lists.length})
+              </h3>
+              <div style={{ 
+                display: 'grid', 
+                gap: '0.75rem' 
+              }}>
+                {lists.map((list) => (
+                  <div
+                    key={list.id}
+                    style={{
+                      padding: '1rem',
+                      border: '1px solid var(--dge-gray-200)',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: 'var(--dge-white)',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--dge-red)';
+                      e.currentTarget.style.transform = 'translateX(4px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--dge-gray-200)';
+                      e.currentTarget.style.transform = 'translateX(0)';
+                    }}
+                  >
+                    <div>
+                      <div style={{ 
+                        fontWeight: 500,
+                        color: 'var(--dge-gray-900)'
+                      }}>
+                        {list.title}
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.75rem',
+                        color: 'var(--dge-gray-600)',
+                        marginTop: '0.25rem'
+                      }}>
+                        ID: {list.id}
+                      </div>
+                    </div>
+                    <div style={{
+                      padding: '0.25rem 0.75rem',
+                      backgroundColor: 'var(--dge-red)',
+                      color: 'white',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: 500
+                    }}>
+                      {list.itemCount} élément(s)
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Message si pas de listes */}
+          {!loading && selectedSite && lists.length === 0 && (
+            <div style={{
+              textAlign: 'center',
+              padding: '2rem',
+              color: 'var(--dge-gray-600)',
+              fontSize: '0.875rem'
+            }}>
+              Aucune liste trouvée pour ce site
+            </div>
+          )}
+
+          {/* Instructions */}
+          <div style={{
+            marginTop: '2rem',
+            padding: '1rem',
+            backgroundColor: 'var(--dge-gray-50)',
+            borderRadius: '6px',
+            fontSize: '0.875rem',
+            color: 'var(--dge-gray-700)'
+          }}>
+            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>
+              💡 Fonctions disponibles :
+            </div>
+            <ul style={{ 
+              margin: '0.5rem 0',
+              paddingLeft: '1.5rem',
+              lineHeight: '1.6'
+            }}>
+              <li><code>createItem(siteId, listId, data)</code> - Créer un élément</li>
+              <li><code>getItems(siteId, listId)</code> - Lire les éléments</li>
+              <li><code>updateItem(siteId, listId, itemId, data)</code> - Mettre à jour</li>
+              <li><code>deleteItem(siteId, listId, itemId)</code> - Supprimer</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

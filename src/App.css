@@ -1,0 +1,232 @@
+/* Thème DGE - Rouge, Noir, Blanc */
+:root {
+  --dge-red: #CC0000;
+  --dge-dark-red: #990000;
+  --dge-light-red: #FF3333;
+  --dge-black: #1A1A1A;
+  --dge-dark-gray: #333333;
+  --dge-light-gray: #F5F5F5;
+  --dge-white: #FFFFFF;
+  --dge-border: #E0E0E0;
+  --dge-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--dge-light-gray);
+  color: var(--dge-black);
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.app-header {
+  background: linear-gradient(135deg, var(--dge-red) 0%, var(--dge-dark-red) 100%);
+  color: var(--dge-white);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px var(--dge-shadow);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+/* Navigation */
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.nav-tab {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--dge-white);
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-tab.active {
+  background: var(--dge-white);
+  color: var(--dge-red);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+.content-section {
+  background: var(--dge-white);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--dge-shadow);
+  margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--dge-red);
+  color: var(--dge-white);
+}
+
+.btn-primary:hover {
+  background: var(--dge-dark-red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(204, 0, 0, 0.3);
+}
+
+.btn-secondary {
+  background: var(--dge-dark-gray);
+  color: var(--dge-white);
+}
+
+.btn-secondary:hover {
+  background: var(--dge-black);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--dge-red);
+  border: 2px solid var(--dge-red);
+}
+
+.btn-outline:hover {
+  background: var(--dge-red);
+  color: var(--dge-white);
+}
+
+/* Cards */
+.card {
+  background: var(--dge-white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px var(--dge-shadow);
+  border-left: 4px solid var(--dge-red);
+}
+
+.card-header {
+  border-bottom: 2px solid var(--dge-border);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  color: var(--dge-black);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dge-black);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--dge-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--dge-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Status Indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status-submitted {
+  background: rgba(0, 128, 0, 0.1);
+  color: #006400;
+}
+
+.status-pending {
+  background: rgba(255, 165, 0, 0.1);
+  color: #FF8C00;
+}
+
+.status-missing {
+  background: rgba(204, 0, 0, 0.1);
+  color: var(--dge-red);
+}
