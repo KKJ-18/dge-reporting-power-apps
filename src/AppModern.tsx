@@ -8,9 +8,8 @@ import AdminEngagementsForm from './components/forms/AdminEngagementsForm'
 import SuiviMEPForm from './components/forms/SuiviMEPForm'
 import ActivitesAnnexesForm from './components/forms/ActivitesAnnexesForm'
 import UserProfile from './components/UserProfile'
-import SharePointActivityManager from './components/SharePointActivityManager'
-import SharePointListExplorer from './components/SharePointListExplorer'
-import { ConnectionInitializer } from './components/ConnectionInitializer'
+import CategoryManager from './components/CategoryManager'
+import ActivityManager from './components/ActivityManager'
 import { Office365UsersService } from './services/Office365UsersService'
 
 function AppModern() {
@@ -32,35 +31,68 @@ function AppModern() {
     const loadUserProfile = async () => {
       console.log('🔄 Chargement du profil utilisateur...');
       try {
-        const profile = await Office365UsersService.getMyProfile()
-        console.log('✅ Profil reçu:', profile);
+        const profileResult = await Office365UsersService.MyProfile();
+        console.log('✅ Profil reçu (raw):', profileResult);
+        console.log('✅ Type du résultat:', typeof profileResult);
+        console.log('✅ Clés du résultat:', Object.keys(profileResult || {}));
         
-        if (profile) {
-          updateUserProfile(profile);
+        if (profileResult) {
+          updateUserProfile(profileResult);
           console.log('✅ État utilisateur mis à jour');
-          setProfileError(null)
+          setProfileError(null);
+        } else {
+          console.warn('⚠️ Aucun profil reçu');
+          setProfileError('Aucun profil utilisateur trouvé');
         }
       } catch (error) {
         console.error('❌ Erreur lors du chargement du profil:', error);
-        setProfileError(error instanceof Error ? error.message : 'Erreur inconnue lors du chargement du profil utilisateur.')
+        console.error('❌ Stack:', error instanceof Error ? error.stack : 'N/A');
+        setProfileError(error instanceof Error ? error.message : 'Erreur inconnue lors du chargement du profil utilisateur.');
       }
     }
     loadUserProfile()
   }, [])
 
-  const updateUserProfile = (profile: any) => {
-    const displayName = profile.displayName || 'Utilisateur'
-    const role = profile.jobTitle || 'Utilisateur'
+  const updateUserProfile = (profileResult: any) => {
+    console.log('📊 updateUserProfile appelé avec:', profileResult);
+    
+    // Le SDK retourne { data: {...}, success: true }
+    let profile = profileResult?.data || profileResult?.result?.result || profileResult?.result || profileResult;
+    
+    console.log('📊 Profil extrait:', profile);
+    console.log('📊 Type du profil:', typeof profile);
+    
+    if (profile && typeof profile === 'object') {
+      console.log('📊 Propriétés du profil:', Object.keys(profile));
+      console.log('📊 DisplayName:', profile.DisplayName);
+      console.log('📊 displayName:', profile.displayName);
+    }
+    
+    const displayName = profile?.DisplayName || profile?.displayName || 'Utilisateur (données non chargées)';
+    const jobTitle = profile?.JobTitle || profile?.jobTitle || 'En attente de connexion';
+    const mail = profile?.Mail || profile?.mail || '';
+    const mobilePhone = profile?.mobilePhone || profile?.TelephoneNumber || '';
+    const officeLocation = profile?.OfficeLocation || profile?.officeLocation || '';
+    const department = profile?.Department || profile?.department || '';
 
     setCurrentUser({
       name: displayName,
-      role,
+      role: jobTitle,
       avatar: displayName.charAt(0).toUpperCase(),
-      mail: profile.mail,
-      phone: profile.mobilePhone,
-      location: profile.officeLocation,
-      department: profile.department
-    })
+      mail,
+      phone: mobilePhone,
+      location: officeLocation,
+      department
+    });
+    
+    console.log('✅ État currentUser mis à jour:', {
+      name: displayName,
+      role: jobTitle,
+      mail,
+      phone: mobilePhone,
+      location: officeLocation,
+      department
+    });
   }
 
   const handleModuleSelect = (moduleId: string) => {
@@ -124,11 +156,11 @@ function AppModern() {
           />
         )
       
-      case 'sharepoint-activity':
-        return <SharePointActivityManager />
+      case 'categories':
+        return <CategoryManager />
       
-      case 'sharepoint-explorer':
-        return <SharePointListExplorer />
+      case 'activities':
+        return <ActivityManager />
       
       case 'reports':
         return (
@@ -191,9 +223,6 @@ function AppModern() {
 
   return (
     <div className="app-container">
-      {/* Initialisation des connexions (invisible) */}
-      <ConnectionInitializer />
-      
       <Sidebar
         activeModule={activeModule}
         onModuleChange={setActiveModule}

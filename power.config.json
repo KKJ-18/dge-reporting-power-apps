@@ -7,6 +7,62 @@
   "buildEntryPoint": "index.html",
   "logoPath": "Default",
   "localAppUrl": "http://localhost:5173/",
-  "connectionReferences": {},
-  "databaseReferences": {}
+  "connectionReferences": {
+    "fffec559-7a60-4d91-aac5-0c70418970d6": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_office365users",
+      "displayName": "Office 365 Users",
+      "dataSources": [
+        "office365users"
+      ],
+      "authenticationType": null,
+      "sharedConnectionId": null,
+      "dataSets": {}
+    },
+    "9d72c28a-b870-47ff-b766-91b4b4ec4688": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+      "displayName": "SharePoint",
+      "dataSources": [
+        "category",
+        "activity",
+        "suividossiersrestructuration",
+        "agenceresau",
+        "dossiersattentecomite",
+        "formationunites",
+        "suividepassements",
+        "repriseprovision"
+      ],
+      "authenticationType": null,
+      "sharedConnectionId": null,
+      "dataSets": {
+        "https%253A%252F%252Fafrilandfirstbankcmr.sharepoint.com%252Fsites%252FDGEReportingActivity": {
+          "dataSources": {
+            "category": {
+              "tableName": "ce9cbf69-be65-47c6-a064-f16f5c9d49a0"
+            },
+            "activity": {
+              "tableName": "1ecbbdd1-db27-4370-a30e-b51b6d95d9d1"
+            },
+            "suividossiersrestructuration": {
+              "tableName": "8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a"
+            },
+            "agenceresau": {
+              "tableName": "25efd047-86d7-44aa-ba1e-a68cf766682a"
+            },
+            "dossiersattentecomite": {
+              "tableName": "cd2e80ec-a9eb-4a27-9a59-d049ff907e20"
+            },
+            "formationunites": {
+              "tableName": "dddf2147-30fd-41b5-8578-a1244d3b2a08"
+            },
+            "suividepassements": {
+              "tableName": "565f3ced-5695-408a-8f89-28e34175238c"
+            },
+            "repriseprovision": {
+              "tableName": "62a91185-a94c-4156-875c-bd2ce52fe376"
+            }
+          }
+        }
+      }
+    }
+  }
 }

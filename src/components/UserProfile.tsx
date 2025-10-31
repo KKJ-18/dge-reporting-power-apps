@@ -28,11 +28,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
     
     try {
       console.log('🔐 Tentative de connexion à Office 365...');
-      const profile = await Office365UsersService.getMyProfile();
+      const profileResult = await Office365UsersService.MyProfile();
+      
+      console.log('📊 Résultat de MyProfile:', profileResult);
+      
+      // Le SDK retourne { data: {...}, success: true }
+      const profile = profileResult?.data || profileResult?.result || profileResult;
       
       if (profile && onProfileRefresh) {
-        console.log('✅ Profil récupéré avec succès');
-        onProfileRefresh(profile);
+        console.log('✅ Profil récupéré avec succès:', profile);
+        onProfileRefresh(profileResult);
       }
       setError(null);
     } catch (err: any) {

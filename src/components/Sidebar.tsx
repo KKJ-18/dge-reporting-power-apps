@@ -7,6 +7,10 @@ interface SidebarProps {
     name: string;
     role: string;
     avatar?: string;
+    mail?: string;
+    phone?: string;
+    location?: string;
+    department?: string;
   };
 }
 
@@ -21,8 +25,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, current
     { id: 'suivi-mep', icon: '📈', label: 'Suivi MEP', badge: null },
     { id: 'activites-annexes', icon: '📋', label: 'Activités Annexes', badge: null },
     { id: 'divider', label: 'divider' },
-    { id: 'sharepoint-activity', icon: '📝', label: 'SharePoint Activity', badge: null },
-    { id: 'sharepoint-explorer', icon: '🔍', label: 'Explorateur SharePoint', badge: null },
+    { id: 'categories', icon: '📂', label: 'Catégories (CRUD)', badge: null },
+    { id: 'activities', icon: '📝', label: 'Activités (CRUD)', badge: null },
     { id: 'reports', icon: '📑', label: 'Mes Rapports', badge: null },
     { id: 'validation', icon: '✅', label: 'Validation', badge: '3' },
     { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null },
@@ -57,45 +61,137 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, current
       {currentUser && (
         <div className="user-info" style={{
           background: 'rgba(26, 26, 26, 0.03)',
-          borderRadius: '8px',
-          padding: '0.875rem',
+          borderRadius: '12px',
+          padding: '1rem',
           marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
           border: '1px solid rgba(0, 0, 0, 0.06)'
         }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.25rem',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            flexShrink: 0
+            gap: '0.75rem',
+            marginBottom: isCollapsed ? 0 : '0.75rem'
           }}>
-            {currentUser.avatar || currentUser.name.charAt(0).toUpperCase()}
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              fontWeight: '700',
+              color: '#FFFFFF',
+              flexShrink: 0
+            }}>
+              {currentUser.avatar || currentUser.name.charAt(0).toUpperCase()}
+            </div>
+            {!isCollapsed && (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="user-name" style={{ 
+                  fontWeight: '600', 
+                  fontSize: '0.875rem',
+                  color: '#1A1A1A',
+                  marginBottom: '0.125rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {currentUser.name}
+                </div>
+                <div className="user-role" style={{ 
+                  fontSize: '0.75rem', 
+                  color: '#6B7280',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {currentUser.role}
+                </div>
+              </div>
+            )}
           </div>
+          
+          {/* Informations supplémentaires */}
           {!isCollapsed && (
-            <div style={{ flex: 1 }}>
-              <div className="user-name" style={{ 
-                fontWeight: '600', 
-                fontSize: '0.875rem',
-                color: '#1A1A1A',
-                marginBottom: '0.125rem'
-              }}>
-                {currentUser.name}
-              </div>
-              <div className="user-role" style={{ 
-                fontSize: '0.75rem', 
-                color: '#6B7280'
-              }}>
-                {currentUser.role}
-              </div>
+            <div style={{
+              borderTop: '1px solid rgba(0, 0, 0, 0.06)',
+              paddingTop: '0.75rem',
+              fontSize: '0.75rem',
+              color: '#6B7280',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem'
+            }}>
+              {currentUser.department && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  overflow: 'hidden'
+                }}>
+                  <span style={{ flexShrink: 0 }}>🏢</span>
+                  <span style={{ 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {currentUser.department}
+                  </span>
+                </div>
+              )}
+              {currentUser.location && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  overflow: 'hidden'
+                }}>
+                  <span style={{ flexShrink: 0 }}>📍</span>
+                  <span style={{ 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {currentUser.location}
+                  </span>
+                </div>
+              )}
+              {currentUser.mail && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  overflow: 'hidden'
+                }}>
+                  <span style={{ flexShrink: 0 }}>📧</span>
+                  <span style={{ 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {currentUser.mail}
+                  </span>
+                </div>
+              )}
+              {currentUser.phone && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  overflow: 'hidden'
+                }}>
+                  <span style={{ flexShrink: 0 }}>📱</span>
+                  <span style={{ 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {currentUser.phone}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
