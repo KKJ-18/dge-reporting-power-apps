@@ -492,6 +492,12 @@ export const dataSourcesInfo = {
       }
     }
   },
+  "activitestransversales": {
+    "tableId": "c98ff885-2780-4f8e-8103-9ed428fe0e99",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "activity": {
     "tableId": "1ecbbdd1-db27-4370-a30e-b51b6d95d9d1",
     "version": "",
@@ -504,14 +510,56 @@ export const dataSourcesInfo = {
     "primaryKey": "ID",
     "apis": {}
   },
+  "analysedelaiscredit": {
+    "tableId": "d26a59f9-306e-4eaf-802a-bd50c0250e4f",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "analysedossierscomites": {
+    "tableId": "671cd488-f73b-4659-bf14-b48f99a7a31a",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "analyseengagements": {
+    "tableId": "c62636db-6b1f-47e2-8ebd-c670e900de4f",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "analysesuivimep": {
+    "tableId": "fdda512c-6cae-4421-b9ed-65ec6f4b5077",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "analysesuivitransmission": {
+    "tableId": "42cf885c-e340-4f43-88f2-734a3619050a",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "category": {
     "tableId": "ce9cbf69-be65-47c6-a064-f16f5c9d49a0",
     "version": "",
     "primaryKey": "ID",
     "apis": {}
   },
+  "detailsdossiers": {
+    "tableId": "2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "dossiersattentecomite": {
     "tableId": "cd2e80ec-a9eb-4a27-9a59-d049ff907e20",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "formations": {
+    "tableId": "c8ea3772-1900-492b-a5de-209277a691a8",
     "version": "",
     "primaryKey": "ID",
     "apis": {}
@@ -536,6 +584,18 @@ export const dataSourcesInfo = {
   },
   "suividossiersrestructuration": {
     "tableId": "8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "utilisateurs": {
+    "tableId": "462c3867-cfb0-4b87-9a0e-2c813ad2bd02",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "visiteclientele": {
+    "tableId": "358344db-ad54-4720-b93b-4552d40897ca",
     "version": "",
     "primaryKey": "ID",
     "apis": {}

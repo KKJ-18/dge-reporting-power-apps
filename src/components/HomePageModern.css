@@ -1,0 +1,381 @@
+/* HomePage Modern Styles */
+
+.homepage-modern {
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
+}
+
+/* Loading & Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 3rem;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.loading-container p {
+  margin-top: 1.5rem;
+  font-size: 1.125rem;
+  color: #666;
+}
+
+.error-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-container h2 {
+  font-size: 1.75rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.contact-info {
+  background: #F5F5F5;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.contact-info p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.contact-info strong {
+  color: #333;
+}
+
+/* Director View */
+.director-view {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.welcome-header {
+  background: linear-gradient(135deg, #CC0000 0%, #990000 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  box-shadow: 0 8px 24px rgba(204, 0, 0, 0.2);
+  color: white;
+}
+
+.welcome-icon {
+  font-size: 5rem;
+  background: rgba(255, 255, 255, 0.15);
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.welcome-content {
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.welcome-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  margin: 0;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Departments Selection */
+.departments-selection {
+  margin-bottom: 3rem;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.department-selector-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-top: 6px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.department-selector-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.dept-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dept-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.dept-info {
+  flex: 1;
+}
+
+.dept-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+}
+
+.dept-full-name {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dept-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 2px solid #F0F0F0;
+  border-bottom: 2px solid #F0F0F0;
+}
+
+.dept-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dept-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #CC0000;
+  line-height: 1;
+}
+
+.dept-stat-label {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.btn-access-dept {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-access-dept:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Quick Actions */
+.quick-actions {
+  margin-bottom: 2rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  background: white;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.action-card:hover {
+  border-color: #CC0000;
+  background: #FFF5F5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(204, 0, 0, 0.1);
+}
+
+.action-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.action-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.action-card:hover .action-label {
+  color: #CC0000;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .departments-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .homepage-modern {
+    padding: 1rem;
+  }
+
+  .welcome-header {
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .welcome-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 4rem;
+  }
+
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .departments-grid,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dept-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+
+  .dept-name {
+    font-size: 1.25rem;
+  }
+
+  .loading-container,
+  .error-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-modern {
+    padding: 0.75rem;
+  }
+
+  .welcome-header {
+    padding: 1.5rem;
+  }
+
+  .welcome-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 3rem;
+  }
+
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+
+  .department-selector-card {
+    padding: 1.5rem;
+  }
+
+  .dept-card-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .action-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+  }
+
+  .action-label {
+    font-size: 1rem;
+  }
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ExportButtons } from '../ExportButtons'
+import { AgenceResauService } from '../../services/AgenceResauService'
 
 interface EngagementSection {
   nombre: number
@@ -64,22 +65,44 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [reseaux, setReseaux] = useState<string[]>([])
+  const [agences, setAgences] = useState<string[]>([])
+  const [loadingAgences, setLoadingAgences] = useState(true)
 
-  const reseaux = ['National', 'International']
-  const agences = [
-    'Casablanca Centre',
-    'Casablanca Maarif',
-    'Rabat Agdal',
-    'Rabat Ville',
-    'Tanger',
-    'Marrakech',
-    'Fès',
-    'Agadir',
-    'Oujda',
-    'Kénitra',
-    'Tétouan',
-    'Meknès'
-  ]
+  // Charger les réseaux et agences depuis SharePoint
+  useEffect(() => {
+    loadAgencesEtReseaux()
+  }, [])
+
+  const loadAgencesEtReseaux = async () => {
+    try {
+      setLoadingAgences(true)
+      console.log('📊 Chargement des agences et réseaux...')
+      
+      const result = await AgenceResauService.getAll()
+      const data = result?.data || result?.value || []
+      
+      console.log(`✅ ${data.length} agences/réseaux chargés`)
+      
+      // Extraire les réseaux uniques
+      const reseauxUniques = [...new Set(data.map((item: any) => item.NomResau).filter(Boolean))] as string[]
+      setReseaux(reseauxUniques)
+      
+      // Extraire les agences uniques
+      const agencesUniques = [...new Set(data.map((item: any) => item.Title).filter(Boolean))] as string[]
+      setAgences(agencesUniques)
+      
+      console.log('📍 Réseaux:', reseauxUniques)
+      console.log('🏢 Agences:', agencesUniques)
+    } catch (error) {
+      console.error('❌ Erreur chargement agences:', error)
+      // Valeurs par défaut en cas d'erreur
+      setReseaux(['National', 'International'])
+      setAgences([])
+    } finally {
+      setLoadingAgences(false)
+    }
+  }
 
   // Auto-save toutes les 30 secondes
   useEffect(() => {
@@ -308,8 +331,11 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
                 className={`form-input ${errors.reseau ? 'error' : ''}`}
                 value={formData.reseau}
                 onChange={(e) => handleInputChange('reseau', e.target.value)}
+                disabled={loadingAgences}
               >
-                <option value="">-- Sélectionnez un réseau --</option>
+                <option value="">
+                  {loadingAgences ? '⏳ Chargement...' : '-- Sélectionnez un réseau --'}
+                </option>
                 {reseaux.map(r => (
                   <option key={r} value={r}>{r}</option>
                 ))}
@@ -325,8 +351,11 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
                 className={`form-input ${errors.agence ? 'error' : ''}`}
                 value={formData.agence}
                 onChange={(e) => handleInputChange('agence', e.target.value)}
+                disabled={loadingAgences}
               >
-                <option value="">-- Sélectionnez une agence --</option>
+                <option value="">
+                  {loadingAgences ? '⏳ Chargement...' : '-- Sélectionnez une agence --'}
+                </option>
                 {agences.map(a => (
                   <option key={a} value={a}>{a}</option>
                 ))}

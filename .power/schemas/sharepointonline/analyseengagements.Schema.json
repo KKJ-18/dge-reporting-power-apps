@@ -1,6 +1,6 @@
 {
-  "name": "1ecbbdd1-db27-4370-a30e-b51b6d95d9d1",
-  "title": "Activity",
+  "name": "c62636db-6b1f-47e2-8ebd-c670e900de4f",
+  "title": "AnalyseEngagements",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
@@ -97,8 +97,8 @@
           },
           "maxLength": 255
         },
-        "NomRubrique": {
-          "title": "NomRubrique",
+        "Reseau": {
+          "title": "Reseau",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -110,8 +110,59 @@
           },
           "maxLength": 255
         },
-        "FrequenceReporting": {
-          "title": "FrequenceReporting",
+        "Agence": {
+          "title": "Agence",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Nombre": {
+          "title": "Nombre",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "Montant": {
+          "title": "Montant",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "Segment": {
+          "title": "Segment",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -646,19 +697,28 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting",
+          "Reseau",
+          "Agence",
+          "Nombre",
+          "Montant",
+          "Segment",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "Reseau",
+          "Agence",
+          "Nombre",
+          "Montant",
+          "Segment"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "Reseau",
+          "Agence",
+          "Nombre",
+          "Montant",
+          "Segment"
         ]
       }
     }
@@ -666,7 +726,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Author",
+        "path": "/tables/c62636db-6b1f-47e2-8ebd-c670e900de4f/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -675,7 +735,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Editor",
+        "path": "/tables/c62636db-6b1f-47e2-8ebd-c670e900de4f/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -684,7 +744,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/%257bContentType%257d",
+        "path": "/tables/c62636db-6b1f-47e2-8ebd-c670e900de4f/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -692,5 +752,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/Activity/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/AnalyseEngagements/AllItems.aspx"
 }

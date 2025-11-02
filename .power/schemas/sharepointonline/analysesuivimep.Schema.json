@@ -1,6 +1,6 @@
 {
-  "name": "1ecbbdd1-db27-4370-a30e-b51b6d95d9d1",
-  "title": "Activity",
+  "name": "fdda512c-6cae-4421-b9ed-65ec6f4b5077",
+  "title": "AnalyseSuiviMEP",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
@@ -97,31 +97,62 @@
           },
           "maxLength": 255
         },
-        "NomRubrique": {
-          "title": "NomRubrique",
-          "type": "string",
+        "DossiersAttentePrecedent": {
+          "title": "DossiersAttentePrecedent",
+          "type": "number",
+          "format": "double",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
             "filterFunctions": [
               "eq",
-              "startswith"
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
             ]
           },
-          "maxLength": 255
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
         },
-        "FrequenceReporting": {
-          "title": "FrequenceReporting",
-          "type": "string",
+        "MouvementMois": {
+          "title": "MouvementMois",
+          "type": "number",
+          "format": "double",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
             "filterFunctions": [
               "eq",
-              "startswith"
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
             ]
           },
-          "maxLength": 255
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "StockRestant": {
+          "title": "StockRestant",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
         },
         "OData__ColorTag": {
           "title": "Color Tag",
@@ -646,19 +677,22 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting",
+          "DossiersAttentePrecedent",
+          "MouvementMois",
+          "StockRestant",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "DossiersAttentePrecedent",
+          "MouvementMois",
+          "StockRestant"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "DossiersAttentePrecedent",
+          "MouvementMois",
+          "StockRestant"
         ]
       }
     }
@@ -666,7 +700,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Author",
+        "path": "/tables/fdda512c-6cae-4421-b9ed-65ec6f4b5077/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -675,7 +709,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Editor",
+        "path": "/tables/fdda512c-6cae-4421-b9ed-65ec6f4b5077/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -684,7 +718,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/%257bContentType%257d",
+        "path": "/tables/fdda512c-6cae-4421-b9ed-65ec6f4b5077/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -692,5 +726,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/Activity/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/AnalyseSuiviMEP/AllItems.aspx"
 }

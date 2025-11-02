@@ -1,0 +1,322 @@
+/**
+ * Structure des données des départements
+ * Définit les catégories et activités pour chaque département
+ */
+
+export interface ActivityItem {
+  id: string;
+  label: string;
+  unit?: string; // Unité de mesure (nombre, montant, etc.)
+  type?: 'number' | 'amount' | 'text' | 'date'; // Type de saisie
+}
+
+export interface CategoryData {
+  id: string;
+  name: string;
+  activities: ActivityItem[];
+  icon?: string;
+}
+
+export interface DepartmentData {
+  id: 'DA' | 'DSE' | 'DPNP';
+  name: string;
+  fullName: string;
+  icon: string;
+  color: string;
+  categories: CategoryData[];
+}
+
+// 🏢 Département Analyse (DA)
+export const DA_DEPARTMENT: DepartmentData = {
+  id: 'DA',
+  name: 'DA',
+  fullName: 'Département Analyse',
+  icon: '📊',
+  color: '#0066CC',
+  categories: [
+    {
+      id: 'credit-classique',
+      name: 'Crédit classique',
+      icon: '💼',
+      activities: [
+        { id: 'dossiers-recus', label: 'Dossiers reçus des unités', type: 'number' },
+        { id: 'dossiers-presentes-comites', label: 'Dossiers présentés aux différents comités de crédit', type: 'number' },
+        { id: 'far', label: 'FAR', type: 'number' },
+        { id: 'note-circulation', label: 'Note de circulation', type: 'number' },
+        { id: 'dossiers-cours-analyse', label: 'Dossiers en cours d\'analyse', type: 'number' },
+        { id: 'dossiers-attente-avis-risque', label: 'Dossiers en attente de l\'avis de risque', type: 'number' },
+        { id: 'dossiers-renvoyes', label: 'Dossiers renvoyés', type: 'number' },
+        { id: 'dossiers-attente-avis-conformite', label: 'Dossiers en attente de l\'avis de la conformité', type: 'number' },
+        { id: 'dossiers-attente-comite', label: 'Dossiers en attente du comité de crédit', type: 'number' },
+        { id: 'dossiers-conseil-attente-scrg', label: 'Dossiers CONSEIL en attente avis du SCRG', type: 'number' },
+        { id: 'suivi-regulariser-cc4-ccca', label: 'Suivi des dossiers à régulariser aux CC4 et CCCA', type: 'number' },
+        { id: 'evaluation-delai-moyen', label: 'Évaluation du délai moyen du crédit classique', type: 'number', unit: 'jours' }
+      ]
+    },
+    {
+      id: 'credit-programme',
+      name: 'Crédit programme',
+      icon: '📋',
+      activities: [
+        { id: 'cp-entreprises-recus-traites', label: 'Crédits programme Entreprises reçus et traités', type: 'number' },
+        { id: 'cp-particuliers-recus-traites', label: 'Crédits programme Particuliers reçus et traités', type: 'number' },
+        { id: 'eval-delai-cp-particuliers', label: 'Évaluation du délai moyen crédit programme Particuliers', type: 'number', unit: 'jours' },
+        { id: 'eval-delai-cp-entreprises', label: 'Évaluation du délai moyen crédit programme Entreprises', type: 'number', unit: 'jours' }
+      ]
+    },
+    {
+      id: 'admin-engagements',
+      name: 'Administration des engagements',
+      icon: '📑',
+      activities: [
+        { id: 'credits-amortissables', label: 'Crédits amortissables', type: 'number' },
+        { id: 'lignes-decouvert', label: 'Lignes de découvert', type: 'number' },
+        { id: 'lignes-autres-decouvert', label: 'Lignes autres que les découverts', type: 'number' },
+        { id: 'credits-restructures', label: 'Crédits restructurés', type: 'number' },
+        { id: 'leasing', label: 'Leasing', type: 'number' },
+        { id: 'credits-islamiques', label: 'Crédits islamiques', type: 'number' }
+      ]
+    },
+    {
+      id: 'suivi-mep',
+      name: 'Suivi des dossiers en cours de MEP',
+      icon: '⏱️',
+      activities: [
+        { id: 'dossiers-attente-mep', label: 'Dossiers en attente de MEP au mois précédent N', type: 'number' }
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📝',
+      activities: [
+        { id: 'visites-clientele', label: 'Visites clientèle effectuées', type: 'number' },
+        { id: 'formations', label: 'Formations', type: 'number' },
+        { id: 'redaction-procedures', label: 'Rédaction / mise à jour des procédures', type: 'number' },
+        { id: 'etudes-realisees', label: 'Études réalisées', type: 'number' },
+        { id: 'autres-activites', label: 'Autres activités', type: 'text' }
+      ]
+    }
+  ]
+};
+
+// 🏦 Département Surveillance des Engagements (DSE)
+export const DSE_DEPARTMENT: DepartmentData = {
+  id: 'DSE',
+  name: 'DSE',
+  fullName: 'Département Surveillance des Engagements',
+  icon: '🔍',
+  color: '#00994C',
+  categories: [
+    {
+      id: 'situation-mep',
+      name: 'Situation Mise en Place',
+      icon: '📊',
+      activities: [
+        { id: 'amortissables', label: 'Amortissables (agence, matricule, client, échéances, durée)', type: 'number' },
+        { id: 'restructuration', label: 'Restructuration', type: 'number' },
+        { id: 'caution', label: 'Caution', type: 'number' },
+        { id: 'credoc', label: 'CréDoc', type: 'number' },
+        { id: 'leasing', label: 'Leasing', type: 'number' },
+        { id: 'ligne-decouvert', label: 'Ligne de Découvert', type: 'number' },
+        { id: 'lignes-autres-decouvert', label: 'Lignes autres que les découverts', type: 'number' },
+        { id: 'finance-islamique', label: 'Finance islamique', type: 'number' }
+      ]
+    },
+    {
+      id: 'accords-classement',
+      name: 'Accords de Classement',
+      icon: '✅',
+      activities: [
+        { id: 'autorisation-mobilisation', label: 'Autorisation Individuelle de Mobilisation', type: 'number' },
+        { id: 'accords-classement', label: 'Accords de Classement', type: 'number' },
+        { id: 'accords-liste', label: 'Accords sur Liste', type: 'number' }
+      ]
+    },
+    {
+      id: 'contrats',
+      name: 'Contrats',
+      icon: '📄',
+      activities: [
+        { id: 'avance-facture', label: 'Avance sur facture', type: 'number' },
+        { id: 'prefinancement', label: 'Préfinancement', type: 'number' },
+        { id: 'cautions', label: 'Cautions', type: 'number' }
+      ]
+    },
+    {
+      id: 'projets',
+      name: 'Projets',
+      icon: '🎯',
+      activities: [
+        { id: 'pv-comite-credit', label: 'PV du comité de crédit', type: 'number' }
+      ]
+    },
+    {
+      id: 'declaration-reglementaire',
+      name: 'Déclaration Règlementaire',
+      icon: '📋',
+      activities: [
+        { id: 'teg', label: 'TEG', type: 'number' },
+        { id: 'fibane-1-2-3', label: 'FIBANE 1 / 2 / 3', type: 'number' },
+        { id: 'douane', label: 'Douane', type: 'number' },
+        { id: 'cre', label: 'CRE', type: 'number' }
+      ]
+    },
+    {
+      id: 'autres-activites',
+      name: 'Autres Activités',
+      icon: '📝',
+      activities: [
+        { id: 'visite-unite-collecte', label: 'Visite unité pour la collecte documentaire', type: 'number' },
+        { id: 'etudes', label: 'Études', type: 'number' },
+        { id: 'autres', label: 'Autres', type: 'text' },
+        { id: 'formation', label: 'Formation', type: 'number' },
+        { id: 'gestion-relations', label: 'Gestion des relations avec des entités externes et internes', type: 'text' },
+        { id: 'projets-dri-dsi', label: 'Projets avec la DRI et DSI', type: 'text' },
+        { id: 'redaction-procedures', label: 'Rédaction des procédures', type: 'number' }
+      ]
+    }
+  ]
+};
+
+// 🏛️ Département des Prêts Non Performants (DPNP)
+export const DPNP_DEPARTMENT: DepartmentData = {
+  id: 'DPNP',
+  name: 'DPNP',
+  fullName: 'Département des Prêts Non Performants',
+  icon: '⚠️',
+  color: '#CC0000',
+  categories: [
+    {
+      id: 'analyse-restructuration',
+      name: 'Analyse des dossiers de restructuration',
+      icon: '🔄',
+      activities: [
+        { id: 'dossiers-recus-unites', label: 'Dossiers reçus des unités', type: 'number' },
+        { id: 'dossiers-observations-envoyees', label: 'Dossiers dont les observations ont été envoyées pour compléments d\'informations', type: 'number' },
+        { id: 'dossiers-cours-analyse', label: 'Dossiers en cours d\'analyse', type: 'number' },
+        { id: 'dossiers-attente-comite', label: 'Dossiers en attente de comité (pour les dossiers nécessitant un comité de crédit)', type: 'number' },
+        { id: 'dossiers-attente-decision', label: 'Dossiers en attente de décision (PV monté, signataires habilités)', type: 'number' },
+        { id: 'dossiers-accord', label: 'Dossiers dont on a eu l\'accord (comité + PV)', type: 'number' },
+        { id: 'dossiers-renvoyes', label: 'Dossiers renvoyés', type: 'number' },
+        { id: 'remboursement-echeance', label: 'Remboursement d\'échéance (échéances remboursées sur les dossiers restructurés)', type: 'number' },
+        { id: 'dossiers-attente-conformite', label: 'Dossiers en attente de l\'avis de la conformité', type: 'number' },
+        { id: 'attente-comite-credit', label: 'En attente du comité de crédit', type: 'number' }
+      ]
+    },
+    {
+      id: 'suivi-anomalies-tresorerie',
+      name: 'Suivi des anomalies engagements par trésorerie',
+      icon: '💰',
+      activities: [
+        { id: 'origine-anomalies', label: 'Renseigner l\'origine des anomalies de chaque client en anomalie', type: 'text' }
+      ]
+    },
+    {
+      id: 'suivi-anomalies-leasing',
+      name: 'Suivi des anomalies leasing',
+      icon: '🚗',
+      activities: [
+        { id: 'origine-anomalies-leasing', label: 'Renseigner l\'origine des anomalies de chaque client en anomalie', type: 'text' }
+      ]
+    },
+    {
+      id: 'travail-proximite',
+      name: 'Travail de proximité avec les unités',
+      icon: '👥',
+      activities: [
+        { id: 'formation-unites', label: 'Formation des unités', type: 'number' }
+      ]
+    },
+    {
+      id: 'suivi-debits-non-autorises',
+      name: 'Suivi des débits non autorisés (dépassement)',
+      icon: '🚫',
+      activities: [
+        { id: 'nombre-depassements', label: 'Nombre de dépassements', type: 'number' },
+        { id: 'depassements-regularises-72h', label: 'Nombre de dépassements régularisés dans le délai de 72h', type: 'number' },
+        { id: 'depassements-attente-regularisation', label: 'Nombre de dépassements en attente de régularisation', type: 'number' }
+      ]
+    },
+    {
+      id: 'recouvrement-versement',
+      name: 'Recouvrement par versement (après actions de la DCE, pas de porte)',
+      icon: '📞',
+      activities: [
+        { id: 'clients-appeles', label: 'Nombre de clients appelés', type: 'number' }
+      ]
+    },
+    {
+      id: 'suivi-contagion',
+      name: 'Suivi de la contagion des comptes',
+      icon: '🔗',
+      activities: [
+        { id: 'comptes-nettoyer', label: 'Nombre de comptes à nettoyer', type: 'number' },
+        { id: 'montant-global-regulariser', label: 'Montant global à verser pour régulariser', type: 'amount' },
+        { id: 'reprise-provision', label: 'Reprise de provision', type: 'amount' }
+      ]
+    },
+    {
+      id: 'suivi-provisions',
+      name: 'Suivi des provisions',
+      icon: '💵',
+      activities: [
+        { id: 'volume-provisions', label: 'Volume des provisions', type: 'amount' },
+        { id: 'volume-reprises', label: 'Volume des reprises de provision', type: 'amount' }
+      ]
+    },
+    {
+      id: 'recherche-clients-etranger',
+      name: 'Recherche des clients particuliers en anomalie à l\'étranger (risque Canada)',
+      icon: '🌍',
+      activities: [
+        { id: 'clients-anomalies', label: 'Nombre de clients en anomalies', type: 'number' },
+        { id: 'pays-residence', label: 'Pays de résidence', type: 'text' },
+        { id: 'employeur', label: 'Employeur', type: 'text' },
+        { id: 'ville-residence', label: 'Ville de résidence', type: 'text' }
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📝',
+      activities: [
+        { id: 'visites-clientele', label: 'Visites clientèles effectuées', type: 'number' },
+        { id: 'formations', label: 'Formations', type: 'number' },
+        { id: 'redaction-procedures', label: 'Rédaction / mise à jour des procédures', type: 'number' },
+        { id: 'etudes-realisees', label: 'Études réalisées', type: 'number' },
+        { id: 'autres-activites', label: 'Autres activités', type: 'text' }
+      ]
+    }
+  ]
+};
+
+// Map de tous les départements
+export const DEPARTMENTS_MAP = {
+  DA: DA_DEPARTMENT,
+  DSE: DSE_DEPARTMENT,
+  DPNP: DPNP_DEPARTMENT
+};
+
+// Liste de tous les départements
+export const ALL_DEPARTMENTS = [DA_DEPARTMENT, DSE_DEPARTMENT, DPNP_DEPARTMENT];
+
+// Fonction helper pour obtenir un département
+export function getDepartment(deptId: 'DA' | 'DSE' | 'DPNP'): DepartmentData {
+  return DEPARTMENTS_MAP[deptId];
+}
+
+// Fonction helper pour obtenir une catégorie
+export function getCategory(deptId: 'DA' | 'DSE' | 'DPNP', categoryId: string): CategoryData | undefined {
+  return DEPARTMENTS_MAP[deptId].categories.find(cat => cat.id === categoryId);
+}
+
+// Fonction helper pour obtenir toutes les catégories d'un département
+export function getDepartmentCategories(deptId: 'DA' | 'DSE' | 'DPNP'): CategoryData[] {
+  return DEPARTMENTS_MAP[deptId].categories;
+}
+
+// Fonction helper pour obtenir le nombre total d'activités d'un département
+export function getDepartmentActivityCount(deptId: 'DA' | 'DSE' | 'DPNP'): number {
+  return DEPARTMENTS_MAP[deptId].categories.reduce((sum, cat) => sum + cat.activities.length, 0);
+}

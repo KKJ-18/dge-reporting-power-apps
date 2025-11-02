@@ -1,11 +1,14 @@
 {
-  "name": "1ecbbdd1-db27-4370-a30e-b51b6d95d9d1",
-  "title": "Activity",
+  "name": "2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe",
+  "title": "DetailsDossiers",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
       "sortable": true,
       "unsortableProperties": [
+        "DetailDecision",
+        "ObjetCommentaire",
+        "Commentaire",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -27,6 +30,9 @@
     "filterRestrictions": {
       "filterable": true,
       "nonFilterableProperties": [
+        "DetailDecision",
+        "ObjetCommentaire",
+        "Commentaire",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -97,8 +103,8 @@
           },
           "maxLength": 255
         },
-        "NomRubrique": {
-          "title": "NomRubrique",
+        "NomClient": {
+          "title": "NomClient",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -110,8 +116,71 @@
           },
           "maxLength": 255
         },
-        "FrequenceReporting": {
-          "title": "FrequenceReporting",
+        "Matricule": {
+          "title": "Matricule",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "MontantSollicite": {
+          "title": "MontantSollicite",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "Decision": {
+          "title": "Decision",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "DetailDecision": {
+          "title": "DetailDecision",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "none"
+        },
+        "ObjetCommentaire": {
+          "title": "ObjetCommentaire",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "none"
+        },
+        "Commentaire": {
+          "title": "Commentaire",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "none"
+        },
+        "Comite": {
+          "title": "Comite",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -646,19 +715,37 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting",
+          "NomClient",
+          "Matricule",
+          "MontantSollicite",
+          "Decision",
+          "DetailDecision",
+          "ObjetCommentaire",
+          "Commentaire",
+          "Comite",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "NomClient",
+          "Matricule",
+          "MontantSollicite",
+          "Decision",
+          "DetailDecision",
+          "ObjetCommentaire",
+          "Commentaire",
+          "Comite"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "NomRubrique",
-          "FrequenceReporting"
+          "NomClient",
+          "Matricule",
+          "MontantSollicite",
+          "Decision",
+          "DetailDecision",
+          "ObjetCommentaire",
+          "Commentaire",
+          "Comite"
         ]
       }
     }
@@ -666,7 +753,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Author",
+        "path": "/tables/2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -675,7 +762,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/Editor",
+        "path": "/tables/2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -684,7 +771,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/1ecbbdd1-db27-4370-a30e-b51b6d95d9d1/entities/%257bContentType%257d",
+        "path": "/tables/2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -692,5 +779,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/Activity/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/DetailsDossiers/AllItems.aspx"
 }

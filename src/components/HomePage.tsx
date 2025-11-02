@@ -125,70 +125,73 @@ const HomePage: React.FC<HomePageProps> = ({ onModuleSelect, selectedPeriod, onP
           gap: '1rem',
           marginTop: '1.5rem'
         }}>
-          <div style={{
-            padding: '1rem',
+          <div className="stats-card" style={{
             background: 'linear-gradient(135deg, rgba(0, 200, 83, 0.1) 0%, rgba(0, 200, 83, 0.05) 100%)',
-            borderRadius: '12px',
             borderLeft: '4px solid #00C853'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>Modules Complets</div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#00C853' }}>
-              {globalStats.completed}/{globalStats.totalReports}
+            <div className="stats-card-label">Modules Complets</div>
+            <div className="stats-card-value" style={{ color: '#00C853' }}>
+              <span>{globalStats.completed}</span>
+              <span className="stats-card-unit">/ {globalStats.totalReports}</span>
             </div>
           </div>
 
-          <div style={{
-            padding: '1rem',
+          <div className="stats-card" style={{
             background: 'linear-gradient(135deg, rgba(255, 111, 0, 0.1) 0%, rgba(255, 111, 0, 0.05) 100%)',
-            borderRadius: '12px',
             borderLeft: '4px solid #FF6F00'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>En Cours</div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#FF6F00' }}>
+            <div className="stats-card-label">En Cours</div>
+            <div className="stats-card-value" style={{ color: '#FF6F00' }}>
               {globalStats.inProgress}
             </div>
           </div>
 
-          <div style={{
-            padding: '1rem',
+          <div className="stats-card" style={{
             background: 'linear-gradient(135deg, rgba(204, 0, 0, 0.1) 0%, rgba(204, 0, 0, 0.05) 100%)',
-            borderRadius: '12px',
             borderLeft: '4px solid #CC0000'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>À Compléter</div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#CC0000' }}>
+            <div className="stats-card-label">À Compléter</div>
+            <div className="stats-card-value" style={{ color: '#CC0000' }}>
               {globalStats.pending}
             </div>
           </div>
 
-          <div style={{
-            padding: '1rem',
+          <div className="stats-card" style={{
             background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(25, 118, 210, 0.05) 100%)',
-            borderRadius: '12px',
             borderLeft: '4px solid #1976D2'
           }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>Taux Moyen</div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#1976D2' }}>
-              {globalStats.averageCompletion}%
+            <div className="stats-card-label">Taux Moyen</div>
+            <div className="stats-card-value" style={{ color: '#1976D2' }}>
+              <span>{globalStats.averageCompletion}</span>
+              <span className="stats-card-unit">%</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Actions rapides */}
+      {/* Actions rapides - Navigation fonctionnelle */}
       <div style={{ 
         display: 'flex', 
         gap: '1rem', 
         marginBottom: '2rem',
         flexWrap: 'wrap'
       }}>
-        <button className="btn btn-primary btn-lg">
+        <button 
+          className="btn btn-primary btn-lg"
+          onClick={() => onModuleSelect('credit-classique')}
+        >
           ➕ Nouveau Rapport
         </button>
-        <button className="btn btn-secondary btn-lg">
+        <button 
+          className="btn btn-secondary btn-lg"
+          onClick={() => onModuleSelect('reports')}
+        >
           📋 Consulter mes Rapports
         </button>
-        <button className="btn btn-outline btn-lg">
+        <button 
+          className="btn btn-outline btn-lg"
+          onClick={() => onModuleSelect('settings')}
+        >
           📥 Importer des Données
         </button>
       </div>

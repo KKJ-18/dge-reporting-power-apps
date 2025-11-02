@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './AppModern.css'
 import Sidebar from './components/Sidebar'
+import HomePageModern from './components/HomePageModern'
 import HomePage from './components/HomePage'
 import CreditClassiqueForm from './components/forms/CreditClassiqueForm'
 import CreditProgrammeForm from './components/forms/CreditProgrammeForm'
@@ -9,91 +10,54 @@ import SuiviMEPForm from './components/forms/SuiviMEPForm'
 import ActivitesAnnexesForm from './components/forms/ActivitesAnnexesForm'
 import UserProfile from './components/UserProfile'
 import CategoryManager from './components/CategoryManager'
-import ActivityManager from './components/ActivityManager'
-import { Office365UsersService } from './services/Office365UsersService'
+import ActivityManagerModern from './components/ActivityManagerModern'
+import DepartmentDashboard from './components/DepartmentDashboard'
+import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyse'
+import DirectorDashboard from './components/DirectorDashboard'
+import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
+import { getDepartment, loadDepartments } from './config/departmentsData'
 
 function AppModern() {
   const [activeModule, setActiveModule] = useState('home')
   const [selectedPeriod, setSelectedPeriod] = useState('')
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Chargement...',
-    role: 'Utilisateur',
-    avatar: '?',
-    mail: '',
-    phone: '',
-    location: '',
-    department: ''
-  })
+  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
   const [profileError, setProfileError] = useState<string | null>(null)
 
-  // Charger le profil utilisateur au démarrage
+  // 🎯 POINT D'ENTRÉE - Charger le profil utilisateur au démarrage
   useEffect(() => {
     const loadUserProfile = async () => {
-      console.log('🔄 Chargement du profil utilisateur...');
+      setLoadingProfile(true);
       try {
-        const profileResult = await Office365UsersService.MyProfile();
-        console.log('✅ Profil reçu (raw):', profileResult);
-        console.log('✅ Type du résultat:', typeof profileResult);
-        console.log('✅ Clés du résultat:', Object.keys(profileResult || {}));
+        // Charger les départements depuis SharePoint
+        await loadDepartments();
         
-        if (profileResult) {
-          updateUserProfile(profileResult);
-          console.log('✅ État utilisateur mis à jour');
-          setProfileError(null);
+        // Charger le profil utilisateur
+        const profile = await UserProfileService.getCurrentUserProfile();
+        console.log('✅ Profil chargé:', profile);
+        setUserProfile(profile);
+        setProfileError(null);
+        
+        // Redirection automatique basée sur le profil
+        if (profile.isDirecteur) {
+          console.log('👔 Directeur détecté - Vue globale');
+          setActiveModule('home'); // Affiche la sélection des départements
+        } else if (profile.departement) {
+          console.log(`🏢 Département ${profile.departement} détecté`);
+          setActiveModule('home'); // Affiche le dashboard du département
         } else {
-          console.warn('⚠️ Aucun profil reçu');
-          setProfileError('Aucun profil utilisateur trouvé');
+          console.log('⚠️ Utilisateur sans département');
+          setActiveModule('home'); // Affiche le message d'erreur
         }
       } catch (error) {
-        console.error('❌ Erreur lors du chargement du profil:', error);
-        console.error('❌ Stack:', error instanceof Error ? error.stack : 'N/A');
-        setProfileError(error instanceof Error ? error.message : 'Erreur inconnue lors du chargement du profil utilisateur.');
+        console.error('❌ Erreur chargement profil:', error);
+        setProfileError(error instanceof Error ? error.message : 'Erreur de chargement du profil');
+      } finally {
+        setLoadingProfile(false);
       }
     }
     loadUserProfile()
   }, [])
-
-  const updateUserProfile = (profileResult: any) => {
-    console.log('📊 updateUserProfile appelé avec:', profileResult);
-    
-    // Le SDK retourne { data: {...}, success: true }
-    let profile = profileResult?.data || profileResult?.result?.result || profileResult?.result || profileResult;
-    
-    console.log('📊 Profil extrait:', profile);
-    console.log('📊 Type du profil:', typeof profile);
-    
-    if (profile && typeof profile === 'object') {
-      console.log('📊 Propriétés du profil:', Object.keys(profile));
-      console.log('📊 DisplayName:', profile.DisplayName);
-      console.log('📊 displayName:', profile.displayName);
-    }
-    
-    const displayName = profile?.DisplayName || profile?.displayName || 'Utilisateur (données non chargées)';
-    const jobTitle = profile?.JobTitle || profile?.jobTitle || 'En attente de connexion';
-    const mail = profile?.Mail || profile?.mail || '';
-    const mobilePhone = profile?.mobilePhone || profile?.TelephoneNumber || '';
-    const officeLocation = profile?.OfficeLocation || profile?.officeLocation || '';
-    const department = profile?.Department || profile?.department || '';
-
-    setCurrentUser({
-      name: displayName,
-      role: jobTitle,
-      avatar: displayName.charAt(0).toUpperCase(),
-      mail,
-      phone: mobilePhone,
-      location: officeLocation,
-      department
-    });
-    
-    console.log('✅ État currentUser mis à jour:', {
-      name: displayName,
-      role: jobTitle,
-      mail,
-      phone: mobilePhone,
-      location: officeLocation,
-      department
-    });
-  }
 
   const handleModuleSelect = (moduleId: string) => {
     setActiveModule(moduleId)
@@ -102,24 +66,97 @@ function AppModern() {
   const handleSaveForm = (data: any, isDraft: boolean) => {
     console.log('Sauvegarde formulaire:', { data, isDraft })
     
-    // Ici, on intégrera la logique pour envoyer les données à SharePoint
-    // via les services Power Platform
-    
     if (!isDraft) {
       alert('✅ Rapport soumis avec succès !\n\nVotre rapport a été enregistré et sera traité automatiquement.')
     }
+  }
+
+  // Écran de chargement
+  if (loadingProfile) {
+    return (
+      <div className="app-container" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        width: '100%'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          textAlign: 'center',
+          padding: '2rem'
+        }}>
+          <div className="spinner"></div>
+          <p style={{ 
+            fontSize: '1.125rem', 
+            color: '#666',
+            fontWeight: 500
+          }}>
+            Chargement de votre profil...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Écran d'erreur
+  if (profileError || !userProfile) {
+    return (
+      <div className="app-container">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          flexDirection: 'column',
+          gap: '1rem',
+          padding: '2rem'
+        }}>
+          <div style={{ fontSize: '3rem' }}>⚠️</div>
+          <h2>Erreur de chargement</h2>
+          <p>{profileError || 'Impossible de charger votre profil'}</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            🔄 Réessayer
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const renderMainContent = () => {
     switch (activeModule) {
       case 'home':
         return (
-          <HomePage
+          <HomePageModern
             onModuleSelect={handleModuleSelect}
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
           />
         )
+      
+      // Routes pour les départements (vue Directeur)
+      case 'department-DA':
+        return (
+          <DepartmentDashboardAnalyse
+            department={getDepartment('DA')}
+            userProfile={userProfile}
+          />
+        );
+      
+      case 'department-DSE':
+      case 'department-DPNP':
+        const deptId = activeModule.split('-')[1] as 'DSE' | 'DPNP';
+        return (
+          <DepartmentDashboard
+            department={getDepartment(deptId)}
+            userProfile={userProfile}
+          />
+        );
       
       case 'credit-classique':
         return (
@@ -160,7 +197,7 @@ function AppModern() {
         return <CategoryManager />
       
       case 'activities':
-        return <ActivityManager />
+        return <ActivityManagerModern />
       
       case 'reports':
         return (
@@ -186,18 +223,24 @@ function AppModern() {
           </div>
         )
       
+      case 'team-monitoring':
+        return <DirectorDashboard />
+      
       case 'settings':
         return (
           <UserProfile 
             user={{
-              name: currentUser.name,
-              role: currentUser.role,
-              mail: currentUser.mail,
-              phone: currentUser.phone,
-              location: currentUser.location,
-              department: currentUser.department
+              name: userProfile.email,
+              role: userProfile.fonction || 'Non défini',
+              mail: userProfile.email,
+              phone: '',
+              location: '',
+              department: userProfile.departement || 'Non assigné'
             }}
-            onProfileRefresh={updateUserProfile}
+            onProfileRefresh={async () => {
+              const newProfile = await UserProfileService.getCurrentUserProfile();
+              setUserProfile(newProfile);
+            }}
             initialError={profileError}
           />
         )
@@ -226,7 +269,7 @@ function AppModern() {
       <Sidebar
         activeModule={activeModule}
         onModuleChange={setActiveModule}
-        currentUser={currentUser}
+        userProfile={userProfile}
       />
       
       <main className="main-content">
@@ -246,7 +289,8 @@ function AppModern() {
             <div style={{ marginTop: '0.5rem' }}>
               Module actif: <strong>{activeModule}</strong> | 
               Période: <strong>{selectedPeriod || 'Non définie'}</strong> |
-              Environnement: <strong>{window.parent !== window ? 'Power Apps' : 'Développement'}</strong>
+              Département: <strong>{userProfile.departement || 'N/A'}</strong> |
+              Directeur: <strong>{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong>
             </div>
           </div>
         )}

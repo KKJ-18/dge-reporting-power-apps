@@ -29,7 +29,17 @@
         "dossiersattentecomite",
         "formationunites",
         "suividepassements",
-        "repriseprovision"
+        "repriseprovision",
+        "utilisateurs",
+        "detailsdossiers",
+        "analysedossierscomites",
+        "analysesuivitransmission",
+        "analysedelaiscredit",
+        "analyseengagements",
+        "analysesuivimep",
+        "visiteclientele",
+        "formations",
+        "activitestransversales"
       ],
       "authenticationType": null,
       "sharedConnectionId": null,
@@ -59,6 +69,36 @@
             },
             "repriseprovision": {
               "tableName": "62a91185-a94c-4156-875c-bd2ce52fe376"
+            },
+            "utilisateurs": {
+              "tableName": "462c3867-cfb0-4b87-9a0e-2c813ad2bd02"
+            },
+            "detailsdossiers": {
+              "tableName": "2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe"
+            },
+            "analysedossierscomites": {
+              "tableName": "671cd488-f73b-4659-bf14-b48f99a7a31a"
+            },
+            "analysesuivitransmission": {
+              "tableName": "42cf885c-e340-4f43-88f2-734a3619050a"
+            },
+            "analysedelaiscredit": {
+              "tableName": "d26a59f9-306e-4eaf-802a-bd50c0250e4f"
+            },
+            "analyseengagements": {
+              "tableName": "c62636db-6b1f-47e2-8ebd-c670e900de4f"
+            },
+            "analysesuivimep": {
+              "tableName": "fdda512c-6cae-4421-b9ed-65ec6f4b5077"
+            },
+            "visiteclientele": {
+              "tableName": "358344db-ad54-4720-b93b-4552d40897ca"
+            },
+            "formations": {
+              "tableName": "c8ea3772-1900-492b-a5de-209277a691a8"
+            },
+            "activitestransversales": {
+              "tableName": "c98ff885-2780-4f8e-8103-9ed428fe0e99"
             }
           }
         }

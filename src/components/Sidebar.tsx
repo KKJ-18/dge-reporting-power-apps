@@ -1,247 +1,130 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { UserProfile } from '../services/UserProfileService';
+import { getDepartment } from '../config/departmentsData';
+import './Sidebar.css';
 
 interface SidebarProps {
   activeModule: string;
   onModuleChange: (moduleId: string) => void;
-  currentUser?: {
-    name: string;
-    role: string;
-    avatar?: string;
-    mail?: string;
-    phone?: string;
-    location?: string;
-    department?: string;
-  };
+  userProfile: UserProfile;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, currentUser }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, userProfile }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const menuItems = [
-    { id: 'home', icon: '🏠', label: 'Tableau de Bord', badge: null },
-    { id: 'credit-classique', icon: '💰', label: 'Crédit Classique', badge: null },
-    { id: 'credit-programme', icon: '🎯', label: 'Crédit Programme', badge: null },
-    { id: 'admin-engagements', icon: '📊', label: 'Admin. Engagements', badge: null },
-    { id: 'suivi-mep', icon: '📈', label: 'Suivi MEP', badge: null },
-    { id: 'activites-annexes', icon: '📋', label: 'Activités Annexes', badge: null },
-    { id: 'divider', label: 'divider' },
-    { id: 'categories', icon: '📂', label: 'Catégories (CRUD)', badge: null },
-    { id: 'activities', icon: '📝', label: 'Activités (CRUD)', badge: null },
-    { id: 'reports', icon: '📑', label: 'Mes Rapports', badge: null },
-    { id: 'validation', icon: '✅', label: 'Validation', badge: '3' },
-    { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null },
-    { id: 'divider2', label: 'divider' },
-    { id: 'settings', icon: '⚙️', label: 'Paramètres', badge: null },
-    { id: 'help', icon: '❓', label: 'Aide', badge: null }
-  ];
+  // Construction du menu dynamique basé sur le profil
+  const menuItems = useMemo(() => {
+    const items: any[] = [
+      { id: 'home', icon: '🏠', label: 'Tableau de Bord', badge: null }
+    ];
+
+    // Si l'utilisateur a un département, ajouter les catégories du département
+    if (userProfile.departement && !userProfile.isDirecteur) {
+      const department = getDepartment(userProfile.departement);
+      
+      // Ajouter un séparateur
+      items.push({ id: 'divider-dept', label: 'divider' });
+      
+      // Ajouter les catégories du département
+      department.categories.forEach((category) => {
+        items.push({
+          id: `category-${category.id}`,
+          icon: category.icon,
+          label: category.name,
+          badge: null
+        });
+      });
+    }
+
+    // Sections communes pour tous les utilisateurs
+    items.push(
+      { id: 'divider-common', label: 'divider' },
+      { id: 'reports', icon: '📑', label: 'Rapports', badge: null },
+      { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null }
+    );
+
+    // Section administration (uniquement pour directeur)
+    if (userProfile.isDirecteur) {
+      items.push(
+        { id: 'divider-admin', label: 'divider' },
+        { id: 'validation', icon: '✅', label: 'Validation', badge: null },
+        { id: 'team-monitoring', icon: '👥', label: 'Suivi Équipe', badge: null }
+      );
+    }
+
+    // Section paramètres et aide
+    items.push(
+      { id: 'divider-settings', label: 'divider' },
+      { id: 'settings', icon: '⚙️', label: 'Paramètres', badge: null },
+      { id: 'help', icon: '❓', label: 'Aide', badge: null }
+    );
+
+    return items;
+  }, [userProfile]);
 
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      {/* Bouton de rétraction */}
+      {/* Bouton de rétraction moderne */}
       <button 
         className="sidebar-toggle"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        title={isCollapsed ? "Étendre" : "Réduire"}
+        title={isCollapsed ? "Étendre le menu" : "Réduire le menu"}
+        aria-label={isCollapsed ? "Étendre le menu" : "Réduire le menu"}
       >
-        {isCollapsed ? '→' : '←'}
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {isCollapsed ? (
+            <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          ) : (
+            <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          )}
+        </svg>
       </button>
 
       {/* Logo et titre */}
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">📈</div>
         {!isCollapsed && (
-          <div>
+          <div className="sidebar-logo-text">
             <div className="sidebar-title">DGE Reporting</div>
             <div className="sidebar-subtitle">Plateforme Hebdomadaire</div>
           </div>
         )}
       </div>
 
-      {/* Profil utilisateur */}
-      {currentUser && (
-        <div className="user-info" style={{
-          background: 'rgba(26, 26, 26, 0.03)',
-          borderRadius: '12px',
-          padding: '1rem',
-          marginBottom: '1.5rem',
-          border: '1px solid rgba(0, 0, 0, 0.06)'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            marginBottom: isCollapsed ? 0 : '0.75rem'
-          }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              flexShrink: 0
-            }}>
-              {currentUser.avatar || currentUser.name.charAt(0).toUpperCase()}
-            </div>
-            {!isCollapsed && (
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="user-name" style={{ 
-                  fontWeight: '600', 
-                  fontSize: '0.875rem',
-                  color: '#1A1A1A',
-                  marginBottom: '0.125rem',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {currentUser.name}
-                </div>
-                <div className="user-role" style={{ 
-                  fontSize: '0.75rem', 
-                  color: '#6B7280',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {currentUser.role}
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Informations supplémentaires */}
-          {!isCollapsed && (
-            <div style={{
-              borderTop: '1px solid rgba(0, 0, 0, 0.06)',
-              paddingTop: '0.75rem',
-              fontSize: '0.75rem',
-              color: '#6B7280',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem'
-            }}>
-              {currentUser.department && (
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  overflow: 'hidden'
-                }}>
-                  <span style={{ flexShrink: 0 }}>🏢</span>
-                  <span style={{ 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    {currentUser.department}
-                  </span>
-                </div>
-              )}
-              {currentUser.location && (
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  overflow: 'hidden'
-                }}>
-                  <span style={{ flexShrink: 0 }}>📍</span>
-                  <span style={{ 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    {currentUser.location}
-                  </span>
-                </div>
-              )}
-              {currentUser.mail && (
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  overflow: 'hidden'
-                }}>
-                  <span style={{ flexShrink: 0 }}>📧</span>
-                  <span style={{ 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    {currentUser.mail}
-                  </span>
-                </div>
-              )}
-              {currentUser.phone && (
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  overflow: 'hidden'
-                }}>
-                  <span style={{ flexShrink: 0 }}>📱</span>
-                  <span style={{ 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    {currentUser.phone}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Menu de navigation (sans scroll) */}
+      <nav className="sidebar-nav">
+        {menuItems.map((item) => {
+          if (item.label === 'divider') {
+            return !isCollapsed && <div key={item.id} className="sidebar-divider" />;
+          }
 
-      {/* Navigation */}
-      <nav>
-        <ul className="nav-menu">
-          {menuItems.map((item) => {
-            if (item.label === 'divider') {
-              return (
-                <li key={item.id} style={{
-                  height: '1px',
-                  background: 'rgba(0, 0, 0, 0.08)',
-                  margin: '1rem 0'
-                }} />
-              );
-            }
-
-            return (
-              <li key={item.id} className="nav-item">
-                <a
-                  className={`nav-link ${activeModule === item.id ? 'active' : ''}`}
-                  onClick={() => onModuleChange(item.id)}
-                  title={isCollapsed ? item.label : undefined}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  {!isCollapsed && <span className="nav-text" style={{ flex: 1 }}>{item.label}</span>}
-                  {!isCollapsed && item.badge && <span className="nav-badge">{item.badge}</span>}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+          return (
+            <button
+              key={item.id}
+              className={`sidebar-item ${activeModule === item.id ? 'active' : ''}`}
+              onClick={() => onModuleChange(item.id)}
+              title={isCollapsed ? item.label : undefined}
+            >
+              <span className="sidebar-item-icon">{item.icon}</span>
+              {!isCollapsed && (
+                <>
+                  <span className="sidebar-item-label">{item.label}</span>
+                  {item.badge && (
+                    <span className="sidebar-item-badge">{item.badge}</span>
+                  )}
+                </>
+              )}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Footer */}
       {!isCollapsed && (
-        <div style={{
-          marginTop: 'auto',
-          paddingTop: '2rem',
-          borderTop: '1px solid rgba(0, 0, 0, 0.08)'
-        }}>
-          <div style={{ 
-            fontSize: '0.6875rem', 
-            color: '#9CA3AF',
-            textAlign: 'center'
-          }}>
+        <div className="sidebar-footer">
+          <div className="sidebar-version">
             <div>© 2025 DGE</div>
-            <div style={{ marginTop: '0.25rem' }}>Version 2.0.0</div>
+            <div>Version 2.0.0</div>
           </div>
         </div>
       )}
