@@ -6,7 +6,7 @@ import * as path from 'path';
 export default defineConfig({
   base: "./",
   server: {
-    host: "::",
+    host: true,
     port: 5173,
   },
   plugins: [react()],
@@ -15,5 +15,9 @@ export default defineConfig({
         "@": path.resolve(__dirname, "./src"),
       },
   },  
- 
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+  }
 });
