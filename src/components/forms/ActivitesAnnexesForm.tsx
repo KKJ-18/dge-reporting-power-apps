@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { ExportButtons } from '../ExportButtons'
+import { useObjectifValidation } from '../../hooks/useObjectifValidation'
+import { ACTIVITY_NAMES } from '../../config/activityNames'
 
 interface ActiviteAnnexeData {
   type: string
@@ -63,6 +65,7 @@ export default function ActivitesAnnexesForm({ onSave, initialData }: ActivitesA
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
+  const { isValidating: isValidatingObjectif, validateBeforeSubmit } = useObjectifValidation()
 
   // Auto-save toutes les 30 secondes
   useEffect(() => {
@@ -207,6 +210,41 @@ export default function ActivitesAnnexesForm({ onSave, initialData }: ActivitesA
   const handleSave = async (isDraft: boolean) => {
     if (!isDraft && !validateForm()) {
       return
+    }
+
+    if (!isDraft) {
+      // Vérifier au moins une activité pour la validation
+      const totalActivites = 
+        formData.formations.length +
+        formData.reunions.length +
+        formData.deplacements.length +
+        formData.audits.length +
+        formData.autres.length;
+
+      if (totalActivites === 0) {
+        alert('⚠️ Veuillez ajouter au moins une activité avant de soumettre.');
+        return;
+      }
+
+      // Pour ActivitesAnnexes, on valide avec le type d'activité le plus représentatif
+      let activityName: typeof ACTIVITY_NAMES[keyof typeof ACTIVITY_NAMES] = ACTIVITY_NAMES.FORMATIONS;
+      if (formData.formations.length > 0) {
+        activityName = ACTIVITY_NAMES.FORMATIONS;
+      } else if (formData.reunions.length > 0) {
+        activityName = ACTIVITY_NAMES.REUNIONS;
+      } else if (formData.deplacements.length > 0) {
+        activityName = ACTIVITY_NAMES.DEPLACEMENTS;
+      } else if (formData.audits.length > 0) {
+        activityName = ACTIVITY_NAMES.AUDITS;
+      } else {
+        activityName = ACTIVITY_NAMES.AUTRES_ACTIVITES;
+      }
+
+      const isValid = await validateBeforeSubmit(
+        activityName,
+        new Date(formData.dateRapport)
+      );
+      if (!isValid) return;
     }
 
     setSaveStatus('saving')
@@ -392,8 +430,9 @@ export default function ActivitesAnnexesForm({ onSave, initialData }: ActivitesA
           <button 
             className="btn btn-primary"
             onClick={() => handleSave(false)}
+            disabled={isValidatingObjectif}
           >
-            ✅ Soumettre
+            {isValidatingObjectif ? '⏳ Vérification objectif...' : '✅ Soumettre'}
           </button>
         </div>
       </div>

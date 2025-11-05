@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ExportButtons } from '../ExportButtons'
+import { useObjectifValidation } from '../../hooks/useObjectifValidation'
+import { ACTIVITY_NAMES } from '../../config/activityNames'
 
 interface SuiviMEPData {
   // Métadonnées
@@ -70,6 +72,7 @@ export default function SuiviMEPForm({ onSave, initialData }: SuiviMEPFormProps)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const { isValidating: isValidatingObjectif, validateBeforeSubmit } = useObjectifValidation()
 
   // Auto-save toutes les 30 secondes
   useEffect(() => {
@@ -181,6 +184,14 @@ export default function SuiviMEPForm({ onSave, initialData }: SuiviMEPFormProps)
       return
     }
 
+    if (!isDraft) {
+      const isValid = await validateBeforeSubmit(
+        ACTIVITY_NAMES.SUIVI_MEP,
+        new Date(formData.dateRapport)
+      );
+      if (!isValid) return;
+    }
+
     setSaveStatus('saving')
     
     try {
@@ -234,8 +245,9 @@ export default function SuiviMEPForm({ onSave, initialData }: SuiviMEPFormProps)
           <button 
             className="btn btn-primary"
             onClick={() => handleSave(false)}
+            disabled={isValidatingObjectif}
           >
-            ✅ Soumettre
+            {isValidatingObjectif ? '⏳ Vérification objectif...' : '✅ Soumettre'}
           </button>
         </div>
       </div>

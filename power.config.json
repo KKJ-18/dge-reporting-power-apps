@@ -39,7 +39,8 @@
         "analysesuivimep",
         "visiteclientele",
         "formations",
-        "activitestransversales"
+        "activitestransversales",
+        "objectif"
       ],
       "authenticationType": null,
       "sharedConnectionId": null,
@@ -99,6 +100,9 @@
             },
             "activitestransversales": {
               "tableName": "c98ff885-2780-4f8e-8103-9ed428fe0e99"
+            },
+            "objectif": {
+              "tableName": "682cc61e-d3a7-4bef-8757-8c9c70d8b61b"
             }
           }
         }

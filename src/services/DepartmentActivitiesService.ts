@@ -8,6 +8,8 @@ export interface ActivityItem {
   requiresAmount?: boolean;
   requiresCount?: boolean;
   requiresComment?: boolean;
+  requiresDetails?: boolean; // Nouveau: indique si l'activité nécessite des détails de dossiers
+  detailsType?: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg';
 }
 
 export interface CategoryItem {
@@ -96,7 +98,22 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Recherche clients en anomalie à l\'étranger': '🌍',
   
   // Commun à tous les départements
-  'Activités annexes': '📋',
+  'Activités annexes': '�'
+};
+
+/**
+ * Mapping des activités qui nécessitent des détails de dossiers
+ * Format: { "Nom de l'activité": "type de détails" }
+ */
+const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg'> = {
+  'Dossiers présentés aux différents comités de crédit': 'comite',
+  'Note de circulation': 'note',
+  'Dossiers en cours d\'analyse': 'analyse',
+  'Dossiers en attente de l\'avis de risque': 'risque',
+  'Dossiers renvoyés': 'renvoye',
+  'Dossiers en attente de l\'avis de la conformité': 'conformite',
+  'Dossiers en attente du comité de crédit': 'attente_comite',
+  'Dossiers CONSEIL en attente avis du SCRG': 'scrg'
 };
 
 /**
@@ -255,14 +272,21 @@ export class DepartmentActivitiesService {
       id: this.getCategoryId(categoryName),
       name: categoryName,
       icon: CATEGORY_ICONS[categoryName] || '📋',
-      activities: activities.map(activity => ({
-        id: this.getActivityId(activity.Title || '', categoryName),
-        name: activity.Title || '',
-        frequency: (activity.FrequenceReporting || 'Journalière') as any,
-        requiresAmount: true, // Par défaut, nécessite un montant
-        requiresCount: false,
-        requiresComment: false
-      }))
+      activities: activities.map(activity => {
+        const activityName = activity.Title || '';
+        const detailsType = ACTIVITIES_WITH_DETAILS[activityName];
+        
+        return {
+          id: this.getActivityId(activityName, categoryName),
+          name: activityName,
+          frequency: (activity.FrequenceReporting || 'Journalière') as any,
+          requiresAmount: true, // Par défaut, nécessite un montant
+          requiresCount: false,
+          requiresComment: false,
+          requiresDetails: !!detailsType, // true si l'activité a des détails de dossiers
+          detailsType: detailsType // Type de détails (comite, note, etc.)
+        };
+      })
     };
   }
 

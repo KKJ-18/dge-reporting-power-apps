@@ -14,6 +14,8 @@ import ActivityManagerModern from './components/ActivityManagerModern'
 import DepartmentDashboard from './components/DepartmentDashboard'
 import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyse'
 import DirectorDashboard from './components/DirectorDashboard'
+import ReportsStatistics from './components/ReportsStatistics'
+import ObjectifsManagement from './components/ObjectifsManagement'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
 
@@ -216,12 +218,10 @@ function AppModern() {
         )
       
       case 'analytics':
-        return (
-          <div className="page-header">
-            <h1 className="page-title">📊 Statistiques</h1>
-            <p className="page-subtitle">Analyses et métriques de performance</p>
-          </div>
-        )
+        return <ReportsStatistics />
+
+      case 'objectifs':
+        return <ObjectifsManagement />
       
       case 'team-monitoring':
         return <DirectorDashboard />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserProfile, UserProfileService } from '../services/UserProfileService';
 import { getDepartment, DEPARTMENTS_MAP } from '../config/departmentsData';
-import DepartmentDashboard from './DepartmentDashboard';
+import DepartmentDashboardAnalyse from './DepartmentDashboardAnalyse';
 import './HomePageModern.css';
 
 interface HomePageModernProps {
@@ -151,7 +151,7 @@ const HomePageModern: React.FC<HomePageModernProps> = ({ onModuleSelect }) => {
     
     return (
       <div className="homepage-modern">
-        <DepartmentDashboard 
+        <DepartmentDashboardAnalyse 
           department={department} 
           userProfile={userProfile}
         />

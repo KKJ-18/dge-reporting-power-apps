@@ -1,40 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { ACTIVITY_NAMES } from '../../config/activityNames';
+import { useObjectifValidation } from '../../hooks/useObjectifValidation';
+import DossiersDetailsInput, { type DossierDetail } from './DossiersDetailsInput';
+import './CreditClassiqueFormNew.css';
 
 interface CreditClassiqueData {
-  // Dossiers reçus
-  dossiersRecusNombre: number;
-  dossiersRecusMontant: number;
-  dossiersRecusDate: string;
+  // Métadonnées
+  dateRapport: string;
   
-  // Dossiers présentés comités
-  comiteType: string;
-  comiteNombre: number;
-  comiteMontant: number;
-  
-  // FAR
-  farNombre: number;
-  farMontant: number;
+  // Dossiers présentés aux comités
+  comitesNombre: number;
+  comitesMontant: number;
+  comitesDetails: DossierDetail[];
   
   // Notes de circulation
   notesNombre: number;
   notesMontant: number;
+  notesDetails: DossierDetail[];
   
   // Dossiers en cours d'analyse
   analyseNombre: number;
   analyseMontant: number;
+  analyseDetails: DossierDetail[];
   
   // Dossiers en attente avis risque
   risqueNombre: number;
   risqueMontant: number;
+  risqueDetails: DossierDetail[];
+  
+  // Dossiers renvoyés
+  renvoyesNombre: number;
+  renvoyesMontant: number;
+  renvoyesDetails: DossierDetail[];
   
   // Dossiers en attente conformité
   conformiteNombre: number;
   conformiteMontant: number;
+  conformiteDetails: DossierDetail[];
   
-  // Suivi régularisation
-  regularisationAgence: string;
-  regularisationNombre: number;
-  regularisationMontant: number;
+  // Dossiers en attente comité crédit
+  attenteComiteNombre: number;
+  attenteComiteMontant: number;
+  attenteComiteDetails: DossierDetail[];
+  
+  // Dossiers CONSEIL SCRG
+  scrgNombre: number;
+  scrgMontant: number;
+  scrgDetails: DossierDetail[];
+  scrgDateCC3?: string;
+  scrgDateTransmission?: string;
 }
 
 interface CreditClassiqueFormProps {
@@ -49,397 +63,420 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
   readOnly = false 
 }) => {
   const [formData, setFormData] = useState<CreditClassiqueData>({
-    dossiersRecusNombre: 0,
-    dossiersRecusMontant: 0,
-    dossiersRecusDate: new Date().toISOString().split('T')[0],
-    comiteType: '',
-    comiteNombre: 0,
-    comiteMontant: 0,
-    farNombre: 0,
-    farMontant: 0,
+    dateRapport: new Date().toISOString().split('T')[0],
+    comitesNombre: 0,
+    comitesMontant: 0,
+    comitesDetails: [],
     notesNombre: 0,
     notesMontant: 0,
+    notesDetails: [],
     analyseNombre: 0,
     analyseMontant: 0,
+    analyseDetails: [],
     risqueNombre: 0,
     risqueMontant: 0,
+    risqueDetails: [],
+    renvoyesNombre: 0,
+    renvoyesMontant: 0,
+    renvoyesDetails: [],
     conformiteNombre: 0,
     conformiteMontant: 0,
-    regularisationAgence: '',
-    regularisationNombre: 0,
-    regularisationMontant: 0,
+    conformiteDetails: [],
+    attenteComiteNombre: 0,
+    attenteComiteMontant: 0,
+    attenteComiteDetails: [],
+    scrgNombre: 0,
+    scrgMontant: 0,
+    scrgDetails: [],
     ...initialData
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
+  const { isValidating: isValidatingObjectif, validateBeforeSubmit } = useObjectifValidation();
 
-  // Auto-save every 30 seconds
-  useEffect(() => {
-    if (!readOnly) {
-      const interval = setInterval(() => {
-        setAutoSaveStatus('saving');
-        onSave(formData, true);
-        setTimeout(() => setAutoSaveStatus('saved'), 500);
-      }, 30000);
-      
-      return () => clearInterval(interval);
-    }
-  }, [formData, onSave, readOnly]);
-
-  const handleChange = (field: keyof CreditClassiqueData, value: string | number) => {
+  const handleChange = (field: keyof CreditClassiqueData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-    setAutoSaveStatus('unsaved');
-    
-    // Clear error for this field
-    if (errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
   };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
-    // Validation: Si montant > 0, nombre doit être > 0
-    if (formData.dossiersRecusMontant > 0 && formData.dossiersRecusNombre === 0) {
-      newErrors.dossiersRecusNombre = 'Nombre de dossiers requis si montant > 0';
+
+    if (!formData.dateRapport) {
+      newErrors.dateRapport = 'La date du rapport est obligatoire';
+    }
+
+    // Validation des dossiers avec détails
+    if (formData.comitesNombre > 0 && formData.comitesDetails.length !== formData.comitesNombre) {
+      newErrors.comitesDetails = 'Veuillez remplir tous les détails des dossiers';
     }
     
-    if (formData.comiteMontant > 0 && formData.comiteNombre === 0) {
-      newErrors.comiteNombre = 'Nombre de dossiers requis si montant > 0';
+    if (formData.notesNombre > 0 && formData.notesDetails.length !== formData.notesNombre) {
+      newErrors.notesDetails = 'Veuillez remplir tous les détails des notes';
     }
-    
-    if (formData.comiteNombre > 0 && !formData.comiteType) {
-      newErrors.comiteType = 'Type de comité requis';
-    }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      onSave(formData, false);
+    
+    if (!validate()) {
+      return;
     }
+
+    const isValid = await validateBeforeSubmit(
+      ACTIVITY_NAMES.CREDIT_CLASSIQUE,
+      new Date(formData.dateRapport)
+    );
+
+    if (!isValid) return;
+    onSave(formData, false);
   };
 
   const handleSaveDraft = () => {
     onSave(formData, true);
-    setAutoSaveStatus('saved');
   };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', { 
-      style: 'currency', 
-      currency: 'XAF',
-      minimumFractionDigits: 0
-    }).format(value);
-  };
-
-  const calculateDelais = () => {
-    // Simulation de calcul de délais
-    // En production, ces données viendraient de SharePoint/BI
-    return {
-      delaiMoyenDCE: 5,
-      delaiMoyenTotal: 8
-    };
-  };
-
-  const delais = calculateDelais();
 
   return (
-    <div className="animate-fade-in">
-      {/* En-tête */}
-      <div className="page-header">
-        <div className="page-header-top">
-          <div>
-            <h1 className="page-title">💰 Crédit Classique</h1>
-            <p className="page-subtitle">
-              Saisie des dossiers, comités, FAR et notes de circulation
-            </p>
-          </div>
-          
-          <div className="page-actions">
-            <div style={{
-              padding: '0.5rem 1rem',
-              background: autoSaveStatus === 'saved' ? '#E8F5E9' : 
-                          autoSaveStatus === 'saving' ? '#FFF3E0' : '#FFEBEE',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: autoSaveStatus === 'saved' ? '#00C853' : 
-                     autoSaveStatus === 'saving' ? '#FF6F00' : '#D32F2F'
-            }}>
-              {autoSaveStatus === 'saved' ? '✅ Sauvegardé' : 
-               autoSaveStatus === 'saving' ? '⏳ Sauvegarde...' : '⚠️ Non sauvegardé'}
-            </div>
-          </div>
-        </div>
-
-        {/* Indicateurs calculés */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          marginTop: '1.5rem'
-        }}>
-          <div style={{
-            padding: '1rem',
-            background: 'linear-gradient(135deg, rgba(204, 0, 0, 0.1) 0%, rgba(204, 0, 0, 0.05) 100%)',
-            borderRadius: '12px',
-            borderLeft: '4px solid #CC0000'
-          }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Délai Moyen DCE
-            </div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#CC0000' }}>
-              {delais.delaiMoyenDCE} jours
-            </div>
-          </div>
-
-          <div style={{
-            padding: '1rem',
-            background: 'linear-gradient(135deg, rgba(204, 0, 0, 0.1) 0%, rgba(204, 0, 0, 0.05) 100%)',
-            borderRadius: '12px',
-            borderLeft: '4px solid #CC0000'
-          }}>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Délai Moyen Total
-            </div>
-            <div style={{ fontSize: '2rem', fontWeight: '700', color: '#CC0000' }}>
-              {delais.delaiMoyenTotal} jours
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="form-container">
       <form onSubmit={handleSubmit}>
-        {/* Section 1: Dossiers reçus */}
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-title">
-              <div className="form-section-icon">📥</div>
-              Dossiers Reçus
-            </div>
-          </div>
-
-          <div className="form-grid form-grid-3">
-            <div className="form-group">
-              <label className="form-label form-label-required">Nombre de dossiers</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.dossiersRecusNombre}
-                onChange={(e) => handleChange('dossiersRecusNombre', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              {errors.dossiersRecusNombre && (
-                <div className="form-error">⚠️ {errors.dossiersRecusNombre}</div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label form-label-required">Montant total (FCFA)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.dossiersRecusMontant}
-                onChange={(e) => handleChange('dossiersRecusMontant', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              <div className="form-helper">
-                {formatCurrency(formData.dossiersRecusMontant)}
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Date de réception</label>
-              <input
-                type="date"
-                className="form-input"
-                value={formData.dossiersRecusDate}
-                onChange={(e) => handleChange('dossiersRecusDate', e.target.value)}
-                disabled={readOnly}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Section 2: Dossiers présentés comités */}
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-title">
-              <div className="form-section-icon">🏛️</div>
-              Dossiers Présentés en Comité
-            </div>
-          </div>
-
-          <div className="form-grid form-grid-3">
-            <div className="form-group">
-              <label className="form-label form-label-required">Type de comité</label>
-              <select
-                className="form-select"
-                value={formData.comiteType}
-                onChange={(e) => handleChange('comiteType', e.target.value)}
-                disabled={readOnly}
-              >
-                <option value="">Sélectionnez...</option>
-                <option value="CC1">CC1</option>
-                <option value="CC2">CC2</option>
-                <option value="CC3">CC3</option>
-                <option value="CC4">CC4</option>
-                <option value="CCCA">CCCA</option>
-              </select>
-              {errors.comiteType && (
-                <div className="form-error">⚠️ {errors.comiteType}</div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nombre de dossiers</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.comiteNombre}
-                onChange={(e) => handleChange('comiteNombre', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              {errors.comiteNombre && (
-                <div className="form-error">⚠️ {errors.comiteNombre}</div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Montant total (FCFA)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.comiteMontant}
-                onChange={(e) => handleChange('comiteMontant', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              <div className="form-helper">
-                {formatCurrency(formData.comiteMontant)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 3: FAR */}
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-title">
-              <div className="form-section-icon">📄</div>
-              FAR (Fiche d'Analyse de Risque)
-            </div>
-          </div>
-
-          <div className="form-grid form-grid-2">
-            <div className="form-group">
-              <label className="form-label">Nombre de dossiers</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.farNombre}
-                onChange={(e) => handleChange('farNombre', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Montant total (FCFA)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.farMontant}
-                onChange={(e) => handleChange('farMontant', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              <div className="form-helper">
-                {formatCurrency(formData.farMontant)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 4: Notes de circulation */}
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-title">
-              <div className="form-section-icon">📝</div>
-              Notes de Circulation
-            </div>
-          </div>
-
-          <div className="form-grid form-grid-2">
-            <div className="form-group">
-              <label className="form-label">Nombre de notes</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.notesNombre}
-                onChange={(e) => handleChange('notesNombre', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Montant total (FCFA)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.notesMontant}
-                onChange={(e) => handleChange('notesMontant', parseInt(e.target.value) || 0)}
-                disabled={readOnly}
-                min="0"
-              />
-              <div className="form-helper">
-                {formatCurrency(formData.notesMontant)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sections restantes dans le même format... */}
-        
-        {/* Boutons d'action */}
-        {!readOnly && (
-          <div style={{
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            marginTop: '2rem'
-          }}>
+        {/* En-tête */}
+        <div className="form-header">
+          <h2>📊 Crédit Classique</h2>
+          <div className="form-actions-header">
             <button
               type="button"
-              className="btn btn-secondary btn-lg"
+              className="btn btn-secondary"
               onClick={handleSaveDraft}
+              disabled={readOnly}
             >
-              💾 Sauvegarder Brouillon
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary btn-lg"
-            >
-              ✅ Soumettre le Rapport
+              💾 Brouillon
             </button>
           </div>
-        )}
+        </div>
+
+        {/* Date du rapport */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">📅 Informations générales</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Date du rapport *</label>
+              <input
+                type="date"
+                value={formData.dateRapport}
+                onChange={(e) => handleChange('dateRapport', e.target.value)}
+                disabled={readOnly}
+                required
+              />
+              {errors.dateRapport && <span className="error">{errors.dateRapport}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Section 1: Dossiers présentés aux comités */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">📋 Dossiers présentés aux différents comités de crédit</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.comitesNombre || ''}
+                onChange={(e) => handleChange('comitesNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 5"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.comitesNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.comitesNombre}
+                activityType="comite"
+                initialDetails={formData.comitesDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('comitesDetails', details);
+                  handleChange('comitesMontant', montantTotal);
+                }}
+              />
+            )}
+            {errors.comitesDetails && <span className="error">{errors.comitesDetails}</span>}
+          </div>
+        </div>
+
+        {/* Section 2: Notes de circulation */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">📝 Notes de circulation</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de notes</label>
+              <input
+                type="number"
+                value={formData.notesNombre || ''}
+                onChange={(e) => handleChange('notesNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 3"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.notesNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.notesNombre}
+                activityType="note"
+                initialDetails={formData.notesDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('notesDetails', details);
+                  handleChange('notesMontant', montantTotal);
+                }}
+              />
+            )}
+            {errors.notesDetails && <span className="error">{errors.notesDetails}</span>}
+          </div>
+        </div>
+
+        {/* Section 3: Dossiers en cours d'analyse */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">🔍 Dossiers en cours d'analyse</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.analyseNombre || ''}
+                onChange={(e) => handleChange('analyseNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 2"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.analyseNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.analyseNombre}
+                activityType="analyse"
+                initialDetails={formData.analyseDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('analyseDetails', details);
+                  handleChange('analyseMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Section 4: Dossiers en attente avis risque */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">⚠️ Dossiers en attente de l'avis de risque</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.risqueNombre || ''}
+                onChange={(e) => handleChange('risqueNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 1"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.risqueNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.risqueNombre}
+                activityType="risque"
+                initialDetails={formData.risqueDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('risqueDetails', details);
+                  handleChange('risqueMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Section 5: Dossiers renvoyés */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">↩️ Dossiers renvoyés</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.renvoyesNombre || ''}
+                onChange={(e) => handleChange('renvoyesNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 2"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.renvoyesNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.renvoyesNombre}
+                activityType="renvoye"
+                initialDetails={formData.renvoyesDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('renvoyesDetails', details);
+                  handleChange('renvoyesMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Section 6: Dossiers en attente conformité */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">📋 Dossiers en attente de l'avis de la conformité</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.conformiteNombre || ''}
+                onChange={(e) => handleChange('conformiteNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 1"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.conformiteNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.conformiteNombre}
+                activityType="conformite"
+                initialDetails={formData.conformiteDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('conformiteDetails', details);
+                  handleChange('conformiteMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Section 7: Dossiers en attente du comité de crédit */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">⏳ Dossiers en attente du comité de crédit</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-group">
+              <label>Nombre de dossiers</label>
+              <input
+                type="number"
+                value={formData.attenteComiteNombre || ''}
+                onChange={(e) => handleChange('attenteComiteNombre', parseInt(e.target.value) || 0)}
+                placeholder="Ex: 3"
+                min="0"
+                disabled={readOnly}
+              />
+            </div>
+
+            {formData.attenteComiteNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.attenteComiteNombre}
+                activityType="attente_comite"
+                initialDetails={formData.attenteComiteDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('attenteComiteDetails', details);
+                  handleChange('attenteComiteMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Section 8: Dossiers CONSEIL SCRG */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">🏛️ Dossiers CONSEIL en attente avis du SCRG</h3>
+          </div>
+          <div className="card-content">
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.scrgNombre || ''}
+                  onChange={(e) => handleChange('scrgNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Ex: 1"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Date du CC3</label>
+                <input
+                  type="date"
+                  value={formData.scrgDateCC3 || ''}
+                  onChange={(e) => handleChange('scrgDateCC3', e.target.value)}
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Date de transmission au SCRG</label>
+                <input
+                  type="date"
+                  value={formData.scrgDateTransmission || ''}
+                  onChange={(e) => handleChange('scrgDateTransmission', e.target.value)}
+                  disabled={readOnly}
+                />
+              </div>
+            </div>
+
+            {formData.scrgNombre > 0 && (
+              <DossiersDetailsInput
+                nombreDossiers={formData.scrgNombre}
+                activityType="scrg"
+                initialDetails={formData.scrgDetails}
+                onDetailsChange={(details, montantTotal) => {
+                  handleChange('scrgDetails', details);
+                  handleChange('scrgMontant', montantTotal);
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="form-actions">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleSaveDraft}
+            disabled={readOnly}
+          >
+            💾 Sauvegarder comme brouillon
+          </button>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={readOnly || isValidatingObjectif}
+          >
+            {isValidatingObjectif ? '⏳ Vérification objectif...' : '✅ Soumettre le Rapport'}
+          </button>
+        </div>
       </form>
     </div>
   );

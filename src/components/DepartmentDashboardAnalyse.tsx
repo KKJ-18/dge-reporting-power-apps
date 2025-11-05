@@ -3,13 +3,26 @@ import { DepartmentData, CategoryData, ActivityItem } from '../config/department
 import { UserProfile } from '../services/UserProfileService';
 import Modal from './Modal';
 
-// Import des formulaires spécialisés pour DA
-import CreditClassiqueFormNew from './forms/CreditClassiqueFormNew';
+// Import des formulaires spécialisés pour autres catégories
 import FormSuiviTransmission from './forms/FormSuiviTransmission';
 import FormEvaluationDelais from './forms/FormEvaluationDelais';
 import FormAdminEngagementsAnalyse from './forms/FormAdminEngagementsAnalyse';
 import FormSuiviMEP from './forms/FormSuiviMEP';
 import FormActivitesAnnexes from './forms/FormActivitesAnnexes';
+
+// Import des formulaires individuels pour Crédit Classique
+import FormDossiersRecus from './forms/FormDossiersRecus';
+import FormDossiersComites from './forms/FormDossiersComites';
+import FormFAR from './forms/FormFAR';
+import FormNotesCirculation from './forms/FormNotesCirculation';
+import FormDossiersAnalyse from './forms/FormDossiersAnalyse';
+import FormDossiersRisque from './forms/FormDossiersRisque';
+import FormDossiersRenvoyes from './forms/FormDossiersRenvoyes';
+import FormDossiersConformite from './forms/FormDossiersConformite';
+import FormDossiersAttenteComite from './forms/FormDossiersAttenteComite';
+import FormSCRG from './forms/FormSCRG';
+import FormSuiviRegularisation from './forms/FormSuiviRegularisation';
+import FormDelaisCreditClassique from './forms/FormDelaisCreditClassique';
 
 import './DepartmentDashboard.css';
 
@@ -19,12 +32,16 @@ interface DepartmentDashboardAnalyseProps {
 }
 
 type ActivityType = 'visites' | 'formations' | 'procedures' | 'etudes';
+type CreditClassiqueFormType = 'dossiers-recus' | 'dossiers-comites' | 'far' | 'notes-circulation' | 
+  'dossiers-analyse' | 'dossiers-risque' | 'dossiers-renvoyes' | 'dossiers-conformite' | 
+  'dossiers-attente-comite' | 'scrg' | 'suivi-regularisation' | 'delais-credit';
 
 /**
  * Détecte automatiquement le type de formulaire basé sur la catégorie et le nom de l'activité
  */
 function detectFormType(categoryName: string, activityLabel: string): {
   formType: 'credit-classique' | 'suivi-transmission' | 'evaluation-delais' | 'admin-engagements' | 'suivi-mep' | 'activites-annexes';
+  creditClassiqueType?: CreditClassiqueFormType;
   props?: {
     requiresComite?: boolean;
     requiresDetails?: boolean;
@@ -34,13 +51,58 @@ function detectFormType(categoryName: string, activityLabel: string): {
   const categoryLower = categoryName.toLowerCase();
   const activityLower = activityLabel.toLowerCase();
 
-  // Crédit Classique
+  // Crédit Classique - Mapping individuel pour chaque activité
   if (categoryLower.includes('crédit classique') || categoryLower.includes('credit classique')) {
-    const requiresComite = activityLower.includes('cc1') || activityLower.includes('cc2') || 
-                          activityLower.includes('cc3') || activityLower.includes('cc4') || 
-                          activityLower.includes('ccca') || activityLower.includes('comité');
-    const requiresDetails = !activityLower.includes('reçus') && !activityLower.includes('autres');
-    return { formType: 'credit-classique', props: { requiresComite, requiresDetails } };
+    // Dossiers reçus des unités
+    if (activityLower.includes('reçu') || activityLower.includes('recu')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' };
+    }
+    // Dossiers présentés aux comités
+    if (activityLower.includes('comité') || activityLower.includes('comite') || activityLower.includes('présenté')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-comites' };
+    }
+    // FAR
+    if (activityLower.includes('far')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'far' };
+    }
+    // Notes de circulation
+    if (activityLower.includes('note')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'notes-circulation' };
+    }
+    // Dossiers en cours d'analyse
+    if (activityLower.includes('analyse') || activityLower.includes('cours')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-analyse' };
+    }
+    // Dossiers en attente avis risque
+    if (activityLower.includes('risque')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-risque' };
+    }
+    // Dossiers renvoyés
+    if (activityLower.includes('renvoy')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-renvoyes' };
+    }
+    // Dossiers en attente conformité
+    if (activityLower.includes('conformit')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-conformite' };
+    }
+    // Dossiers en attente du comité de crédit
+    if (activityLower.includes('attente') && (activityLower.includes('comité') || activityLower.includes('comite'))) {
+      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-attente-comite' };
+    }
+    // SCRG CONSEIL
+    if (activityLower.includes('scrg') || activityLower.includes('conseil')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'scrg' };
+    }
+    // Suivi dossiers à régulariser CC4/CCCA
+    if (activityLower.includes('régularis') || activityLower.includes('regularis') || activityLower.includes('cc4') || activityLower.includes('ccca')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'suivi-regularisation' };
+    }
+    // Évaluation délai moyen
+    if (activityLower.includes('délai') || activityLower.includes('delai') || activityLower.includes('evaluation')) {
+      return { formType: 'credit-classique', creditClassiqueType: 'delais-credit' };
+    }
+    // Par défaut pour autres activités Crédit Classique
+    return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' };
   }
 
   // Crédit Programme
@@ -126,13 +188,35 @@ const DepartmentDashboardAnalyse: React.FC<DepartmentDashboardAnalyseProps> = ({
 
     switch (config.formType) {
       case 'credit-classique':
-        return (
-          <CreditClassiqueFormNew
-            {...commonProps}
-            requiresComite={config.props?.requiresComite || false}
-            requiresDetails={config.props?.requiresDetails || false}
-          />
-        );
+        // Router vers le bon formulaire spécifique selon l'activité
+        switch (config.creditClassiqueType) {
+          case 'dossiers-recus':
+            return <FormDossiersRecus {...commonProps} />;
+          case 'dossiers-comites':
+            return <FormDossiersComites {...commonProps} />;
+          case 'far':
+            return <FormFAR {...commonProps} />;
+          case 'notes-circulation':
+            return <FormNotesCirculation {...commonProps} />;
+          case 'dossiers-analyse':
+            return <FormDossiersAnalyse {...commonProps} />;
+          case 'dossiers-risque':
+            return <FormDossiersRisque {...commonProps} />;
+          case 'dossiers-renvoyes':
+            return <FormDossiersRenvoyes {...commonProps} />;
+          case 'dossiers-conformite':
+            return <FormDossiersConformite {...commonProps} />;
+          case 'dossiers-attente-comite':
+            return <FormDossiersAttenteComite {...commonProps} />;
+          case 'scrg':
+            return <FormSCRG {...commonProps} />;
+          case 'suivi-regularisation':
+            return <FormSuiviRegularisation {...commonProps} />;
+          case 'delais-credit':
+            return <FormDelaisCreditClassique {...commonProps} />;
+          default:
+            return <FormDossiersRecus {...commonProps} />;
+        }
 
       case 'suivi-transmission':
         return (

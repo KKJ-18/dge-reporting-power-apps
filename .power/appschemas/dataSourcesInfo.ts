@@ -570,6 +570,12 @@ export const dataSourcesInfo = {
     "primaryKey": "ID",
     "apis": {}
   },
+  "objectif": {
+    "tableId": "682cc61e-d3a7-4bef-8757-8c9c70d8b61b",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "repriseprovision": {
     "tableId": "62a91185-a94c-4156-875c-bd2ce52fe376",
     "version": "",

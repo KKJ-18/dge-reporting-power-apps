@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ExportButtons } from '../ExportButtons'
+import { useObjectifValidation } from '../../hooks/useObjectifValidation'
+import { ACTIVITY_NAMES } from '../../config/activityNames'
 
 interface CreditProgrammeData {
   // Dossiers reçus
@@ -65,6 +67,7 @@ export default function CreditProgrammeForm({ onSave, initialData }: CreditProgr
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const { isValidating: isValidatingObjectif, validateBeforeSubmit } = useObjectifValidation()
 
   // Auto-save toutes les 30 secondes
   useEffect(() => {
@@ -147,6 +150,14 @@ export default function CreditProgrammeForm({ onSave, initialData }: CreditProgr
       return
     }
 
+    if (!isDraft) {
+      const isValid = await validateBeforeSubmit(
+        ACTIVITY_NAMES.CREDIT_PROGRAMME,
+        new Date(formData.dossiersRecus_date)
+      );
+      if (!isValid) return;
+    }
+
     setSaveStatus('saving')
     
     try {
@@ -200,8 +211,9 @@ export default function CreditProgrammeForm({ onSave, initialData }: CreditProgr
           <button 
             className="btn btn-primary"
             onClick={() => handleSave(false)}
+            disabled={isValidatingObjectif}
           >
-            ✅ Soumettre
+            {isValidatingObjectif ? '⏳ Vérification objectif...' : '✅ Soumettre'}
           </button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { ExportButtons } from '../ExportButtons'
 import { AgenceResauService } from '../../services/AgenceResauService'
+import { useObjectifValidation } from '../../hooks/useObjectifValidation'
+import { ACTIVITY_NAMES } from '../../config/activityNames'
 
 interface EngagementSection {
   nombre: number
@@ -68,6 +70,7 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
   const [reseaux, setReseaux] = useState<string[]>([])
   const [agences, setAgences] = useState<string[]>([])
   const [loadingAgences, setLoadingAgences] = useState(true)
+  const { isValidating: isValidatingObjectif, validateBeforeSubmit } = useObjectifValidation()
 
   // Charger les réseaux et agences depuis SharePoint
   useEffect(() => {
@@ -215,6 +218,14 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
       return
     }
 
+    if (!isDraft) {
+      const isValid = await validateBeforeSubmit(
+        ACTIVITY_NAMES.ADMIN_ENGAGEMENTS,
+        new Date(formData.semaine)
+      );
+      if (!isValid) return;
+    }
+
     setSaveStatus('saving')
     
     try {
@@ -312,8 +323,9 @@ export default function AdminEngagementsForm({ onSave, initialData }: AdminEngag
           <button 
             className="btn btn-primary"
             onClick={() => handleSave(false)}
+            disabled={isValidatingObjectif}
           >
-            ✅ Soumettre
+            {isValidatingObjectif ? '⏳ Vérification objectif...' : '✅ Soumettre'}
           </button>
         </div>
       </div>

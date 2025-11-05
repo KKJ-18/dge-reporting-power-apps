@@ -40,7 +40,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, userPro
     items.push(
       { id: 'divider-common', label: 'divider' },
       { id: 'reports', icon: '📑', label: 'Rapports', badge: null },
-      { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null }
+      { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null },
+      { id: 'objectifs', icon: '🎯', label: 'Objectifs', badge: null }
     );
 
     // Section administration (uniquement pour directeur)
