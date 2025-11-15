@@ -98,7 +98,8 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Recherche clients en anomalie à l\'étranger': '🌍',
   
   // Commun à tous les départements
-  'Activités annexes': '�'
+  'Activités annexes': '📎',
+  'Autres Activités': '📌'
 };
 
 /**

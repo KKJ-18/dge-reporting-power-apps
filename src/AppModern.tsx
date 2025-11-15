@@ -11,11 +11,13 @@ import ActivitesAnnexesForm from './components/forms/ActivitesAnnexesForm'
 import UserProfile from './components/UserProfile'
 import CategoryManager from './components/CategoryManager'
 import ActivityManagerModern from './components/ActivityManagerModern'
-import DepartmentDashboard from './components/DepartmentDashboard'
 import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyse'
+import DepartmentDashboardDSE from './components/DepartmentDashboardDSE'
+import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNP'
 import DirectorDashboard from './components/DirectorDashboard'
 import ReportsStatistics from './components/ReportsStatistics'
 import ObjectifsManagement from './components/ObjectifsManagement'
+import DiagnosticPanel from './components/DiagnosticPanel'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
 
@@ -73,33 +75,21 @@ function AppModern() {
     }
   }
 
-  // Écran de chargement
+  // Écran de chargement ultra moderne
   if (loadingProfile) {
     return (
-      <div className="app-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        width: '100%'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '1.5rem',
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <div className="spinner"></div>
-          <p style={{ 
-            fontSize: '1.125rem', 
-            color: '#666',
-            fontWeight: 500
-          }}>
-            Chargement de votre profil...
-          </p>
+      <div className="modern-loader-container">
+        <div className="modern-loader-card">
+          <div className="modern-spinner">
+            <div className="spinner-ring"></div>
+            <div className="spinner-ring"></div>
+            <div className="spinner-ring"></div>
+            <div className="spinner-core"></div>
+          </div>
+          <div className="modern-loader-text">
+            Chargement de votre profil
+          </div>
+          <div className="loader-progress"></div>
         </div>
       </div>
     );
@@ -151,11 +141,17 @@ function AppModern() {
         );
       
       case 'department-DSE':
-      case 'department-DPNP':
-        const deptId = activeModule.split('-')[1] as 'DSE' | 'DPNP';
         return (
-          <DepartmentDashboard
-            department={getDepartment(deptId)}
+          <DepartmentDashboardDSE
+            department={getDepartment('DSE')}
+            userProfile={userProfile}
+          />
+        );
+
+      case 'department-DPNP':
+        return (
+          <DepartmentDashboardDPNP
+            department={getDepartment('DPNP')}
             userProfile={userProfile}
           />
         );
@@ -295,6 +291,9 @@ function AppModern() {
           </div>
         )}
       </main>
+
+      {/* 🔧 Panneau de diagnostic Power SDK */}
+      <DiagnosticPanel />
     </div>
   )
 }
