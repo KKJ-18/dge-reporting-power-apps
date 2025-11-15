@@ -16,13 +16,13 @@ const FormSuiviClientAppele: React.FC<FormSuiviClientAppeleProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    NombreClientAnomalie: 0,
-    NombreClientAppele: 0,
+    NbreClientAnomalie: 0,
+    NbreClientApple: 0,
     VolumeGlobalEngagement: 0,
     VolumeAnomalie: 0,
     DateAppel: format(new Date(), 'yyyy-MM-dd'),
-    DateRenseignementRDV: '',
-    DateRDVPris: '',
+    DateRenseignementRdv: '',
+    DateRdv: '',
     DateVersement: '',
     MontantVersement: 0
   });
@@ -34,17 +34,17 @@ const FormSuiviClientAppele: React.FC<FormSuiviClientAppeleProps> = ({
     try {
       const record = {
         Title: activityName,
-        NombreClientAnomalie: formData.NombreClientAnomalie,
-        NombreClientAppele: formData.NombreClientAppele,
+        NbreClientAnomalie: formData.NbreClientAnomalie,
+        NbreClientApple: formData.NbreClientApple,
         VolumeGlobalEngagement: formData.VolumeGlobalEngagement,
         VolumeAnomalie: formData.VolumeAnomalie,
         DateAppel: formData.DateAppel,
-        DateRenseignementRDV: formData.DateRenseignementRDV || undefined,
-        DateRDVPris: formData.DateRDVPris || undefined,
+        DateRenseignementRdv: formData.DateRenseignementRdv || undefined,
+        DateRdv: formData.DateRdv || undefined,
         DateVersement: formData.DateVersement || undefined,
         MontantVersement: formData.MontantVersement
       };
-      console.log(' Envoi SuiviClientAppele vers SharePoint:', record);
+      console.log('📤 Envoi SuiviClientAppele vers SharePoint:', record);
       await SuiviClientAppeleService.create(record);
       setShowSuccess(true);
       setTimeout(() => { setShowSuccess(false); onSave(); }, 2000);
@@ -92,11 +92,11 @@ const FormSuiviClientAppele: React.FC<FormSuiviClientAppeleProps> = ({
         <div className="form-section">
           <div className="form-group">
             <label className="form-label">Nombre de clients en anomalies *</label>
-            <input type="number" className="form-input" value={formData.NombreClientAnomalie === 0 ? '' : formData.NombreClientAnomalie} onChange={(e) => setFormData({ ...formData, NombreClientAnomalie: parseInt(e.target.value) || 0 })} required onFocus={(e) => e.currentTarget.select()} />
+            <input type="number" className="form-input" value={formData.NbreClientAnomalie === 0 ? '' : formData.NbreClientAnomalie} onChange={(e) => setFormData({ ...formData, NbreClientAnomalie: parseInt(e.target.value) || 0 })} required onFocus={(e) => e.currentTarget.select()} />
           </div>
           <div className="form-group">
             <label className="form-label">Nombre de clients appelés *</label>
-            <input type="number" className="form-input" value={formData.NombreClientAppele === 0 ? '' : formData.NombreClientAppele} onChange={(e) => setFormData({ ...formData, NombreClientAppele: parseInt(e.target.value) || 0 })} required onFocus={(e) => e.currentTarget.select()} />
+            <input type="number" className="form-input" value={formData.NbreClientApple === 0 ? '' : formData.NbreClientApple} onChange={(e) => setFormData({ ...formData, NbreClientApple: parseInt(e.target.value) || 0 })} required onFocus={(e) => e.currentTarget.select()} />
           </div>
           <div className="form-group">
             <label className="form-label">Volume global des engagements (FCFA) *</label>
@@ -112,11 +112,11 @@ const FormSuiviClientAppele: React.FC<FormSuiviClientAppeleProps> = ({
           </div>
           <div className="form-group">
             <label className="form-label">Date de renseignement du RDV pris</label>
-            <input type="date" className="form-input" value={formData.DateRenseignementRDV} onChange={(e) => setFormData({ ...formData, DateRenseignementRDV: e.target.value })} />
+            <input type="date" className="form-input" value={formData.DateRenseignementRdv} onChange={(e) => setFormData({ ...formData, DateRenseignementRdv: e.target.value })} />
           </div>
           <div className="form-group">
             <label className="form-label">Date du RDV pris</label>
-            <input type="date" className="form-input" value={formData.DateRDVPris} onChange={(e) => setFormData({ ...formData, DateRDVPris: e.target.value })} />
+            <input type="date" className="form-input" value={formData.DateRdv} onChange={(e) => setFormData({ ...formData, DateRdv: e.target.value })} />
           </div>
           <div className="form-group">
             <label className="form-label">Date de versement</label>
