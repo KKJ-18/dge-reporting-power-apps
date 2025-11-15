@@ -9,6 +9,8 @@ export interface SuiviAnomalies {
   OrigineAnomalie?: string;
   NombreClient?: number;
   VolumeGlobalEngagement?: number;
+  VolumeAnomalie?: number;
+  Agence?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

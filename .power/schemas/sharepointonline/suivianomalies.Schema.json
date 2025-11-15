@@ -143,6 +143,38 @@
           "maximum": 1.7976931348623157E+308,
           "minimum": -1.7976931348623157E+308
         },
+        "VolumeAnomalie": {
+          "title": "VolumeAnomalie",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "Agence": {
+          "title": "Agence",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
         "OData__ColorTag": {
           "title": "Color Tag",
           "type": "string",
@@ -669,19 +701,25 @@
           "OrigineAnomalie",
           "NombreClient",
           "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "Agence",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
           "OrigineAnomalie",
           "NombreClient",
-          "VolumeGlobalEngagement"
+          "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "Agence"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
           "OrigineAnomalie",
           "NombreClient",
-          "VolumeGlobalEngagement"
+          "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "Agence"
         ]
       }
     }
