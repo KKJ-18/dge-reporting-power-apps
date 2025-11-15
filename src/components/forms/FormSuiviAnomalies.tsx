@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SuiviAnomaliesService } from '../../services/SuiviAnomaliesService';
 import { AgenceResauService } from '../../services/AgenceResauService';
-import CloseButton from '../CloseButton';
+import './CommonForm.css';
 
 interface FormSuiviAnomaliesProps {
   activityName: string;
@@ -14,7 +14,6 @@ interface FormSuiviAnomaliesProps {
 const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({ 
   activityName,
   specificType,
-  departmentColor = '#990000',
   onClose,
   onSave
 }) => {
@@ -22,10 +21,8 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
   const [loadingAgences, setLoadingAgences] = useState(false);
   const [agences, setAgences] = useState<string[]>([]);
   const [formData, setFormData] = useState({
-    NombreClient: 0,
-    VolumeGlobalEngagements: 0,
-    VolumeAnomalies: 0,
-    OrigineAnomalie: '',
+    NombreCompte: 0,
+    MontantGlobal: 0,
     Agence: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
@@ -58,13 +55,12 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
     try {
       const record = {
         Title: activityName,
-        TypeAnomalie: specificType,
-        NombreClient: formData.NombreClient,
-        VolumeGlobalEngagements: formData.VolumeGlobalEngagements,
-        VolumeAnomalies: formData.VolumeAnomalies,
-        OrigineAnomalie: formData.OrigineAnomalie,
+        NombreCompte: formData.NombreCompte,
+        MontantGlobal: formData.MontantGlobal,
         Agence: formData.Agence,
       };
+
+      console.log('📤 Envoi FormSuiviAnomalies:', record);
 
       await SuiviAnomaliesService.create(record);
       setShowSuccess(true);
@@ -83,267 +79,79 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
   };
 
   const getTypeLabel = () => {
-    return specificType === 'anomalies-leasing' 
-      ? 'Suivi des anomalies leasing' 
-      : 'Suivi des anomalies engagements par trésorerie';
+    return specificType === 'anomalies-tresorerie' 
+      ? 'Anomalies Trésorerie' 
+      : 'Anomalies Leasing';
   };
 
   if (showSuccess) {
     return (
-      <div style={{ 
-        padding: '3rem 2rem', 
-        textAlign: 'center',
-        backdropFilter: 'blur(8px)',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '16px',
-        border: `3px solid ${departmentColor}`,
-        animation: 'bounce 0.6s ease-out'
-      }}>
-        <div style={{ 
-          width: '80px', 
-          height: '80px', 
-          backgroundColor: `${departmentColor}15`,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 1.5rem'
-        }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={departmentColor} strokeWidth="3">
+      <div className="success-message">
+        <div className="success-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#1A1A1A' }}>
-          Enregistrement réussi
-        </h3>
-        <p style={{ margin: 0, color: '#666', fontSize: '0.95rem' }}>
-          Les données ont été synchronisées
-        </p>
+        <h3>Enregistrement réussi</h3>
+        <p>Les données ont été synchronisées</p>
       </div>
     );
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      <CloseButton onClick={onClose} />
+    <div className="form-container">
+      <button className="close-button" onClick={onClose} aria-label="Fermer">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
 
-      <div style={{
-        background: `linear-gradient(to right, ${departmentColor}05, transparent)`,
-        padding: '2rem',
-        marginBottom: '2rem',
-        borderRadius: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1.5rem'
-      }}>
-        <div style={{
-          width: '70px',
-          height: '70px',
-          backgroundColor: `${departmentColor}15`,
-          borderRadius: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0
-        }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={departmentColor} strokeWidth="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
+      <div className="form-header">
+        <div className="form-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <div style={{ flex: 1 }}>
-          <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.75rem', fontWeight: 700, color: '#1A1A1A' }}>
-            {activityName}
-          </h2>
-          <div style={{
-            display: 'inline-block',
-            padding: '0.25rem 0.75rem',
-            backgroundColor: `${departmentColor}20`,
-            borderRadius: '6px',
-            fontSize: '0.875rem',
-            color: departmentColor,
-            fontWeight: 600
-          }}>
-            {getTypeLabel()}
-          </div>
+        <div className="form-title-group">
+          <h2 className="form-title">{activityName}</h2>
+          <span className="form-badge">{getTypeLabel()}</span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ padding: '0 2rem 2rem' }}>
-        <div style={{ display: 'grid', gap: '1.5rem' }}>
+      <form onSubmit={handleSubmit} className="form-body">
+        <div className="form-section">
           
-          {/* Nombre de clients */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>
-              Nombre de clients *
-            </label>
+          <div className="form-group">
+            <label>Nombre de comptes *</label>
             <input
               type="number"
-              value={formData.NombreClient === 0 ? '' : formData.NombreClient}
-              onChange={(e) => setFormData({ ...formData, NombreClient: parseInt(e.target.value) || 0 })}
+              value={formData.NombreCompte === 0 ? '' : formData.NombreCompte}
+              onChange={(e) => setFormData({ ...formData, NombreCompte: parseInt(e.target.value) || 0 })}
               placeholder="0"
               required
-              onFocus={(e) => {
-                e.currentTarget.select();
-                e.currentTarget.style.borderColor = departmentColor;
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = '#FAFAFA';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-              style={{
-                width: '100%',
-                padding: '0.875rem',
-                border: '2px solid #E5E7EB',
-                borderRadius: '10px',
-                fontSize: '0.95rem',
-                backgroundColor: '#FAFAFA',
-                transition: 'all 0.2s ease'
-              }}
             />
           </div>
 
-          {/* Volume global des engagements */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>
-              Volume global des engagements (FCFA) *
-            </label>
+          <div className="form-group">
+            <label>Montant global (FCFA) *</label>
             <input
               type="number"
-              value={formData.VolumeGlobalEngagements === 0 ? '' : formData.VolumeGlobalEngagements}
-              onChange={(e) => setFormData({ ...formData, VolumeGlobalEngagements: parseFloat(e.target.value) || 0 })}
+              value={formData.MontantGlobal === 0 ? '' : formData.MontantGlobal}
+              onChange={(e) => setFormData({ ...formData, MontantGlobal: parseFloat(e.target.value) || 0 })}
               placeholder="0"
               required
-              onFocus={(e) => {
-                e.currentTarget.select();
-                e.currentTarget.style.borderColor = departmentColor;
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = '#FAFAFA';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-              style={{
-                width: '100%',
-                padding: '0.875rem',
-                border: '2px solid #E5E7EB',
-                borderRadius: '10px',
-                fontSize: '0.95rem',
-                backgroundColor: '#FAFAFA',
-                transition: 'all 0.2s ease'
-              }}
             />
           </div>
 
-          {/* Volume des anomalies */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>
-              Volume des anomalies (impayé + agios) *
-            </label>
-            <input
-              type="number"
-              value={formData.VolumeAnomalies === 0 ? '' : formData.VolumeAnomalies}
-              onChange={(e) => setFormData({ ...formData, VolumeAnomalies: parseFloat(e.target.value) || 0 })}
-              placeholder="0"
-              required
-              onFocus={(e) => {
-                e.currentTarget.select();
-                e.currentTarget.style.borderColor = departmentColor;
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = '#FAFAFA';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-              style={{
-                width: '100%',
-                padding: '0.875rem',
-                border: '2px solid #E5E7EB',
-                borderRadius: '10px',
-                fontSize: '0.95rem',
-                backgroundColor: '#FAFAFA',
-                transition: 'all 0.2s ease'
-              }}
-            />
-          </div>
-
-          {/* Origine de l'anomalie */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>
-              Origine de l'anomalie *
-            </label>
-            <textarea
-              value={formData.OrigineAnomalie}
-              onChange={(e) => setFormData({ ...formData, OrigineAnomalie: e.target.value })}
-              placeholder="Renseigner l'origine des anomalies de chaque client en anomalie"
-              required
-              rows={3}
-              style={{
-                width: '100%',
-                padding: '0.875rem',
-                border: '2px solid #E5E7EB',
-                borderRadius: '10px',
-                fontSize: '0.95rem',
-                backgroundColor: '#FAFAFA',
-                transition: 'all 0.2s ease',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = departmentColor;
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = '#FAFAFA';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            />
-          </div>
-
-          {/* Agence */}
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>
-              Agence *
-            </label>
+          <div className="form-group">
+            <label>Agence *</label>
             {loadingAgences ? (
-              <div style={{ padding: '0.875rem', color: '#666', fontSize: '0.9rem' }}>
-                Chargement des agences...
-              </div>
+              <div className="loading">Chargement des agences...</div>
             ) : agences.length > 0 ? (
               <select
                 value={formData.Agence}
                 onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '2px solid #E5E7EB',
-                  borderRadius: '10px',
-                  fontSize: '0.95rem',
-                  backgroundColor: '#FAFAFA',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = departmentColor;
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                  e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#E5E7EB';
-                  e.currentTarget.style.backgroundColor = '#FAFAFA';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
               >
                 <option value="">-- Sélectionner une agence --</option>
                 {agences.map((agence, index) => (
@@ -359,69 +167,49 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
                 onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
                 placeholder="Nom de l'agence"
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '2px solid #E5E7EB',
-                  borderRadius: '10px',
-                  fontSize: '0.95rem',
-                  backgroundColor: '#FAFAFA',
-                  transition: 'all 0.2s ease'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = departmentColor;
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                  e.currentTarget.style.boxShadow = `0 0 0 3px ${departmentColor}15`;
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#E5E7EB';
-                  e.currentTarget.style.backgroundColor = '#FAFAFA';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
               />
             )}
           </div>
 
         </div>
 
-        {/* Boutons d'action */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
+        <div className="card">
+          <div className="card-header">
+            <h4>RÉSUMÉ DES DONNÉES</h4>
+          </div>
+          <div className="card-content">
+            <div className="form-row">
+              <div>
+                <span>Nombre de comptes:</span>
+                <strong>{formData.NombreCompte}</strong>
+              </div>
+              <div>
+                <span>Montant global:</span>
+                <strong>{formData.MontantGlobal.toLocaleString()} FCFA</strong>
+              </div>
+            </div>
+            <div className="form-row">
+              <div>
+                <span>Agence:</span>
+                <strong>{formData.Agence || '-'}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-actions">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            style={{
-              minWidth: '140px',
-              padding: '1rem 2.5rem',
-              border: '2px solid #E5E7EB',
-              borderRadius: '10px',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              backgroundColor: '#FFFFFF',
-              color: '#374151',
-              transition: 'all 0.2s ease'
-            }}
+            className="btn-secondary"
           >
             Annuler
           </button>
           <button
             type="submit"
             disabled={loading}
-            style={{
-              minWidth: '160px',
-              padding: '1rem 2.5rem',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              backgroundColor: departmentColor,
-              color: '#FFFFFF',
-              boxShadow: `0 4px 12px ${departmentColor}30`,
-              transition: 'all 0.2s ease',
-              opacity: loading ? 0.7 : 1
-            }}
+            className="btn-primary"
           >
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>

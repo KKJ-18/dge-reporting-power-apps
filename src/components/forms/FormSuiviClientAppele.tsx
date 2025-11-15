@@ -1,13 +1,39 @@
 import React from 'react';
-import CloseButton from '../CloseButton';
+import './CommonForm.css';
 
-interface Props { activityName: string; departmentColor?: string; onClose: () => void; onSave: () => void; }
-const FormSuiviClientAppele: React.FC<Props> = ({ activityName, departmentColor = '#990000', onClose }) => (
-  <div style={{ position: 'relative', padding: '2rem' }}>
-    <CloseButton onClick={onClose} />
-    <h2>{activityName}</h2>
-    <p>Formulaire en cours de développement - Suivi Client Appelé</p>
-    <button onClick={onClose} style={{ padding: '1rem 2rem', backgroundColor: departmentColor, color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Fermer</button>
+interface Props { 
+  activityName: string;
+  onClose: () => void;
+  onSave: () => void;
+}
+
+const FormSuiviClientAppele: React.FC<Props> = ({ activityName, onClose }) => (
+  <div className="form-container">
+    <button className="close-button" onClick={onClose} aria-label="Fermer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </svg>
+    </button>
+    
+    <div className="form-header">
+      <div className="form-title-group">
+        <h2 className="form-title">{activityName}</h2>
+        <div className="form-badge">En développement</div>
+      </div>
+    </div>
+    
+    <div className="form-body">
+      <p style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
+        Formulaire en cours de développement - Suivi Client Appelé
+      </p>
+      
+      <div className="form-actions">
+        <button onClick={onClose} className="btn-primary">
+          Fermer
+        </button>
+      </div>
+    </div>
   </div>
 );
+
 export default FormSuiviClientAppele;

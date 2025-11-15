@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { SuiviDepassementsService } from '../../services/SuiviDepassementsService';
 import { AgenceResauService } from '../../services/AgenceResauService';
 import { format } from 'date-fns';
-import CloseButton from '../CloseButton';
+import './CommonForm.css';
 
 interface FormSuiviDepassementsProps {
   activityName: string;
   specificType: 'nombre-depassement' | 'depassement-regularise-72h' | 'depassement-attente-regularisation';
-  departmentColor?: string;
   onClose: () => void;
   onSave: () => void;
 }
 
 const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({ 
-  activityName, specificType, departmentColor = '#990000', onClose, onSave
+  activityName,
+  onClose,
+  onSave
 }) => {
   const [loading, setLoading] = useState(false);
   const [loadingAgences, setLoadingAgences] = useState(false);
@@ -52,14 +53,18 @@ const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({
     e.preventDefault();
     setLoading(true);
     try {
-      await SuiviDepassementsService.create({ 
+      const record = { 
         Title: activityName, 
         NombreCompte: formData.NombreCompte,
         DateDepassement: formData.DateDepassement,
         DureeDepassementJours: formData.DureeDepassementJours,
         VolumeDepassement: formData.VolumeDepassement,
         Agence: formData.Agence
-      });
+      };
+      
+      console.log('📤 Envoi SuiviDepassements vers SharePoint:', record);
+      
+      await SuiviDepassementsService.create(record);
       setShowSuccess(true);
       setTimeout(() => { setShowSuccess(false); onSave(); }, 2000);
     } catch (error) {
@@ -71,50 +76,139 @@ const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({
   };
 
   if (showSuccess) {
-    return <div style={{ padding: '3rem 2rem', textAlign: 'center', backdropFilter: 'blur(8px)', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '16px', border: `3px solid ${departmentColor}`, animation: 'bounce 0.6s ease-out' }}><div style={{ width: '80px', height: '80px', backgroundColor: `${departmentColor}15`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={departmentColor} strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg></div><h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#1A1A1A' }}>Enregistrement réussi</h3></div>;
+    return (
+      <div className="success-message">
+        <div className="success-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        </div>
+        <h3>Enregistrement réussi</h3>
+        <p>Dépassement enregistré avec succès</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      <CloseButton onClick={onClose} />
-      <div style={{ background: `linear-gradient(to right, ${departmentColor}05, transparent)`, padding: '2rem', marginBottom: '2rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1.5rem' }}><div style={{ width: '70px', height: '70px', backgroundColor: `${departmentColor}15`, borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={departmentColor} strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg></div><div style={{ flex: 1 }}><h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.75rem', fontWeight: 700, color: '#1A1A1A' }}>{activityName}</h2></div></div>
-      <form onSubmit={handleSubmit} style={{ padding: '0 2rem 2rem' }}>
-        <div style={{ display: 'grid', gap: '1.5rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>Nombre de comptes *</label>
-            <input type="number" value={formData.NombreCompte === 0 ? '' : formData.NombreCompte} onChange={(e) => setFormData({ ...formData, NombreCompte: parseInt(e.target.value) || 0 })} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease' }} />
+    <div className="form-container">
+      <button className="close-button" onClick={onClose} aria-label="Fermer">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div className="form-header">
+        <div className="form-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <div className="form-title-group">
+          <h2 className="form-title">{activityName}</h2>
+          <div className="form-badge">Suivi des dépassements</div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="form-body">
+        <div className="form-section">
+          
+          <div className="form-group">
+            <label className="form-label">Nombre de comptes *</label>
+            <input 
+              type="number"
+              className="form-input"
+              value={formData.NombreCompte === 0 ? '' : formData.NombreCompte}
+              onChange={(e) => setFormData({ ...formData, NombreCompte: parseInt(e.target.value) || 0 })}
+              placeholder="0"
+              required
+              onFocus={(e) => e.currentTarget.select()}
+            />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>Date de dépassement *</label>
-            <input type="date" value={formData.DateDepassement} onChange={(e) => setFormData({ ...formData, DateDepassement: e.target.value })} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease' }} />
+
+          <div className="form-group">
+            <label className="form-label">Date de dépassement *</label>
+            <input 
+              type="date"
+              className="form-input"
+              value={formData.DateDepassement}
+              onChange={(e) => setFormData({ ...formData, DateDepassement: e.target.value })}
+              required
+            />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>Durée (jours) *</label>
-            <input type="number" value={formData.DureeDepassementJours === 0 ? '' : formData.DureeDepassementJours} onChange={(e) => setFormData({ ...formData, DureeDepassementJours: parseInt(e.target.value) || 0 })} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease' }} />
+
+          <div className="form-group">
+            <label className="form-label">Durée (jours) *</label>
+            <input 
+              type="number"
+              className="form-input"
+              value={formData.DureeDepassementJours === 0 ? '' : formData.DureeDepassementJours}
+              onChange={(e) => setFormData({ ...formData, DureeDepassementJours: parseInt(e.target.value) || 0 })}
+              placeholder="0"
+              required
+              onFocus={(e) => e.currentTarget.select()}
+            />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>Volume dépassement (FCFA) *</label>
-            <input type="number" value={formData.VolumeDepassement === 0 ? '' : formData.VolumeDepassement} onChange={(e) => setFormData({ ...formData, VolumeDepassement: parseFloat(e.target.value) || 0 })} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease' }} />
+
+          <div className="form-group">
+            <label className="form-label">Volume dépassement (FCFA) *</label>
+            <input 
+              type="number"
+              className="form-input"
+              value={formData.VolumeDepassement === 0 ? '' : formData.VolumeDepassement}
+              onChange={(e) => setFormData({ ...formData, VolumeDepassement: parseFloat(e.target.value) || 0 })}
+              placeholder="0"
+              required
+              onFocus={(e) => e.currentTarget.select()}
+            />
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>Agence *</label>
+
+          <div className="form-group">
+            <label className="form-label">Agence *</label>
             {loadingAgences ? (
-              <div style={{ padding: '0.875rem', color: '#666', fontSize: '0.9rem' }}>Chargement des agences...</div>
+              <div className="loading">Chargement des agences...</div>
             ) : agences.length > 0 ? (
-              <select value={formData.Agence} onChange={(e) => setFormData({ ...formData, Agence: e.target.value })} required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease', cursor: 'pointer' }}>
+              <select 
+                className="form-select"
+                value={formData.Agence}
+                onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
+                required
+              >
                 <option value="">-- Sélectionner une agence --</option>
                 {agences.map((agence, index) => (
                   <option key={index} value={agence}>{agence}</option>
                 ))}
               </select>
             ) : (
-              <input type="text" value={formData.Agence} onChange={(e) => setFormData({ ...formData, Agence: e.target.value })} placeholder="Nom de l'agence" required style={{ width: '100%', padding: '0.875rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', backgroundColor: '#FAFAFA', transition: 'all 0.2s ease' }} />
+              <input 
+                type="text"
+                className="form-input"
+                value={formData.Agence}
+                onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
+                placeholder="Nom de l'agence"
+                required
+              />
             )}
           </div>
+
         </div>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
-          <button type="button" onClick={onClose} style={{ minWidth: '140px', padding: '1rem 2.5rem', border: '2px solid #E5E7EB', borderRadius: '10px', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer', backgroundColor: '#FFFFFF', color: '#374151' }}>Annuler</button>
-          <button type="submit" disabled={loading} style={{ minWidth: '160px', padding: '1rem 2.5rem', border: 'none', borderRadius: '10px', fontSize: '0.95rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', backgroundColor: departmentColor, color: '#FFFFFF', opacity: loading ? 0.7 : 1 }}>{loading ? 'Enregistrement...' : 'Enregistrer'}</button>
+
+        <div className="form-actions">
+          <button 
+            type="button" 
+            onClick={onClose}
+            className="btn-secondary"
+          >
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="btn-primary"
+          >
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
+          </button>
         </div>
       </form>
     </div>

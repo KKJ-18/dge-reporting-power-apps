@@ -10,6 +10,8 @@ import FormContratsDSE from '../components/forms/FormContratsDSE';
 import FormActivitesAnnexes from '../components/forms/FormActivitesAnnexes';
 
 import './DepartmentDashboard.css';
+import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardDSEProps {
   department: DepartmentData;
@@ -257,9 +259,10 @@ const DepartmentDashboardDSE: React.FC<DepartmentDashboardDSEProps> = ({
   };
 
   return (
-    <div className="department-dashboard">
-      {/* Header - Style DA */}
-      <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
+    <DepartmentFormWrapper departmentColor={department.color}>
+      <div className="department-dashboard">
+        {/* Header - Style DA */}
+        <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
         <div className="header-content">
           <div className="header-icon" style={{ backgroundColor: `${department.color}15` }}>
             <span style={{ fontSize: '3rem' }}>{department.icon}</span>
@@ -352,7 +355,8 @@ const DepartmentDashboardDSE: React.FC<DepartmentDashboardDSEProps> = ({
       >
         {renderActivityForm()}
       </Modal>
-    </div>
+      </div>
+    </DepartmentFormWrapper>
   );
 };
 

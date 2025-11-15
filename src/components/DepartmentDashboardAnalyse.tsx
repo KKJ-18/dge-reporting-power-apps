@@ -25,6 +25,8 @@ import FormSuiviRegularisation from './forms/FormSuiviRegularisation';
 import FormDelaisCreditClassique from './forms/FormDelaisCreditClassique';
 
 import './DepartmentDashboard.css';
+import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardAnalyseProps {
   department: DepartmentData;
@@ -253,9 +255,10 @@ const DepartmentDashboardAnalyse: React.FC<DepartmentDashboardAnalyseProps> = ({
   };
 
   return (
-    <div className="department-dashboard">
-      {/* Header */}
-      <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
+    <DepartmentFormWrapper departmentColor={department.color}>
+      <div className="department-dashboard">
+        {/* Header */}
+        <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
         <div className="header-content">
           <div className="header-icon" style={{ backgroundColor: `${department.color}15` }}>
             <span style={{ fontSize: '3rem' }}>{department.icon}</span>
@@ -345,7 +348,8 @@ const DepartmentDashboardAnalyse: React.FC<DepartmentDashboardAnalyseProps> = ({
       >
         {renderActivityForm()}
       </Modal>
-    </div>
+      </div>
+    </DepartmentFormWrapper>
   );
 };
 

@@ -62,6 +62,7 @@ const CATEGORY_TO_DEPARTMENT: Record<string, 'DA' | 'DSE' | 'DPNP'> = {
   'Suivi de la contagion des comptes': 'DPNP',
   'Suivi des provisions': 'DPNP',
   'Recherche clients en anomalie à l\'étranger': 'DPNP',
+  'Recherche clients en anomalie à l\u2019étranger': 'DPNP',  // Apostrophe typographique (U+2019)
   
   // ========================================
   // "Activités annexes" est commune à TOUS les départements
@@ -96,6 +97,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Suivi de la contagion des comptes': '🔍',
   'Suivi des provisions': '💼',
   'Recherche clients en anomalie à l\'étranger': '🌍',
+  'Recherche clients en anomalie à l\u2019étranger': '🌍',  // Apostrophe typographique (U+2019)
   
   // Commun à tous les départements
   'Activités annexes': '📎',
@@ -252,6 +254,7 @@ export class DepartmentActivitiesService {
         console.log(`  ✅ "${categoryName}" assignée à ${deptId}`);
       } else {
         console.warn(`  ⚠️ Catégorie non assignée à un département: "${categoryName}"`);
+        console.warn(`     Code caractères: ${Array.from(categoryName).map(c => c.charCodeAt(0)).join(',')}`);
       }
     });
 
@@ -259,6 +262,9 @@ export class DepartmentActivitiesService {
     departments.forEach((dept, id) => {
       const totalActivities = dept.categories.reduce((sum, cat) => sum + cat.activities.length, 0);
       console.log(`  ${id}: ${dept.categories.length} catégories, ${totalActivities} activités`);
+      if (id === 'DPNP') {
+        console.log('  📋 Catégories DPNP:', dept.categories.map(c => c.name).join(', '));
+      }
     });
 
     this.departmentsCache = departments;

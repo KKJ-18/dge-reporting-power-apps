@@ -16,6 +16,8 @@ import FormVisiteClientele from './forms/FormVisiteClientele';
 import FormActivitesAnnexes from './forms/FormActivitesAnnexes';
 
 import './DepartmentDashboard.css';
+import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardDPNPProps {
   department: DepartmentData;
@@ -119,6 +121,22 @@ function detectFormType(categoryName: string, activityLabel: string): {
   }
 
   // ========================================
+  // RECHERCHE DES CLIENTS PARTICULIERS (4 types) - AVANT "anomalie" générique
+  // ========================================
+  if (categoryLower.includes('recherche') || categoryLower.includes('risque canada')) {
+    if (activityLower.includes('pays de résidence')) {
+      return { formType: 'rechercher-client-anomalie', specificType: 'pays-residence' };
+    }
+    if (activityLower.includes('employeur')) {
+      return { formType: 'rechercher-client-anomalie', specificType: 'employeur' };
+    }
+    if (activityLower.includes('ville de résidence')) {
+      return { formType: 'rechercher-client-anomalie', specificType: 'ville-residence' };
+    }
+    return { formType: 'rechercher-client-anomalie', specificType: 'nombre-clients-anomalies' };
+  }
+
+  // ========================================
   // SUIVI DES ANOMALIES (2 types)
   // ========================================
   if (categoryLower.includes('anomalie')) {
@@ -182,27 +200,11 @@ function detectFormType(categoryName: string, activityLabel: string): {
   }
 
   // ========================================
-  // RECHERCHE DES CLIENTS PARTICULIERS (4 types)
-  // ========================================
-  if (categoryLower.includes('recherche') || categoryLower.includes('risque canada')) {
-    if (activityLower.includes('pays de résidence')) {
-      return { formType: 'rechercher-client-anomalie', specificType: 'pays-residence' };
-    }
-    if (activityLower.includes('employeur')) {
-      return { formType: 'rechercher-client-anomalie', specificType: 'employeur' };
-    }
-    if (activityLower.includes('ville de résidence')) {
-      return { formType: 'rechercher-client-anomalie', specificType: 'ville-residence' };
-    }
-    return { formType: 'rechercher-client-anomalie', specificType: 'nombre-clients-anomalies' };
-  }
-
-  // ========================================
   // ACTIVITÉS ANNEXES (5 types)
   // ========================================
   if (categoryLower.includes('activités annexes')) {
     if (activityLower.includes('visite')) {
-      return { formType: 'visite-clientele', specificType: 'visites-clienteles' };
+      return { formType: 'activites-annexes', specificType: 'visites-clienteles' };
     }
     if (activityLower.includes('formation')) {
       return { formType: 'activites-annexes', specificType: 'formations' };
@@ -361,9 +363,10 @@ const DepartmentDashboardDPNP: React.FC<DepartmentDashboardDPNPProps> = ({
   };
 
   return (
-    <div className="department-dashboard">
-      {/* Header - Style DA */}
-      <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
+    <DepartmentFormWrapper departmentColor={department.color}>
+      <div className="department-dashboard">
+        {/* Header - Style DA */}
+        <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
         <div className="header-content">
           <div className="header-icon" style={{ backgroundColor: `${department.color}15` }}>
             <span style={{ fontSize: '3rem' }}>{department.icon}</span>
@@ -456,7 +459,8 @@ const DepartmentDashboardDPNP: React.FC<DepartmentDashboardDPNPProps> = ({
       >
         {renderActivityForm()}
       </Modal>
-    </div>
+      </div>
+    </DepartmentFormWrapper>
   );
 };
 

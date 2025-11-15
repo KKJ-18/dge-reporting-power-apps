@@ -1,0 +1,816 @@
+/* ============================================
+   SYSTÈME DE FORMULAIRES UNIFIÉ - TOUS DÉPARTEMENTS
+   Style moderne, responsive et adaptatif
+   ============================================ */
+
+/* Variables CSS pour les couleurs par département */
+:root {
+  --dept-color-da: #0078d4;
+  --dept-color-dse: #107c10;
+  --dept-color-dpnp: #990000;
+  
+  /* Couleurs communes */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-text-light: #999999;
+  --color-background: #ffffff;
+  --color-background-light: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-border-focus: var(--dept-color);
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  
+  /* Espacements */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Rayons de bordure */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  
+  /* Ombres */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-focus: 0 0 0 3px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL DU FORMULAIRE
+   ============================================ */
+.common-form-container {
+  position: relative;
+  width: 100%;
+  max-width: min(95vw, 1200px);
+  margin: 0 auto;
+  background: var(--color-background);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   HEADER DU FORMULAIRE
+   ============================================ */
+.common-form-header {
+  position: relative;
+  background: linear-gradient(135deg, var(--dept-color) 0%, color-mix(in srgb, var(--dept-color) 85%, black) 100%);
+  padding: var(--spacing-xl);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  min-height: 100px;
+}
+
+.common-form-header-icon {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+
+.common-form-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.common-form-title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
+
+.common-form-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+/* ============================================
+   CORPS DU FORMULAIRE
+   ============================================ */
+.common-form-body {
+  padding: var(--spacing-xl);
+  max-height: calc(85vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.common-form-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.common-form-body::-webkit-scrollbar-track {
+  background: var(--color-background-light);
+  border-radius: var(--radius-sm);
+}
+
+.common-form-body::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--dept-color) 30%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.common-form-body::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--dept-color) 50%, transparent);
+}
+
+/* ============================================
+   SECTIONS DU FORMULAIRE
+   ============================================ */
+.common-form-section {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--color-background-light);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base);
+}
+
+.common-form-section:hover {
+  border-color: color-mix(in srgb, var(--dept-color) 30%, var(--color-border));
+}
+
+.common-form-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.common-form-section-icon {
+  font-size: 1.25rem;
+  color: var(--dept-color);
+}
+
+.common-form-section-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dept-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   GRILLE DE CHAMPS (RESPONSIVE)
+   ============================================ */
+.common-form-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.common-form-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+}
+
+.common-form-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+}
+
+.common-form-field-full {
+  grid-column: 1 / -1;
+}
+
+/* ============================================
+   GROUPES DE CHAMPS
+   ============================================ */
+.common-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.common-form-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.common-form-label-required::after {
+  content: ' *';
+  color: var(--color-error);
+}
+
+.common-form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
+/* ============================================
+   INPUTS ET CONTRÔLES
+   ============================================ */
+.common-form-input,
+.common-form-select,
+.common-form-textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.common-form-input:focus,
+.common-form-select:focus,
+.common-form-textarea:focus {
+  outline: none;
+  border-color: var(--dept-color);
+  background: white;
+  box-shadow: var(--shadow-focus) color-mix(in srgb, var(--dept-color) 15%, transparent);
+}
+
+.common-form-input:hover:not(:focus),
+.common-form-select:hover:not(:focus),
+.common-form-textarea:hover:not(:focus) {
+  border-color: color-mix(in srgb, var(--dept-color) 40%, var(--color-border));
+}
+
+.common-form-input:disabled,
+.common-form-select:disabled,
+.common-form-textarea:disabled {
+  background: var(--color-background-light);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.common-form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.common-form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  padding-right: 2.5rem;
+}
+
+/* ============================================
+   RÉSUMÉ DES DONNÉES
+   ============================================ */
+.common-form-summary {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: color-mix(in srgb, var(--dept-color) 5%, transparent);
+  border-left: 4px solid var(--dept-color);
+  border-radius: var(--radius-md);
+}
+
+.common-form-summary-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.common-form-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.common-form-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.common-form-summary-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.common-form-summary-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   BOUTONS D'ACTION
+   ============================================ */
+.common-form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  padding: var(--spacing-xl);
+  border-top: 2px solid var(--color-border);
+  background: var(--color-background-light);
+  flex-wrap: wrap;
+}
+
+.common-form-btn {
+  min-width: 140px;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.common-form-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.common-form-btn-cancel {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+}
+
+.common-form-btn-cancel:hover:not(:disabled) {
+  background: var(--color-background-light);
+  border-color: var(--color-text-secondary);
+}
+
+.common-form-btn-submit {
+  background: var(--dept-color);
+  color: white;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--dept-color) 30%, transparent);
+}
+
+.common-form-btn-submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--dept-color) 90%, black);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--dept-color) 40%, transparent);
+  transform: translateY(-2px);
+}
+
+.common-form-btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ============================================
+   MODAL DE SUCCÈS
+   ============================================ */
+.common-form-success-modal {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-xl);
+  border: 3px solid var(--dept-color);
+  animation: bounce 0.6s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.common-form-success-icon {
+  width: 80px;
+  height: 80px;
+  background: color-mix(in srgb, var(--dept-color) 10%, transparent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-lg);
+}
+
+.common-form-success-icon svg {
+  width: 40px;
+  height: 40px;
+  stroke: var(--dept-color);
+  stroke-width: 3;
+}
+
+.common-form-success-title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.common-form-success-message {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.common-form-loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .common-form-container {
+    max-width: 100%;
+    border-radius: 0;
+    height: 100vh;
+  }
+  
+  .common-form-header {
+    padding: var(--spacing-lg);
+    flex-direction: column;
+    text-align: center;
+    min-height: auto;
+  }
+  
+  .common-form-title {
+    font-size: 1.25rem;
+  }
+  
+  .common-form-body {
+    padding: var(--spacing-lg);
+    max-height: calc(100vh - 280px);
+  }
+  
+  .common-form-grid,
+  .common-form-grid-2,
+  .common-form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .common-form-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .common-form-actions {
+    flex-direction: column-reverse;
+    padding: var(--spacing-lg);
+  }
+  
+  .common-form-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .common-form-header-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .common-form-title {
+    font-size: 1.125rem;
+  }
+  
+  .common-form-section {
+    padding: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .common-form-container {
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+  }
+  
+  .common-form-actions {
+    display: none;
+  }
+  
+  .common-form-body {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* ============================================
+   RÉTROCOMPATIBILITÉ - Anciennes classes DA/DSE/DPNP
+   ============================================ */
+
+/* Container */
+.form-container,
+.suivi-transmission-form-container,
+.activites-annexes-form-container {
+  background: var(--color-background);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: min(95vw, 1200px);
+  margin: 0 auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Header */
+.form-header {
+  background: linear-gradient(135deg, var(--dept-color) 0%, color-mix(in srgb, var(--dept-color) 85%, black) 100%);
+  padding: var(--spacing-xl);
+  color: white;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.form-title {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.form-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Card sections */
+.card {
+  margin: var(--spacing-xl);
+  background: var(--color-background-light);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.card-header {
+  padding: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dept-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-content {
+  padding: var(--spacing-lg);
+}
+
+/* Form sections */
+.form-section,
+.suivi-transmission-form {
+  padding: var(--spacing-xl);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Form groups / fields */
+.form-group,
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.form-group label,
+.field-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.field-group input,
+.field-group select,
+.field-group textarea {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus {
+  outline: none;
+  border-color: var(--dept-color);
+  background: white;
+  box-shadow: var(--shadow-focus) color-mix(in srgb, var(--dept-color) 15%, transparent);
+}
+
+.required {
+  color: var(--color-error);
+}
+
+/* Buttons */
+.form-actions,
+.btn-group {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  padding: var(--spacing-xl);
+  border-top: 2px solid var(--color-border);
+  background: var(--color-background-light);
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-submit {
+  min-width: 140px;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--dept-color);
+  color: white;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--dept-color) 30%, transparent);
+  transition: all var(--transition-base);
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--dept-color) 90%, black);
+  transform: translateY(-2px);
+}
+
+.btn-secondary,
+.btn-cancel {
+  min-width: 140px;
+  padding: 1rem 2rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  transition: all var(--transition-base);
+}
+
+.btn-secondary:hover:not(:disabled),
+.btn-cancel:hover:not(:disabled) {
+  background: var(--color-background-light);
+  border-color: var(--color-text-secondary);
+}
+
+/* Success message */
+.success-message {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-xl);
+  border: 3px solid var(--dept-color);
+  animation: bounce 0.6s ease-out;
+}
+
+.success-message h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.success-message p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+/* Error/Info messages */
+.error-message {
+  padding: var(--spacing-md);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  border-left: 4px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.info-message {
+  padding: var(--spacing-md);
+  background: color-mix(in srgb, var(--dept-color) 10%, transparent);
+  border-left: 4px solid var(--dept-color);
+  border-radius: var(--radius-sm);
+  color: var(--dept-color);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Close button */
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: background var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+}
+
+/* Responsive overrides pour anciennes classes */
+@media (max-width: 768px) {
+  .form-container,
+  .suivi-transmission-form-container,
+  .activites-annexes-form-container {
+    max-width: 100%;
+    border-radius: 0;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions,
+  .btn-group {
+    flex-direction: column-reverse;
+  }
+  
+  .btn-primary,
+  .btn-secondary,
+  .btn-submit,
+  .btn-cancel {
+    width: 100%;
+  }
+}
