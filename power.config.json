@@ -47,7 +47,8 @@
         "situationmep",
         "accords",
         "contrats",
-        "detailsurmepclient"
+        "detailsurmepclient",
+        "volumeprovisions"
       ],
       "authenticationType": null,
       "sharedConnectionId": null,
@@ -131,6 +132,9 @@
             },
             "detailsurmepclient": {
               "tableName": "324d8f4b-974d-41ea-b751-6383a5d4692c"
+            },
+            "volumeprovisions": {
+              "tableName": "5aff8808-67d4-46d9-ab47-e7b9f82bf6a8"
             }
           }
         }

@@ -647,5 +647,11 @@ export const dataSourcesInfo = {
     "version": "",
     "primaryKey": "ID",
     "apis": {}
+  },
+  "volumeprovisions": {
+    "tableId": "5aff8808-67d4-46d9-ab47-e7b9f82bf6a8",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
   }
 };
