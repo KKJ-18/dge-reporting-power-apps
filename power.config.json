@@ -40,7 +40,14 @@
         "visiteclientele",
         "formations",
         "activitestransversales",
-        "objectif"
+        "objectif",
+        "suivianomalies",
+        "suiviclientappele",
+        "rechercherclientanomalie",
+        "situationmep",
+        "accords",
+        "contrats",
+        "detailsurmepclient"
       ],
       "authenticationType": null,
       "sharedConnectionId": null,
@@ -103,6 +110,27 @@
             },
             "objectif": {
               "tableName": "682cc61e-d3a7-4bef-8757-8c9c70d8b61b"
+            },
+            "suivianomalies": {
+              "tableName": "aa6f2e72-1797-4fd8-a444-dbf91c06ef2d"
+            },
+            "suiviclientappele": {
+              "tableName": "7bcb2e91-7041-45cd-a37f-a1180bcb7926"
+            },
+            "rechercherclientanomalie": {
+              "tableName": "4ad30b8b-f586-453b-ae24-30b4fd679e7a"
+            },
+            "situationmep": {
+              "tableName": "a9ff5ae4-bd41-4278-88e4-ac1308a9d5db"
+            },
+            "accords": {
+              "tableName": "225ddf34-a54b-42c0-b56b-7f1ac2cdfd4f"
+            },
+            "contrats": {
+              "tableName": "a5cbb790-fb7f-4512-9dac-405a9a3d6ba5"
+            },
+            "detailsurmepclient": {
+              "tableName": "324d8f4b-974d-41ea-b751-6383a5d4692c"
             }
           }
         }

@@ -1,11 +1,12 @@
 {
-  "name": "8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a",
-  "title": "SuiviDossiersRestructuration",
+  "name": "a5cbb790-fb7f-4512-9dac-405a9a3d6ba5",
+  "title": "Contrats",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
       "sortable": true,
       "unsortableProperties": [
+        "Observation",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -27,6 +28,7 @@
     "filterRestrictions": {
       "filterable": true,
       "nonFilterableProperties": [
+        "Observation",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -85,7 +87,7 @@
           }
         },
         "Title": {
-          "title": "NomActivity",
+          "title": "",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -97,8 +99,8 @@
           },
           "maxLength": 255
         },
-        "Agence": {
-          "title": "Agence",
+        "MatriculeClient": {
+          "title": "MatriculeClient",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -110,8 +112,27 @@
           },
           "maxLength": 255
         },
-        "DateEntree": {
-          "title": "DateEntree",
+        "Montant": {
+          "title": "Montant",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "DateVersement": {
+          "title": "DateVersement",
           "type": "string",
           "format": "date",
           "x-ms-permission": "read-write",
@@ -127,8 +148,8 @@
             ]
           }
         },
-        "VolumeGlobalEngagements": {
-          "title": "VolumeGlobalEngagements",
+        "Duree": {
+          "title": "Duree",
           "type": "number",
           "format": "double",
           "x-ms-permission": "read-write",
@@ -146,43 +167,11 @@
           "maximum": 1.7976931348623157E+308,
           "minimum": -1.7976931348623157E+308
         },
-        "VolumeAnomalies": {
-          "title": "VolumeAnomalies",
-          "type": "number",
-          "format": "double",
+        "Observation": {
+          "title": "Observation",
+          "type": "string",
           "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
-        },
-        "MontantSollicite": {
-          "title": "MontantSollicite",
-          "type": "number",
-          "format": "double",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
+          "x-ms-sort": "none"
         },
         "OData__ColorTag": {
           "title": "Color Tag",
@@ -707,28 +696,28 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite",
+          "MatriculeClient",
+          "Montant",
+          "DateVersement",
+          "Duree",
+          "Observation",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "MatriculeClient",
+          "Montant",
+          "DateVersement",
+          "Duree",
+          "Observation"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "MatriculeClient",
+          "Montant",
+          "DateVersement",
+          "Duree",
+          "Observation"
         ]
       }
     }
@@ -736,7 +725,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Author",
+        "path": "/tables/a5cbb790-fb7f-4512-9dac-405a9a3d6ba5/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -745,7 +734,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Editor",
+        "path": "/tables/a5cbb790-fb7f-4512-9dac-405a9a3d6ba5/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -754,7 +743,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/%257bContentType%257d",
+        "path": "/tables/a5cbb790-fb7f-4512-9dac-405a9a3d6ba5/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -762,5 +751,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SuiviDossiersRestructuration/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/Contrats/AllItems.aspx"
 }

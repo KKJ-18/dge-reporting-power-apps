@@ -1,6 +1,6 @@
 {
-  "name": "8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a",
-  "title": "SuiviDossiersRestructuration",
+  "name": "a9ff5ae4-bd41-4278-88e4-ac1308a9d5db",
+  "title": "SituationMEP",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
@@ -85,7 +85,7 @@
           }
         },
         "Title": {
-          "title": "NomActivity",
+          "title": "",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -97,21 +97,46 @@
           },
           "maxLength": 255
         },
-        "Agence": {
-          "title": "Agence",
-          "type": "string",
+        "Nombre": {
+          "title": "Nombre",
+          "type": "number",
+          "format": "double",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
             "filterFunctions": [
               "eq",
-              "startswith"
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
             ]
           },
-          "maxLength": 255
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
         },
-        "DateEntree": {
-          "title": "DateEntree",
+        "Montant": {
+          "title": "Montant",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "DateMep": {
+          "title": "DateMep",
           "type": "string",
           "format": "date",
           "x-ms-permission": "read-write",
@@ -127,8 +152,8 @@
             ]
           }
         },
-        "VolumeGlobalEngagements": {
-          "title": "VolumeGlobalEngagements",
+        "Pourcentage": {
+          "title": "Pourcentage",
           "type": "number",
           "format": "double",
           "x-ms-permission": "read-write",
@@ -146,43 +171,18 @@
           "maximum": 1.7976931348623157E+308,
           "minimum": -1.7976931348623157E+308
         },
-        "VolumeAnomalies": {
-          "title": "VolumeAnomalies",
-          "type": "number",
-          "format": "double",
+        "IdDetailClient": {
+          "title": "IdDetailClient",
+          "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
             "filterFunctions": [
               "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
+              "startswith"
             ]
           },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
-        },
-        "MontantSollicite": {
-          "title": "MontantSollicite",
-          "type": "number",
-          "format": "double",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
+          "maxLength": 255
         },
         "OData__ColorTag": {
           "title": "Color Tag",
@@ -707,28 +707,28 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite",
+          "Nombre",
+          "Montant",
+          "DateMep",
+          "Pourcentage",
+          "IdDetailClient",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "Nombre",
+          "Montant",
+          "DateMep",
+          "Pourcentage",
+          "IdDetailClient"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "Nombre",
+          "Montant",
+          "DateMep",
+          "Pourcentage",
+          "IdDetailClient"
         ]
       }
     }
@@ -736,7 +736,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Author",
+        "path": "/tables/a9ff5ae4-bd41-4278-88e4-ac1308a9d5db/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -745,7 +745,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Editor",
+        "path": "/tables/a9ff5ae4-bd41-4278-88e4-ac1308a9d5db/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -754,7 +754,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/%257bContentType%257d",
+        "path": "/tables/a9ff5ae4-bd41-4278-88e4-ac1308a9d5db/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -762,5 +762,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SuiviDossiersRestructuration/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SituationMEP/AllItems.aspx"
 }

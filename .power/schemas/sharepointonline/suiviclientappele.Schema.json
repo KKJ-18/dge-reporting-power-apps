@@ -1,6 +1,6 @@
 {
-  "name": "8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a",
-  "title": "SuiviDossiersRestructuration",
+  "name": "7bcb2e91-7041-45cd-a37f-a1180bcb7926",
+  "title": "SuiviClientAppele",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
@@ -85,7 +85,7 @@
           }
         },
         "Title": {
-          "title": "NomActivity",
+          "title": "",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -97,21 +97,84 @@
           },
           "maxLength": 255
         },
-        "Agence": {
-          "title": "Agence",
-          "type": "string",
+        "NbreClientApple": {
+          "title": "NbreClientApple",
+          "type": "number",
+          "format": "double",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
             "filterFunctions": [
               "eq",
-              "startswith"
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
             ]
           },
-          "maxLength": 255
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
         },
-        "DateEntree": {
-          "title": "DateEntree",
+        "NbreClientAnomalie": {
+          "title": "NbreClientAnomalie",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "VolumeGlobalEngagement": {
+          "title": "VolumeGlobalEngagement",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "VolumeAnomalie": {
+          "title": "VolumeAnomalie",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "DateAppel": {
+          "title": "DateAppel",
           "type": "string",
           "format": "date",
           "x-ms-permission": "read-write",
@@ -127,10 +190,10 @@
             ]
           }
         },
-        "VolumeGlobalEngagements": {
-          "title": "VolumeGlobalEngagements",
-          "type": "number",
-          "format": "double",
+        "DateRenseignementRdv": {
+          "title": "DateRenseignementRdv",
+          "type": "string",
+          "format": "date",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
@@ -142,14 +205,12 @@
               "le",
               "ne"
             ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
+          }
         },
-        "VolumeAnomalies": {
-          "title": "VolumeAnomalies",
-          "type": "number",
-          "format": "double",
+        "DateRdv": {
+          "title": "DateRdv",
+          "type": "string",
+          "format": "date",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
           "x-ms-capabilities": {
@@ -161,12 +222,27 @@
               "le",
               "ne"
             ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
+          }
         },
-        "MontantSollicite": {
-          "title": "MontantSollicite",
+        "DateVersement": {
+          "title": "DateVersement",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "MontantVersement": {
+          "title": "MontantVersement",
           "type": "number",
           "format": "double",
           "x-ms-permission": "read-write",
@@ -707,28 +783,40 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite",
+          "NbreClientApple",
+          "NbreClientAnomalie",
+          "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "DateAppel",
+          "DateRenseignementRdv",
+          "DateRdv",
+          "DateVersement",
+          "MontantVersement",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "NbreClientApple",
+          "NbreClientAnomalie",
+          "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "DateAppel",
+          "DateRenseignementRdv",
+          "DateRdv",
+          "DateVersement",
+          "MontantVersement"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "Agence",
-          "DateEntree",
-          "VolumeGlobalEngagements",
-          "VolumeAnomalies",
-          "MontantSollicite"
+          "NbreClientApple",
+          "NbreClientAnomalie",
+          "VolumeGlobalEngagement",
+          "VolumeAnomalie",
+          "DateAppel",
+          "DateRenseignementRdv",
+          "DateRdv",
+          "DateVersement",
+          "MontantVersement"
         ]
       }
     }
@@ -736,7 +824,7 @@
   "referencedEntities": {
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Author",
+        "path": "/tables/7bcb2e91-7041-45cd-a37f-a1180bcb7926/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -745,7 +833,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/Editor",
+        "path": "/tables/7bcb2e91-7041-45cd-a37f-a1180bcb7926/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -754,7 +842,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/8a3f3fd4-c5ec-4bb7-b707-5a8e79945e8a/entities/%257bContentType%257d",
+        "path": "/tables/7bcb2e91-7041-45cd-a37f-a1180bcb7926/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -762,5 +850,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SuiviDossiersRestructuration/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SuiviClientAppele/AllItems.aspx"
 }

@@ -492,6 +492,12 @@ export const dataSourcesInfo = {
       }
     }
   },
+  "accords": {
+    "tableId": "225ddf34-a54b-42c0-b56b-7f1ac2cdfd4f",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "activitestransversales": {
     "tableId": "c98ff885-2780-4f8e-8103-9ed428fe0e99",
     "version": "",
@@ -546,8 +552,20 @@ export const dataSourcesInfo = {
     "primaryKey": "ID",
     "apis": {}
   },
+  "contrats": {
+    "tableId": "a5cbb790-fb7f-4512-9dac-405a9a3d6ba5",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "detailsdossiers": {
     "tableId": "2ea690b0-4bb5-4b9d-b43d-fb362f2ff3fe",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "detailsurmepclient": {
+    "tableId": "324d8f4b-974d-41ea-b751-6383a5d4692c",
     "version": "",
     "primaryKey": "ID",
     "apis": {}
@@ -576,8 +594,32 @@ export const dataSourcesInfo = {
     "primaryKey": "ID",
     "apis": {}
   },
+  "rechercherclientanomalie": {
+    "tableId": "4ad30b8b-f586-453b-ae24-30b4fd679e7a",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "repriseprovision": {
     "tableId": "62a91185-a94c-4156-875c-bd2ce52fe376",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "situationmep": {
+    "tableId": "a9ff5ae4-bd41-4278-88e4-ac1308a9d5db",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "suivianomalies": {
+    "tableId": "aa6f2e72-1797-4fd8-a444-dbf91c06ef2d",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "suiviclientappele": {
+    "tableId": "7bcb2e91-7041-45cd-a37f-a1180bcb7926",
     "version": "",
     "primaryKey": "ID",
     "apis": {}
