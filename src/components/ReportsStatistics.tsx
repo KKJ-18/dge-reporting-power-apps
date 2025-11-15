@@ -114,7 +114,7 @@ const ReportsStatistics: React.FC = () => {
   }, [selectedCategory, selectedDepartment]);
 
   const loadTeamMembers = async () => {
-    if (!selectedDepartment) return;
+    if (!selectedDepartment || !userProfile) return;
     
     setLoadingUsers(true);
     try {
@@ -124,7 +124,22 @@ const ReportsStatistics: React.FC = () => {
         departmentId: selectedDepartment
       };
       
-      const users = await ReportsService.getSubmittingUsers(filters);
+      let users = await ReportsService.getSubmittingUsers(filters);
+      
+      // Filtrage par rôle
+      if (userProfile.isDirecteur) {
+        // Directeur : tous les utilisateurs SAUF lui-même
+        users = users.filter(u => u.email.toLowerCase() !== userProfile.email.toLowerCase());
+      } else if (userProfile.fonction?.toLowerCase().includes('chef')) {
+        // Chef de département : uniquement son département
+        if (selectedDepartment !== userProfile.departement) {
+          users = []; // Ne peut pas voir d'autres départements
+        }
+      } else {
+        // Utilisateur normal : uniquement ses propres données
+        users = users.filter(u => u.email.toLowerCase() === userProfile.email.toLowerCase());
+      }
+      
       setTeamMembers(users);
     } catch (error) {
       console.error('Erreur chargement membres:', error);
@@ -283,14 +298,27 @@ const ReportsStatistics: React.FC = () => {
             <select
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
+              disabled={!isDirector && !!userProfile?.departement}
             >
               <option value="">Tous les départements</option>
-              {departments.map(dept => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.fullName}
-                </option>
-              ))}
+              {departments
+                .filter(dept => {
+                  // Directeur : voir tous les départements
+                  if (isDirector) return true;
+                  // Chef ou Utilisateur : uniquement son département
+                  return dept.id === userProfile?.departement;
+                })
+                .map(dept => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.fullName}
+                  </option>
+                ))}
             </select>
+            {!isDirector && userProfile?.departement && (
+              <small style={{ color: '#6B7280', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+                Vous ne pouvez consulter que votre département
+              </small>
+            )}
           </div>
 
           <div className="filter-group">

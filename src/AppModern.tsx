@@ -19,6 +19,7 @@ import ReportsStatistics from './components/ReportsStatistics'
 import ObjectifsManagement from './components/ObjectifsManagement'
 import DiagnosticPanel from './components/DiagnosticPanel'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
+import { NotificationService } from './services/NotificationService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
 
 function AppModern() {
@@ -42,16 +43,33 @@ function AppModern() {
         setUserProfile(profile);
         setProfileError(null);
         
+        // Vérification quotidienne des objectifs (uniquement jours ouvrables)
+        setTimeout(async () => {
+          try {
+            const checkResult = await NotificationService.performDailyCheck();
+            if (checkResult && checkResult.missingItems.length > 0) {
+              console.log('⚠️ Données manquantes:', checkResult.missingItems);
+              // L'utilisateur sera notifié via la console pour l'instant
+              // TODO: Afficher une modal ou un toast UI
+            }
+          } catch (error) {
+            console.error('Erreur vérification quotidienne:', error);
+          }
+        }, 2000); // Attendre 2s après le chargement du profil
+        
         // Redirection automatique basée sur le profil
         if (profile.isDirecteur) {
-          console.log('👔 Directeur détecté - Vue globale');
-          setActiveModule('home'); // Affiche la sélection des départements
+          console.log('👔 Directeur détecté - Redirection vers tableau de bord directeur');
+          setActiveModule('director-dashboard');
+        } else if (profile.fonction?.toLowerCase().includes('chef') && profile.departement) {
+          console.log(`🏢 Chef de département ${profile.departement} - Redirection vers dashboard département`);
+          setActiveModule(`department-${profile.departement}`);
         } else if (profile.departement) {
-          console.log(`🏢 Département ${profile.departement} détecté`);
-          setActiveModule('home'); // Affiche le dashboard du département
+          console.log(`👤 Utilisateur département ${profile.departement} - Redirection vers dashboard`);
+          setActiveModule(`department-${profile.departement}`);
         } else {
-          console.log('⚠️ Utilisateur sans département');
-          setActiveModule('home'); // Affiche le message d'erreur
+          console.log('⚠️ Utilisateur sans département - Affichage home');
+          setActiveModule('home');
         }
       } catch (error) {
         console.error('❌ Erreur chargement profil:', error);
@@ -137,6 +155,7 @@ function AppModern() {
           <DepartmentDashboardAnalyse
             department={getDepartment('DA')}
             userProfile={userProfile}
+            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
           />
         );
       
@@ -145,6 +164,7 @@ function AppModern() {
           <DepartmentDashboardDSE
             department={getDepartment('DSE')}
             userProfile={userProfile}
+            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
           />
         );
 
@@ -153,6 +173,7 @@ function AppModern() {
           <DepartmentDashboardDPNP
             department={getDepartment('DPNP')}
             userProfile={userProfile}
+            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
           />
         );
       

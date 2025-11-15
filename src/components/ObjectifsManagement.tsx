@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ObjectifService } from '../services/ObjectifService';
 import { DepartmentActivitiesService } from '../services/DepartmentActivitiesService';
-// UserProfileService not required here (profil non utilisé)
+import { UserProfileService, type UserProfile } from '../services/UserProfileService';
 import { useNotification } from '../hooks/useNotification';
 import NotificationModal from './NotificationModal';
 import type { Objectif } from '../Models/ObjectifModel';
@@ -28,7 +28,7 @@ interface ActivityGroup {
 const ObjectifsManagement: React.FC = () => {
   const { notification, showSuccess, showError, closeNotification } = useNotification();
   
-  
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [objectifs, setObjectifs] = useState<Objectif[]>([]);
   const [activitiesByCategory, setActivitiesByCategory] = useState<ActivityGroup[]>([]);
@@ -50,14 +50,15 @@ const ObjectifsManagement: React.FC = () => {
   const [templateName, setTemplateName] = useState('');
 
   useEffect(() => {
+    loadUserProfile();
     loadActivities();
   }, []);
 
   useEffect(() => {
-    if (selectedDate) {
+    if (selectedDate && userProfile) {
       loadObjectifsForDate(selectedDate);
     }
-  }, [selectedDate]);
+  }, [selectedDate, userProfile]);
 
   useEffect(() => {
     loadTemplatesFromLocalStorage();
@@ -81,7 +82,16 @@ const ObjectifsManagement: React.FC = () => {
     };
   }, [isActivityDropdownOpen]);
 
-  // (profil non utilisé actuellement)
+  const loadUserProfile = async () => {
+    try {
+      const profile = await UserProfileService.getCurrentUserProfile();
+      setUserProfile(profile);
+      console.log('👤 Profil chargé dans ObjectifsManagement:', profile.email);
+    } catch (error) {
+      console.error('Erreur chargement profil:', error);
+      showError('Erreur', 'Impossible de charger votre profil utilisateur');
+    }
+  };
 
   const loadActivities = async () => {
     try {
@@ -115,9 +125,16 @@ const ObjectifsManagement: React.FC = () => {
   };
 
   const loadObjectifsForDate = async (date: string) => {
+    if (!userProfile) {
+      console.warn('⚠️ Profil utilisateur non chargé, impossible de charger les objectifs');
+      return;
+    }
+
     setLoading(true);
     try {
-      const result = await ObjectifService.getAll();
+      const result = await ObjectifService.getAll({
+        filter: `Author/Email eq '${userProfile.email}'`
+      });
       const data: Objectif[] = result?.data || result?.value || [];
 
       // Filtrer par date sélectionnée
@@ -127,6 +144,7 @@ const ObjectifsManagement: React.FC = () => {
         return objDate === date;
       });
       
+      console.log(`📊 Objectifs chargés pour ${date}: ${filtered.length} trouvé(s) (utilisateur: ${userProfile.email})`);
       setObjectifs(filtered);
     } catch (error: any) {
       showError('Erreur', 'Impossible de charger les objectifs');

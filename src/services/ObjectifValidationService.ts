@@ -4,15 +4,23 @@
  */
 
 import { ObjectifService } from './ObjectifService';
+import { UserProfileService } from './UserProfileService';
 import type { Objectif } from '../Models/ObjectifModel';
 
 export class ObjectifValidationService {
   /**
    * Vérifie si un objectif existe pour une activité à une date donnée
+   * Filtre automatiquement par utilisateur connecté (Created By)
    */
   static async hasObjectifForActivity(activityName: string, date: Date): Promise<boolean> {
     try {
-      const result = await ObjectifService.getAll();
+      // Récupérer le profil utilisateur pour filtrer par email
+      const profile = await UserProfileService.getCurrentUserProfile();
+      const userEmail = profile.email;
+      
+      const result = await ObjectifService.getAll({
+        filter: `Author/Email eq '${userEmail}'`
+      });
       const objectifs: Objectif[] = result?.data || result?.value || [];
       
       const dateStr = date.toISOString().split('T')[0];
@@ -25,6 +33,7 @@ export class ObjectifValidationService {
         return obj.Title === activityName && objDate === dateStr;
       });
       
+      console.log(`🔍 Objectif pour ${activityName} le ${dateStr}: ${found ? 'Trouvé' : 'Non trouvé'} (utilisateur: ${userEmail})`);
       return found;
     } catch (error) {
       console.error('Erreur vérification objectif:', error);
@@ -34,10 +43,17 @@ export class ObjectifValidationService {
 
   /**
    * Récupère l'objectif pour une activité à une date donnée
+   * Filtre automatiquement par utilisateur connecté (Created By)
    */
   static async getObjectifForActivity(activityName: string, date: Date): Promise<Objectif | null> {
     try {
-      const result = await ObjectifService.getAll();
+      // Récupérer le profil utilisateur pour filtrer par email
+      const profile = await UserProfileService.getCurrentUserProfile();
+      const userEmail = profile.email;
+      
+      const result = await ObjectifService.getAll({
+        filter: `Author/Email eq '${userEmail}'`
+      });
       const objectifs: Objectif[] = result?.data || result?.value || [];
       
       const dateStr = date.toISOString().split('T')[0];
@@ -48,6 +64,10 @@ export class ObjectifValidationService {
         const objDate = new Date(obj.Date).toISOString().split('T')[0];
         return obj.Title === activityName && objDate === dateStr;
       });
+      
+      if (found) {
+        console.log(`✅ Objectif trouvé pour ${activityName}: ${found.Nombre} attendu(s)`);
+      }
       
       return found || null;
     } catch (error) {
