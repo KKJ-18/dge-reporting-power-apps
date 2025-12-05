@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ObjectifService } from '../services/ObjectifService';
 import { DepartmentActivitiesService } from '../services/DepartmentActivitiesService';
 import { UserProfileService, type UserProfile } from '../services/UserProfileService';
 import { useNotification } from '../hooks/useNotification';
 import NotificationModal from './NotificationModal';
 import type { Objectif } from '../Models/ObjectifModel';
+import { extractCleanEmail, extractAuthorEmail } from '../utils/emailUtils';
 import './ObjectifsManagement.css';
 
 interface ObjectifForm {
@@ -126,25 +127,52 @@ const ObjectifsManagement: React.FC = () => {
 
   const loadObjectifsForDate = async (date: string) => {
     if (!userProfile) {
-      console.warn('⚠️ Profil utilisateur non chargé, impossible de charger les objectifs');
+      console.warn('⚠️ Profil utilisateur non chargé');
       return;
     }
 
     setLoading(true);
     try {
-      const result = await ObjectifService.getAll({
-        filter: `Author/Email eq '${userProfile.email}'`
-      });
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📡 REQUÊTE SHAREPOINT (SANS FILTRE)');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📧 Email:', userProfile.email);
+      console.log('� Date:', date);
+      console.log('⚠️  Pas de filtre Author/Email (évite 400)');
+      console.log('� Filtrage côté client');
+      
+      // Récupérer TOUS les objectifs SANS FILTRE (évite erreur 400)
+      const result = await ObjectifService.getAll();
+      
+      console.log('📥 Réponse brute:', result);
+      
       const data: Objectif[] = result?.data || result?.value || [];
+      
+      console.log('📊 Total récupéré:', data.length);
+      if (data.length > 0) {
+        console.log('📋 Premier:', JSON.stringify(data[0], null, 2));
+      }
 
-      // Filtrer par date sélectionnée
+      // Filtrer par UTILISATEUR (Author/Email) ET DATE côté client
       const filtered = data.filter((obj: Objectif) => {
+        // Vérifier l'auteur
+        const authorEmail = extractAuthorEmail(obj);
+        const userEmailClean = extractCleanEmail(userProfile.email);
+        const isAuthor = authorEmail === userEmailClean;
+        
+        if (!isAuthor) return false;
         if (!obj.Date) return false;
+        
         const objDate = new Date(obj.Date).toISOString().split('T')[0];
-        return objDate === date;
+        const match = objDate === date;
+        if (match) console.log(`✅ Match: ${obj.Title} (${authorEmail})`);
+        return match;
       });
       
-      console.log(`📊 Objectifs chargés pour ${date}: ${filtered.length} trouvé(s) (utilisateur: ${userProfile.email})`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('✅ RÉSULTAT:', filtered.length, 'objectif(s)');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      
       setObjectifs(filtered);
     } catch (error: any) {
       showError('Erreur', 'Impossible de charger les objectifs');

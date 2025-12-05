@@ -17,7 +17,7 @@ import FormVisiteClientele from './forms/FormVisiteClientele';
 import FormActivitesAnnexes from './forms/FormActivitesAnnexes';
 
 import './DepartmentDashboard.css';
-import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardDPNPProps {

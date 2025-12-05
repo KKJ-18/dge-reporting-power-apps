@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { AnalyseSuiviTransmissionService } from '../../services/AnalyseSuiviTransmissionService';
-import './FormSuiviTransmission.css';
 
 interface FormSCRGProps {
   activityName: string;

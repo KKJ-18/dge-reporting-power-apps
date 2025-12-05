@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import './CommonForm.css';
+
 
 interface DepartmentFormWrapperProps {
   children: ReactNode;

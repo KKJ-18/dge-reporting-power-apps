@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VolumeProvisionsService } from '../../services/VolumeProvisionsService';
 import { AgenceResauService } from '../../services/AgenceResauService';
-import './CommonForm.css';
+
 
 interface Props { 
   activityName: string; 

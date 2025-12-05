@@ -11,7 +11,7 @@ import FormContratsDSE from '../components/forms/FormContratsDSE';
 import FormActivitesAnnexes from '../components/forms/FormActivitesAnnexes';
 
 import './DepartmentDashboard.css';
-import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardDSEProps {

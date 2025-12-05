@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { AnalyseDelaisCreditService } from '../../services/AnalyseDelaisCreditService';
-import './FormSuiviTransmission.css';
 
 interface FormDelaisCreditClassiqueProps {
   activityName: string;

@@ -6,6 +6,7 @@
 import { ObjectifService } from './ObjectifService';
 import { UserProfileService } from './UserProfileService';
 import type { Objectif } from '../Models/ObjectifModel';
+import { extractCleanEmail, extractAuthorEmail } from '../utils/emailUtils';
 
 export class ObjectifValidationService {
   /**
@@ -16,12 +17,17 @@ export class ObjectifValidationService {
     try {
       // Récupérer le profil utilisateur pour filtrer par email
       const profile = await UserProfileService.getCurrentUserProfile();
-      const userEmail = profile.email;
+      const userEmail = extractCleanEmail(profile.email);
       
-      const result = await ObjectifService.getAll({
-        filter: `Author/Email eq '${userEmail}'`
+      // Récupérer TOUS les objectifs (sans filtre serveur pour éviter erreur 400)
+      const result = await ObjectifService.getAll();
+      const allObjectifs: Objectif[] = result?.data || result?.value || [];
+      
+      // Filtrer par utilisateur côté client
+      const objectifs = allObjectifs.filter(obj => {
+        const authorEmail = extractAuthorEmail(obj);
+        return authorEmail === userEmail;
       });
-      const objectifs: Objectif[] = result?.data || result?.value || [];
       
       const dateStr = date.toISOString().split('T')[0];
       
@@ -33,7 +39,6 @@ export class ObjectifValidationService {
         return obj.Title === activityName && objDate === dateStr;
       });
       
-      console.log(`🔍 Objectif pour ${activityName} le ${dateStr}: ${found ? 'Trouvé' : 'Non trouvé'} (utilisateur: ${userEmail})`);
       return found;
     } catch (error) {
       console.error('Erreur vérification objectif:', error);
@@ -49,12 +54,17 @@ export class ObjectifValidationService {
     try {
       // Récupérer le profil utilisateur pour filtrer par email
       const profile = await UserProfileService.getCurrentUserProfile();
-      const userEmail = profile.email;
+      const userEmail = extractCleanEmail(profile.email);
       
-      const result = await ObjectifService.getAll({
-        filter: `Author/Email eq '${userEmail}'`
+      // Récupérer TOUS les objectifs (sans filtre serveur pour éviter erreur 400)
+      const result = await ObjectifService.getAll();
+      const allObjectifs: Objectif[] = result?.data || result?.value || [];
+      
+      // Filtrer par utilisateur côté client
+      const objectifs = allObjectifs.filter(obj => {
+        const authorEmail = extractAuthorEmail(obj);
+        return authorEmail === userEmail;
       });
-      const objectifs: Objectif[] = result?.data || result?.value || [];
       
       const dateStr = date.toISOString().split('T')[0];
       
@@ -64,10 +74,6 @@ export class ObjectifValidationService {
         const objDate = new Date(obj.Date).toISOString().split('T')[0];
         return obj.Title === activityName && objDate === dateStr;
       });
-      
-      if (found) {
-        console.log(`✅ Objectif trouvé pour ${activityName}: ${found.Nombre} attendu(s)`);
-      }
       
       return found || null;
     } catch (error) {

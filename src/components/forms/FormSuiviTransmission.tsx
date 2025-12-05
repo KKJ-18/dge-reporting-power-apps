@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AnalyseSuiviTransmissionService } from '../../services/AnalyseSuiviTransmissionService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
-import './FormSuiviTransmission.css';
 
 interface FormData {
   nombre: number;

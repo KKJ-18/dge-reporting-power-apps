@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FormationUnitesService } from '../../services/FormationUnitesService';
-import './CommonForm.css';
+
 
 interface FormFormationUnitesProps {
   activityName: string;

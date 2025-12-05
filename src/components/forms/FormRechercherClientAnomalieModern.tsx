@@ -8,7 +8,7 @@ import {
   SuccessModal,
   ActivityIcons 
 } from './CommonFormLayout';
-import './CommonForm.css';
+
 
 interface Props { 
   activityName: string; 

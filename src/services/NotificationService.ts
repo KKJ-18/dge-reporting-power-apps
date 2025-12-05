@@ -50,7 +50,6 @@ export class NotificationService {
         result.message = 'Toutes vos données sont à jour !';
       }
 
-      console.log(`📊 Vérification quotidienne pour ${userEmail}:`, result);
       return result;
       
     } catch (error) {
@@ -71,11 +70,9 @@ export class NotificationService {
   /**
    * Affiche une notification à l'utilisateur
    */
-  static showNotification(title: string, message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info'): void {
-    console.log(`🔔 [${type.toUpperCase()}] ${title}: ${message}`);
-    
+  static showNotification(_title: string, _message: string, _type: 'info' | 'warning' | 'success' | 'error' = 'info'): void {
     // Cette méthode peut être étendue pour utiliser un système de toast/notification UI
-    // Pour l'instant, elle log dans la console
+    // Pour l'instant, elle est silencieuse
   }
 
   /**
@@ -87,14 +84,12 @@ export class NotificationService {
       const userProfile = await UserProfileService.getCurrentUserProfile();
       
       if (!userProfile?.email) {
-        console.warn('⚠️ Impossible de vérifier: profil utilisateur non disponible');
         return null;
       }
 
       // Vérifier si c'est un jour ouvrable
       const today = new Date();
       if (!this.isWorkday(today)) {
-        console.log('📅 Week-end détecté, pas de vérification');
         return null;
       }
 

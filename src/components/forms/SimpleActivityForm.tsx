@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersComitesService';
-import './FormSuiviTransmission.css';
 
 interface SimpleActivityFormProps {
   activityName: string;

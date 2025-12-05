@@ -1,0 +1,792 @@
+/* ============================================
+   THÈME DGE PROFESSIONNEL
+   Design System Corporate & Moderne
+   ============================================ */
+
+:root {
+  /* ========== COULEURS DÉPARTEMENTALES ========== */
+  
+  /* Direction des Affaires (DA) - Bleu Corporate */
+  --dept-da-primary: #1565C0;
+  --dept-da-primary-light: #42A5F5;
+  --dept-da-primary-dark: #0D47A1;
+  --dept-da-bg: #F5F9FC;
+  --dept-da-bg-subtle: rgba(21, 101, 192, 0.04);
+  --dept-da-border: rgba(21, 101, 192, 0.15);
+  --dept-da-shadow: rgba(21, 101, 192, 0.12);
+  
+  /* Direction Stratégie Économique (DSE) - Vert Corporate */
+  --dept-dse-primary: #2E7D32;
+  --dept-dse-primary-light: #4CAF50;
+  --dept-dse-primary-dark: #1B5E20;
+  --dept-dse-bg: #F5FAF5;
+  --dept-dse-bg-subtle: rgba(46, 125, 50, 0.04);
+  --dept-dse-border: rgba(46, 125, 50, 0.15);
+  --dept-dse-shadow: rgba(46, 125, 50, 0.12);
+  
+  /* Direction Politique Numérique et Prospective (DPNP) - Orange Corporate */
+  --dept-dpnp-primary: #E65100;
+  --dept-dpnp-primary-light: #FF9800;
+  --dept-dpnp-primary-dark: #BF360C;
+  --dept-dpnp-bg: #FFF8F3;
+  --dept-dpnp-bg-subtle: rgba(230, 81, 0, 0.04);
+  --dept-dpnp-border: rgba(230, 81, 0, 0.15);
+  --dept-dpnp-shadow: rgba(230, 81, 0, 0.12);
+  
+  /* Direction Générale - Rouge DGE */
+  --dept-direction-primary: #B71C1C;
+  --dept-direction-primary-light: #E53935;
+  --dept-direction-primary-dark: #7F0000;
+  --dept-direction-bg: #FDF5F5;
+  --dept-direction-bg-subtle: rgba(183, 28, 28, 0.04);
+  --dept-direction-border: rgba(183, 28, 28, 0.15);
+  --dept-direction-shadow: rgba(183, 28, 28, 0.12);
+  
+  /* ========== COULEURS NEUTRES ========== */
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-200: #EEEEEE;
+  --neutral-300: #E0E0E0;
+  --neutral-400: #BDBDBD;
+  --neutral-500: #9E9E9E;
+  --neutral-600: #757575;
+  --neutral-700: #616161;
+  --neutral-800: #424242;
+  --neutral-900: #212121;
+  
+  /* ========== COULEURS SÉMANTIQUES ========== */
+  --color-success: #2E7D32;
+  --color-success-bg: #E8F5E9;
+  --color-success-border: #A5D6A7;
+  
+  --color-warning: #E65100;
+  --color-warning-bg: #FFF3E0;
+  --color-warning-border: #FFCC80;
+  
+  --color-error: #C62828;
+  --color-error-bg: #FFEBEE;
+  --color-error-border: #EF9A9A;
+  
+  --color-info: #1565C0;
+  --color-info-bg: #E3F2FD;
+  --color-info-border: #90CAF9;
+  
+  /* ========== TYPOGRAPHIE ========== */
+  --font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-base: 0.9375rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* ========== ESPACEMENTS ========== */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  
+  /* ========== BORDURES ========== */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  
+  /* ========== OMBRES SUBTILES ========== */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.03);
+  
+  /* ========== TRANSITIONS ========== */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ============================================
+   BOUTONS PROFESSIONNELS
+   ============================================ */
+
+.btn,
+.button,
+button[type="submit"],
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-5);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: #FFFFFF;
+  background: var(--neutral-800);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:hover,
+.button:hover,
+button[type="submit"]:hover,
+.btn-primary:hover {
+  background: var(--neutral-900);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active,
+.button:active,
+button[type="submit"]:active,
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn:focus-visible,
+.button:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+}
+
+.btn:disabled,
+.button:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Bouton Secondary */
+.btn-secondary {
+  background: var(--neutral-100);
+  color: var(--neutral-800);
+  border: 1px solid var(--neutral-300);
+  box-shadow: none;
+}
+
+.btn-secondary:hover {
+  background: var(--neutral-200);
+  border-color: var(--neutral-400);
+}
+
+/* Bouton Outline */
+.btn-outline {
+  background: transparent;
+  color: var(--neutral-700);
+  border: 1px solid var(--neutral-300);
+  box-shadow: none;
+}
+
+.btn-outline:hover {
+  background: var(--neutral-100);
+  border-color: var(--neutral-400);
+}
+
+/* Bouton Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--neutral-600);
+  border: none;
+  box-shadow: none;
+}
+
+.btn-ghost:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-800);
+}
+
+/* Bouton Success */
+.btn-success {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.btn-success:hover {
+  background: #1B5E20;
+}
+
+/* Bouton Danger */
+.btn-danger {
+  background: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.btn-danger:hover {
+  background: #B71C1C;
+}
+
+/* Tailles de boutons */
+.btn-sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-lg);
+}
+
+/* ============================================
+   BOUTONS PAR DÉPARTEMENT
+   ============================================ */
+
+/* DA - Bleu */
+.dept-da .btn-primary,
+.btn-dept-da {
+  background: var(--dept-da-primary);
+  border-color: var(--dept-da-primary);
+}
+
+.dept-da .btn-primary:hover,
+.btn-dept-da:hover {
+  background: var(--dept-da-primary-dark);
+  border-color: var(--dept-da-primary-dark);
+}
+
+.dept-da .btn-outline {
+  color: var(--dept-da-primary);
+  border-color: var(--dept-da-primary);
+}
+
+.dept-da .btn-outline:hover {
+  background: var(--dept-da-bg-subtle);
+}
+
+/* DSE - Vert */
+.dept-dse .btn-primary,
+.btn-dept-dse {
+  background: var(--dept-dse-primary);
+  border-color: var(--dept-dse-primary);
+}
+
+.dept-dse .btn-primary:hover,
+.btn-dept-dse:hover {
+  background: var(--dept-dse-primary-dark);
+  border-color: var(--dept-dse-primary-dark);
+}
+
+.dept-dse .btn-outline {
+  color: var(--dept-dse-primary);
+  border-color: var(--dept-dse-primary);
+}
+
+.dept-dse .btn-outline:hover {
+  background: var(--dept-dse-bg-subtle);
+}
+
+/* DPNP - Indigo */
+.dept-dpnp .btn-primary,
+.btn-dept-dpnp {
+  background: var(--dept-dpnp-primary);
+  border-color: var(--dept-dpnp-primary);
+}
+
+.dept-dpnp .btn-primary:hover,
+.btn-dept-dpnp:hover {
+  background: var(--dept-dpnp-primary-dark);
+  border-color: var(--dept-dpnp-primary-dark);
+}
+
+.dept-dpnp .btn-outline {
+  color: var(--dept-dpnp-primary);
+  border-color: var(--dept-dpnp-primary);
+}
+
+.dept-dpnp .btn-outline:hover {
+  background: var(--dept-dpnp-bg-subtle);
+}
+
+/* Direction - Rouge */
+.dept-direction .btn-primary,
+.btn-dept-direction {
+  background: var(--dept-direction-primary);
+  border-color: var(--dept-direction-primary);
+}
+
+.dept-direction .btn-primary:hover,
+.btn-dept-direction:hover {
+  background: var(--dept-direction-primary-dark);
+  border-color: var(--dept-direction-primary-dark);
+}
+
+/* ============================================
+   FORMULAIRES PROFESSIONNELS
+   ============================================ */
+
+.form-group {
+  margin-bottom: var(--spacing-5);
+}
+
+.form-label,
+label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-700);
+}
+
+.form-input,
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--neutral-900);
+  background: #FFFFFF;
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.form-input:hover,
+.form-control:hover,
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--neutral-400);
+}
+
+.form-input:focus,
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--neutral-600);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Focus par département */
+.dept-da input:focus,
+.dept-da select:focus,
+.dept-da textarea:focus {
+  border-color: var(--dept-da-primary);
+  box-shadow: 0 0 0 3px var(--dept-da-bg-subtle);
+}
+
+.dept-dse input:focus,
+.dept-dse select:focus,
+.dept-dse textarea:focus {
+  border-color: var(--dept-dse-primary);
+  box-shadow: 0 0 0 3px var(--dept-dse-bg-subtle);
+}
+
+.dept-dpnp input:focus,
+.dept-dpnp select:focus,
+.dept-dpnp textarea:focus {
+  border-color: var(--dept-dpnp-primary);
+  box-shadow: 0 0 0 3px var(--dept-dpnp-bg-subtle);
+}
+
+.dept-direction input:focus,
+.dept-direction select:focus,
+.dept-direction textarea:focus {
+  border-color: var(--dept-direction-primary);
+  box-shadow: 0 0 0 3px var(--dept-direction-bg-subtle);
+}
+
+/* Select stylisé */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23757575' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-3) center;
+  background-size: 16px;
+  padding-right: var(--spacing-10);
+}
+
+/* Textarea */
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Input désactivé */
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+  cursor: not-allowed;
+}
+
+/* États d'erreur */
+.form-input.error,
+input.error,
+select.error,
+textarea.error {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.form-input.error:focus,
+input.error:focus,
+select.error:focus,
+textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+/* Message d'erreur */
+.form-error,
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+}
+
+/* Help text */
+.form-help {
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+}
+
+/* Checkbox & Radio */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--neutral-800);
+}
+
+.dept-da .form-check-input { accent-color: var(--dept-da-primary); }
+.dept-dse .form-check-input { accent-color: var(--dept-dse-primary); }
+.dept-dpnp .form-check-input { accent-color: var(--dept-dpnp-primary); }
+.dept-direction .form-check-input { accent-color: var(--dept-direction-primary); }
+
+.form-check-label {
+  font-size: var(--font-size-sm);
+  color: var(--neutral-700);
+  cursor: pointer;
+}
+
+/* ============================================
+   CARTES PROFESSIONNELLES
+   ============================================ */
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  padding: var(--spacing-4) var(--spacing-5);
+  border-bottom: 1px solid var(--neutral-200);
+  background: var(--neutral-50);
+}
+
+.card-body {
+  padding: var(--spacing-5);
+}
+
+.card-footer {
+  padding: var(--spacing-4) var(--spacing-5);
+  border-top: 1px solid var(--neutral-200);
+  background: var(--neutral-50);
+}
+
+/* Cartes avec accent département */
+.card.dept-da { border-top: 3px solid var(--dept-da-primary); }
+.card.dept-dse { border-top: 3px solid var(--dept-dse-primary); }
+.card.dept-dpnp { border-top: 3px solid var(--dept-dpnp-primary); }
+.card.dept-direction { border-top: 3px solid var(--dept-direction-primary); }
+
+/* ============================================
+   BADGES PROFESSIONNELS
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-primary {
+  background: var(--neutral-800);
+  color: #FFFFFF;
+}
+
+.badge-secondary {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.badge-info {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+/* Badges département */
+.badge-da {
+  background: var(--dept-da-bg);
+  color: var(--dept-da-primary);
+}
+
+.badge-dse {
+  background: var(--dept-dse-bg);
+  color: var(--dept-dse-primary);
+}
+
+.badge-dpnp {
+  background: var(--dept-dpnp-bg);
+  color: var(--dept-dpnp-primary);
+}
+
+.badge-direction {
+  background: var(--dept-direction-bg);
+  color: var(--dept-direction-primary);
+}
+
+/* ============================================
+   TABLEAUX PROFESSIONNELS
+   ============================================ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--spacing-3) var(--spacing-4);
+  text-align: left;
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.table th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-600);
+  background: var(--neutral-50);
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.03em;
+}
+
+.table tbody tr:hover {
+  background: var(--neutral-50);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Tables département */
+.dept-da .table th { color: var(--dept-da-primary); }
+.dept-dse .table th { color: var(--dept-dse-primary); }
+.dept-dpnp .table th { color: var(--dept-dpnp-primary); }
+.dept-direction .table th { color: var(--dept-direction-primary); }
+
+/* ============================================
+   HEADER DE PAGE
+   ============================================ */
+
+.page-header {
+  padding: var(--spacing-6);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--neutral-200);
+  margin-bottom: var(--spacing-6);
+}
+
+.page-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.page-header-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--neutral-100);
+  border-radius: var(--radius-lg);
+  font-size: 1.5rem;
+}
+
+.page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--neutral-900);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--neutral-500);
+  margin: var(--spacing-1) 0 0;
+}
+
+/* Headers département */
+.dept-da .page-header-icon { background: var(--dept-da-bg); color: var(--dept-da-primary); }
+.dept-dse .page-header-icon { background: var(--dept-dse-bg); color: var(--dept-dse-primary); }
+.dept-dpnp .page-header-icon { background: var(--dept-dpnp-bg); color: var(--dept-dpnp-primary); }
+.dept-direction .page-header-icon { background: var(--dept-direction-bg); color: var(--dept-direction-primary); }
+
+/* ============================================
+   ANIMATIONS SUBTILES
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.slide-up {
+  animation: slideUp var(--transition-slow) ease-out;
+}
+
+/* Animation de chargement */
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--neutral-200);
+  border-top-color: var(--neutral-600);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dept-da .loading-spinner { border-top-color: var(--dept-da-primary); }
+.dept-dse .loading-spinner { border-top-color: var(--dept-dse-primary); }
+.dept-dpnp .loading-spinner { border-top-color: var(--dept-dpnp-primary); }
+.dept-direction .loading-spinner { border-top-color: var(--dept-direction-primary); }
+
+/* ============================================
+   UTILITAIRES
+   ============================================ */
+
+/* Textes */
+.text-da { color: var(--dept-da-primary); }
+.text-dse { color: var(--dept-dse-primary); }
+.text-dpnp { color: var(--dept-dpnp-primary); }
+.text-direction { color: var(--dept-direction-primary); }
+
+.text-muted { color: var(--neutral-500); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-error { color: var(--color-error); }
+
+/* Backgrounds */
+.bg-da { background: var(--dept-da-bg); }
+.bg-dse { background: var(--dept-dse-bg); }
+.bg-dpnp { background: var(--dept-dpnp-bg); }
+.bg-direction { background: var(--dept-direction-bg); }
+
+/* Bordures */
+.border-da { border-color: var(--dept-da-border); }
+.border-dse { border-color: var(--dept-dse-border); }
+.border-dpnp { border-color: var(--dept-dpnp-border); }
+.border-direction { border-color: var(--dept-direction-border); }
+
+/* Séparateur */
+.divider {
+  height: 1px;
+  background: var(--neutral-200);
+  margin: var(--spacing-5) 0;
+}
+
+/* Lien professionnel */
+a {
+  color: var(--dept-da-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.dept-dse a { color: var(--dept-dse-primary); }
+.dept-dpnp a { color: var(--dept-dpnp-primary); }
+.dept-direction a { color: var(--dept-direction-primary); }

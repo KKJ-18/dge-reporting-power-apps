@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AccordsService } from '../../services/AccordsService';
-import './CommonForm.css';
+
 
 interface FormAccordsDSEProps {
   activityName: string;

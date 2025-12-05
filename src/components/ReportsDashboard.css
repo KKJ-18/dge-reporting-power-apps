@@ -1,0 +1,207 @@
+.reports-dashboard {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--neutral-50, #FAFAFA);
+}
+
+/* Header */
+.reports-header {
+  margin-bottom: 1.5rem;
+}
+
+.reports-header-content {
+  background: #FFFFFF;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--neutral-200, #EEEEEE);
+  border-left: 3px solid var(--neutral-800, #424242);
+}
+
+.reports-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--neutral-900, #212121);
+  margin: 0 0 0.25rem 0;
+}
+
+.reports-icon {
+  font-size: 1.5rem;
+}
+
+.reports-subtitle {
+  margin: 0;
+  color: var(--neutral-500, #9E9E9E);
+  font-size: 0.875rem;
+}
+
+/* Tabs */
+.reports-tabs {
+  display: flex;
+  gap: 0;
+  background: #FFFFFF;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--neutral-200, #EEEEEE);
+  overflow: hidden;
+}
+
+.reports-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 2px solid transparent;
+  text-align: left;
+  border-right: 1px solid var(--neutral-200, #EEEEEE);
+}
+
+.reports-tab:last-child {
+  border-right: none;
+}
+
+.reports-tab:hover {
+  background: var(--neutral-50, #FAFAFA);
+}
+
+.reports-tab.active {
+  background: var(--neutral-50, #FAFAFA);
+  border-bottom-color: var(--neutral-800, #424242);
+}
+
+.tab-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tab-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.tab-description {
+  font-size: 0.75rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reports-tab.active .tab-label {
+  color: #0f172a;
+}
+
+/* Content */
+.reports-content {
+  background: white;
+  border-radius: 16px;
+  min-height: 500px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .reports-tabs {
+    flex-direction: column;
+  }
+
+  .reports-tab {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .reports-tab.active {
+    border-left-color: inherit;
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-dashboard {
+    padding: 1rem;
+  }
+
+  .reports-header-content {
+    padding: 1.5rem;
+  }
+
+  .reports-title {
+    font-size: 1.5rem;
+  }
+
+  .tab-description {
+    display: none;
+  }
+}
+
+/* ========================================
+   THÈMES PAR DÉPARTEMENT
+   ======================================== */
+
+/* DA - Bleu */
+.reports-dashboard.dept-da .reports-header-content {
+  background: linear-gradient(135deg, var(--dept-da-primary, #1565C0) 0%, var(--dept-da-primary-dark, #0D47A1) 100%);
+}
+
+.reports-dashboard.dept-da .reports-tab.active {
+  border-bottom-color: var(--dept-da-primary, #1565C0);
+}
+
+.reports-dashboard.dept-da .reports-tab.active .tab-label {
+  color: var(--dept-da-primary, #1565C0);
+}
+
+/* DSE - Vert */
+.reports-dashboard.dept-dse .reports-header-content {
+  background: linear-gradient(135deg, var(--dept-dse-primary, #2E7D32) 0%, var(--dept-dse-primary-dark, #1B5E20) 100%);
+}
+
+.reports-dashboard.dept-dse .reports-tab.active {
+  border-bottom-color: var(--dept-dse-primary, #2E7D32);
+}
+
+.reports-dashboard.dept-dse .reports-tab.active .tab-label {
+  color: var(--dept-dse-primary, #2E7D32);
+}
+
+/* DPNP - Orange Corporate */
+.reports-dashboard.dept-dpnp .reports-header-content {
+  background: linear-gradient(135deg, var(--dept-dpnp-primary, #E65100) 0%, var(--dept-dpnp-primary-dark, #BF360C) 100%);
+}
+
+.reports-dashboard.dept-dpnp .reports-tab.active {
+  border-bottom-color: var(--dept-dpnp-primary, #E65100);
+}
+
+.reports-dashboard.dept-dpnp .reports-tab.active .tab-label {
+  color: var(--dept-dpnp-primary, #E65100);
+}
+
+/* Direction - Rouge */
+.reports-dashboard.dept-direction .reports-header-content {
+  background: linear-gradient(135deg, #CC0000 0%, #990000 100%);
+}
+
+.reports-dashboard.dept-direction .reports-tab.active {
+  border-bottom-color: #CC0000;
+}
+
+.reports-dashboard.dept-direction .reports-tab.active .tab-label {
+  color: #CC0000;
+}

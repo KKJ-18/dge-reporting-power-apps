@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SuiviAnomaliesService } from '../../services/SuiviAnomaliesService';
 import { AgenceResauService } from '../../services/AgenceResauService';
-import './CommonForm.css';
+
 
 interface FormSuiviAnomaliesProps {
   activityName: string;

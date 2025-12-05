@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ACTIVITY_NAMES } from '../../config/activityNames';
 import { useObjectifValidation } from '../../hooks/useObjectifValidation';
 import DossiersDetailsInput, { type DossierDetail } from './DossiersDetailsInput';
-import './CreditClassiqueFormNew.css';
 
 interface CreditClassiqueData {
   // Métadonnées

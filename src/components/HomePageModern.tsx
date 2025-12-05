@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { UserProfile, UserProfileService } from '../services/UserProfileService';
 import { getDepartment, DEPARTMENTS_MAP } from '../config/departmentsData';
 import DepartmentDashboardAnalyse from './DepartmentDashboardAnalyse';
+import DepartmentDashboardDSE from './DepartmentDashboardDSE';
+import DepartmentDashboardDPNP from './DepartmentDashboardDPNP';
 import './HomePageModern.css';
 
 interface HomePageModernProps {
@@ -66,7 +68,7 @@ const HomePageModern: React.FC<HomePageModernProps> = ({ onModuleSelect }) => {
   // Vue Directeur - Accès à tous les départements
   if (userProfile.isDirecteur) {
     return (
-      <div className="homepage-modern">
+      <div className="homepage-modern dept-direction fade-in">
         <div className="director-view">
           <div className="welcome-header">
             <div className="welcome-icon">🌍</div>
@@ -145,16 +147,57 @@ const HomePageModern: React.FC<HomePageModernProps> = ({ onModuleSelect }) => {
     );
   }
 
-  // Vue Chef de département - Interface spécifique au département
+  // Vue Chef de département / Agent - Interface spécifique au département
   if (userProfile.departement) {
     const department = getDepartment(userProfile.departement);
     
+    // Déterminer la classe de département pour le thème
+    const getDeptClass = () => {
+      switch (userProfile.departement) {
+        case 'DA': return 'dept-da';
+        case 'DSE': return 'dept-dse';
+        case 'DPNP': return 'dept-dpnp';
+        default: return '';
+      }
+    };
+    
+    // Sélection du bon dashboard selon le département
+    const renderDepartmentDashboard = () => {
+      switch (userProfile.departement) {
+        case 'DA':
+          return (
+            <DepartmentDashboardAnalyse 
+              department={department} 
+              userProfile={userProfile}
+            />
+          );
+        case 'DSE':
+          return (
+            <DepartmentDashboardDSE 
+              department={department} 
+              userProfile={userProfile}
+            />
+          );
+        case 'DPNP':
+          return (
+            <DepartmentDashboardDPNP 
+              department={department} 
+              userProfile={userProfile}
+            />
+          );
+        default:
+          return (
+            <DepartmentDashboardAnalyse 
+              department={department} 
+              userProfile={userProfile}
+            />
+          );
+      }
+    };
+    
     return (
-      <div className="homepage-modern">
-        <DepartmentDashboardAnalyse 
-          department={department} 
-          userProfile={userProfile}
-        />
+      <div className={`homepage-modern ${getDeptClass()} fade-in`}>
+        {renderDepartmentDashboard()}
       </div>
     );
   }

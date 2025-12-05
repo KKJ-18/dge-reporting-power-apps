@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ContratsService } from '../../services/ContratsService';
 import { format } from 'date-fns';
-import './CommonForm.css';
+
 
 interface FormContratsDSEProps {
   activityName: string;

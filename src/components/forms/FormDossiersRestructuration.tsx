@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SuiviDossiersRestructurationService } from '../../services/SuiviDossiersRestructurationService';
 import { AgenceResauService } from '../../services/AgenceResauService';
 import { format } from 'date-fns';
-import './CommonForm.css';
+
 
 interface FormDossiersRestructurationProps {
   activityName: string;

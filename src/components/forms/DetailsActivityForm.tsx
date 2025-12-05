@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersComitesService';
 import { DetailsDossiersService } from '../../services/DetailsDossiersService';
 import DossiersDetailsInput, { DossierDetail } from './DossiersDetailsInput';
-import './FormSuiviTransmission.css';
 
 interface DetailsActivityFormProps {
   activityName: string;

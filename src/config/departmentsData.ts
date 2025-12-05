@@ -37,6 +37,116 @@ export interface DepartmentData {
 }
 
 /**
+ * Données de fallback pour les catégories (utilisées si SharePoint échoue)
+ */
+const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
+  DA: [
+    {
+      id: 'credit-classique',
+      name: 'Crédit classique',
+      icon: '💰',
+      activities: [
+        { id: 'dossiers-recus', label: 'Dossiers reçus des unités', frequency: 'Journalière' },
+        { id: 'dossiers-comites', label: 'Dossiers présentés aux comités', frequency: 'Hebdomadaire' },
+        { id: 'far', label: 'FAR', frequency: 'Journalière' },
+        { id: 'notes-circulation', label: 'Notes de circulation', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'credit-programme',
+      name: 'Crédit programme',
+      icon: '🎯',
+      activities: [
+        { id: 'suivi-programme', label: 'Suivi des programmes', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📎',
+      activities: [
+        { id: 'visites', label: 'Visites terrain', frequency: 'Hebdomadaire' },
+        { id: 'formations', label: 'Formations', frequency: 'Mensuelle' },
+      ]
+    }
+  ],
+  DSE: [
+    {
+      id: 'situation-mep',
+      name: 'Situation Mise en Place',
+      icon: '✅',
+      activities: [
+        { id: 'mep-amortissables', label: 'Crédits amortissables', frequency: 'Journalière' },
+        { id: 'mep-restructuration', label: 'Restructuration', frequency: 'Journalière' },
+        { id: 'mep-caution', label: 'Cautions', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'accords-classement',
+      name: 'Accords de Classement',
+      icon: '📋',
+      activities: [
+        { id: 'autorisation-mobilisation', label: 'Autorisations de mobilisation', frequency: 'Journalière' },
+        { id: 'accords-classement', label: 'Accords de classement', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'contrats',
+      name: 'Contrats',
+      icon: '📄',
+      activities: [
+        { id: 'avance-facture', label: 'Avance sur facture', frequency: 'Journalière' },
+        { id: 'prefinancement', label: 'Préfinancement', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📎',
+      activities: [
+        { id: 'visites', label: 'Visites terrain', frequency: 'Hebdomadaire' },
+        { id: 'formations', label: 'Formations', frequency: 'Mensuelle' },
+      ]
+    }
+  ],
+  DPNP: [
+    {
+      id: 'analyse-restructuration',
+      name: 'Analyse des dossiers de restructuration',
+      icon: '🔄',
+      activities: [
+        { id: 'restructuration', label: 'Analyse restructuration', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'suivi-anomalies',
+      name: 'Suivi des anomalies engagements',
+      icon: '⚠️',
+      activities: [
+        { id: 'anomalies-tresorerie', label: 'Anomalies trésorerie', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'recouvrement',
+      name: 'Recouvrement par versement',
+      icon: '💸',
+      activities: [
+        { id: 'versements', label: 'Suivi versements', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📎',
+      activities: [
+        { id: 'visites', label: 'Visites terrain', frequency: 'Hebdomadaire' },
+        { id: 'formations', label: 'Formations', frequency: 'Mensuelle' },
+      ]
+    }
+  ]
+};
+
+/**
  * Map des départements - chargée dynamiquement depuis SharePoint
  */
 export let DEPARTMENTS_MAP: Record<'DA' | 'DSE' | 'DPNP', DepartmentData> = {
@@ -46,7 +156,7 @@ export let DEPARTMENTS_MAP: Record<'DA' | 'DSE' | 'DPNP', DepartmentData> = {
     fullName: 'Département Analyse',
     icon: '📊',
     color: '#0078d4',
-    categories: []
+    categories: FALLBACK_CATEGORIES.DA // Utiliser les fallback par défaut
   },
   DSE: {
     id: 'DSE',
@@ -54,7 +164,7 @@ export let DEPARTMENTS_MAP: Record<'DA' | 'DSE' | 'DPNP', DepartmentData> = {
     fullName: 'Département Surveillance des Engagements',
     icon: '🏦',
     color: '#107c10',
-    categories: []
+    categories: FALLBACK_CATEGORIES.DSE // Utiliser les fallback par défaut
   },
   DPNP: {
     id: 'DPNP',
@@ -62,7 +172,7 @@ export let DEPARTMENTS_MAP: Record<'DA' | 'DSE' | 'DPNP', DepartmentData> = {
     fullName: 'Département des Prêts Non Performants',
     icon: '🏛️',
     color: '#d83b01',
-    categories: []
+    categories: FALLBACK_CATEGORIES.DPNP // Utiliser les fallback par défaut
   }
 };
 
@@ -100,29 +210,41 @@ export async function loadDepartments(): Promise<void> {
     
     const departments = await DepartmentActivitiesService.getAllDepartments();
     
-    // Convertir au format legacy
-    DEPARTMENTS_MAP.DA = {
-      ...DEPARTMENTS_MAP.DA,
-      categories: convertCategories(departments.DA.categories)
-    };
+    // Vérifier si des données ont été chargées
+    const hasDAData = departments.DA.categories.length > 0;
+    const hasDSEData = departments.DSE.categories.length > 0;
+    const hasDPNPData = departments.DPNP.categories.length > 0;
     
-    DEPARTMENTS_MAP.DSE = {
-      ...DEPARTMENTS_MAP.DSE,
-      categories: convertCategories(departments.DSE.categories)
-    };
+    // Convertir au format legacy seulement si des données existent
+    if (hasDAData) {
+      DEPARTMENTS_MAP.DA = {
+        ...DEPARTMENTS_MAP.DA,
+        categories: convertCategories(departments.DA.categories)
+      };
+    }
     
-    DEPARTMENTS_MAP.DPNP = {
-      ...DEPARTMENTS_MAP.DPNP,
-      categories: convertCategories(departments.DPNP.categories)
-    };
+    if (hasDSEData) {
+      DEPARTMENTS_MAP.DSE = {
+        ...DEPARTMENTS_MAP.DSE,
+        categories: convertCategories(departments.DSE.categories)
+      };
+    }
+    
+    if (hasDPNPData) {
+      DEPARTMENTS_MAP.DPNP = {
+        ...DEPARTMENTS_MAP.DPNP,
+        categories: convertCategories(departments.DPNP.categories)
+      };
+    }
     
     console.log('✅ Départements chargés:');
-    console.log(`  DA: ${DEPARTMENTS_MAP.DA.categories.length} catégories, ${DEPARTMENTS_MAP.DA.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités`);
-    console.log(`  DSE: ${DEPARTMENTS_MAP.DSE.categories.length} catégories, ${DEPARTMENTS_MAP.DSE.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités`);
-    console.log(`  DPNP: ${DEPARTMENTS_MAP.DPNP.categories.length} catégories, ${DEPARTMENTS_MAP.DPNP.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités`);
+    console.log(`  DA: ${DEPARTMENTS_MAP.DA.categories.length} catégories, ${DEPARTMENTS_MAP.DA.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités ${!hasDAData ? '(fallback)' : ''}`);
+    console.log(`  DSE: ${DEPARTMENTS_MAP.DSE.categories.length} catégories, ${DEPARTMENTS_MAP.DSE.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités ${!hasDSEData ? '(fallback)' : ''}`);
+    console.log(`  DPNP: ${DEPARTMENTS_MAP.DPNP.categories.length} catégories, ${DEPARTMENTS_MAP.DPNP.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités ${!hasDPNPData ? '(fallback)' : ''}`);
   } catch (error) {
-    console.error('❌ Erreur chargement départements:', error);
-    // En cas d'erreur, garder la structure vide
+    console.error('❌ Erreur chargement départements depuis SharePoint:', error);
+    console.warn('⚠️ Utilisation des données de fallback pour les départements');
+    // Les données de fallback sont déjà en place, rien à faire
   }
 }
 

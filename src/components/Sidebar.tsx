@@ -18,36 +18,35 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, userPro
       { id: 'home', icon: '🏠', label: 'Tableau de Bord', badge: null }
     ];
 
-    // Si l'utilisateur a un département, ajouter les catégories du département
+    // Si l'utilisateur a un département (Agent ou Chef), ajouter les catégories
     if (userProfile.departement && !userProfile.isDirecteur) {
       const department = getDepartment(userProfile.departement);
       
-      // Ajouter un séparateur
-      items.push({ id: 'divider-dept', label: 'divider' });
+      // Ajouter un séparateur avec label
+      items.push({ id: 'divider-dept', label: 'divider', sectionLabel: 'Activités' });
       
       // Ajouter les catégories du département
       department.categories.forEach((category) => {
         items.push({
           id: `category-${category.id}`,
-          icon: category.icon,
+          icon: category.icon || '📁',
           label: category.name,
           badge: null
         });
       });
     }
 
-    // Sections communes pour tous les utilisateurs
+    // Module Rapports & Analyses (fusion de reports, synthesis, weekly-report, analytics)
     items.push(
-      { id: 'divider-common', label: 'divider' },
-      { id: 'reports', icon: '📑', label: 'Rapports', badge: null },
-      { id: 'analytics', icon: '📊', label: 'Statistiques', badge: null },
+      { id: 'divider-reports', label: 'divider', sectionLabel: 'Rapports' },
+      { id: 'reports-dashboard', icon: '📊', label: 'Rapports & Analyses', badge: null },
       { id: 'objectifs', icon: '🎯', label: 'Objectifs', badge: null }
     );
 
     // Section administration (uniquement pour directeur)
     if (userProfile.isDirecteur) {
       items.push(
-        { id: 'divider-admin', label: 'divider' },
+        { id: 'divider-admin', label: 'divider', sectionLabel: 'Administration' },
         { id: 'validation', icon: '✅', label: 'Validation', badge: null },
         { id: 'team-monitoring', icon: '👥', label: 'Suivi Équipe', badge: null }
       );
@@ -57,14 +56,25 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, userPro
     items.push(
       { id: 'divider-settings', label: 'divider' },
       { id: 'settings', icon: '⚙️', label: 'Paramètres', badge: null },
-      { id: 'help', icon: '❓', label: 'Aide', badge: null }
+      { id: 'help', icon: '❓', label: 'Guide', badge: null }
     );
 
     return items;
   }, [userProfile]);
 
+  // Déterminer la classe de département pour le thème
+  const getDeptClass = () => {
+    if (userProfile.isDirecteur) return 'dept-direction';
+    switch (userProfile.departement) {
+      case 'DA': return 'dept-da';
+      case 'DSE': return 'dept-dse';
+      case 'DPNP': return 'dept-dpnp';
+      default: return '';
+    }
+  };
+
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${getDeptClass()}`}>
       {/* Bouton de rétraction moderne */}
       <button 
         className="sidebar-toggle"

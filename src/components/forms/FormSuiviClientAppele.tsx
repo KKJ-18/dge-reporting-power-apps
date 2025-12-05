@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { SuiviClientAppeleService } from '../../services/SuiviClientAppeleService';
 import { format } from 'date-fns';
-import './CommonForm.css';
+
 
 interface FormSuiviClientAppeleProps {
   activityName: string;

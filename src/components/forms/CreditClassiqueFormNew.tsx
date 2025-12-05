@@ -3,7 +3,6 @@ import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersCom
 import { DetailsDossiersService } from '../../services/DetailsDossiersService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
-import './CreditClassiqueFormNew.css';
 
 interface DossierDetail {
   nomClient: string;

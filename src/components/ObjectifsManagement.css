@@ -468,6 +468,15 @@
   background: #e1dfdd;
 }
 
+.btn-info {
+  background: #0078d4;
+  color: white;
+}
+
+.btn-info:hover:not(:disabled) {
+  background: #106ebe;
+}
+
 .btn-danger {
   background: #d83b01;
   color: white;

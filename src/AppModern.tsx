@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './AppModern.css'
 import Sidebar from './components/Sidebar'
 import HomePageModern from './components/HomePageModern'
@@ -15,9 +15,11 @@ import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyse'
 import DepartmentDashboardDSE from './components/DepartmentDashboardDSE'
 import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNP'
 import DirectorDashboard from './components/DirectorDashboard'
-import ReportsStatistics from './components/ReportsStatistics'
+import ReportsDashboard from './components/ReportsDashboard'
 import ObjectifsManagement from './components/ObjectifsManagement'
 import DiagnosticPanel from './components/DiagnosticPanel'
+import CategoryActivitiesPage from './components/CategoryActivitiesPage'
+import HelpGuide from './components/HelpGuide'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
 import { NotificationService } from './services/NotificationService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
@@ -39,19 +41,13 @@ function AppModern() {
         
         // Charger le profil utilisateur
         const profile = await UserProfileService.getCurrentUserProfile();
-        console.log('✅ Profil chargé:', profile);
         setUserProfile(profile);
         setProfileError(null);
         
         // Vérification quotidienne des objectifs (uniquement jours ouvrables)
         setTimeout(async () => {
           try {
-            const checkResult = await NotificationService.performDailyCheck();
-            if (checkResult && checkResult.missingItems.length > 0) {
-              console.log('⚠️ Données manquantes:', checkResult.missingItems);
-              // L'utilisateur sera notifié via la console pour l'instant
-              // TODO: Afficher une modal ou un toast UI
-            }
+            await NotificationService.performDailyCheck();
           } catch (error) {
             console.error('Erreur vérification quotidienne:', error);
           }
@@ -59,16 +55,10 @@ function AppModern() {
         
         // Redirection automatique basée sur le profil
         if (profile.isDirecteur) {
-          console.log('👔 Directeur détecté - Redirection vers tableau de bord directeur');
-          setActiveModule('director-dashboard');
-        } else if (profile.fonction?.toLowerCase().includes('chef') && profile.departement) {
-          console.log(`🏢 Chef de département ${profile.departement} - Redirection vers dashboard département`);
-          setActiveModule(`department-${profile.departement}`);
+          setActiveModule('home'); // Directeur va au tableau de bord global
         } else if (profile.departement) {
-          console.log(`👤 Utilisateur département ${profile.departement} - Redirection vers dashboard`);
-          setActiveModule(`department-${profile.departement}`);
+          setActiveModule('home'); // Agent/Chef va à son tableau de bord
         } else {
-          console.log('⚠️ Utilisateur sans département - Affichage home');
           setActiveModule('home');
         }
       } catch (error) {
@@ -92,6 +82,21 @@ function AppModern() {
       alert('✅ Rapport soumis avec succès !\n\nVotre rapport a été enregistré et sera traité automatiquement.')
     }
   }
+
+  // Récupérer la catégorie si on est sur une page category-xxx
+  // IMPORTANT: Ce hook doit être AVANT les returns conditionnels
+  const currentCategory = useMemo(() => {
+    if (activeModule.startsWith('category-') && userProfile?.departement) {
+      const categoryId = activeModule.replace('category-', '');
+      try {
+        const department = getDepartment(userProfile.departement);
+        return department.categories.find(cat => cat.id === categoryId) || null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }, [activeModule, userProfile]);
 
   // Écran de chargement ultra moderne
   if (loadingProfile) {
@@ -141,6 +146,20 @@ function AppModern() {
   }
 
   const renderMainContent = () => {
+    // Route pour les catégories d'activités
+    if (activeModule.startsWith('category-') && userProfile?.departement && currentCategory) {
+      const department = getDepartment(userProfile.departement);
+      return (
+        <CategoryActivitiesPage
+          category={currentCategory}
+          department={department}
+          userProfile={userProfile}
+          onNavigateToObjectifs={() => setActiveModule('objectifs')}
+          onBack={() => setActiveModule('home')}
+        />
+      );
+    }
+
     switch (activeModule) {
       case 'home':
         return (
@@ -218,13 +237,9 @@ function AppModern() {
       case 'activities':
         return <ActivityManagerModern />
       
-      case 'reports':
-        return (
-          <div className="page-header">
-            <h1 className="page-title">📑 Mes Rapports</h1>
-            <p className="page-subtitle">Consultez l'historique de vos rapports soumis</p>
-          </div>
-        )
+      // Nouveau module unifié Rapports & Analyses
+      case 'reports-dashboard':
+        return <ReportsDashboard userProfile={userProfile} />
       
       case 'validation':
         return (
@@ -233,9 +248,6 @@ function AppModern() {
             <p className="page-subtitle">Valider les rapports de votre équipe</p>
           </div>
         )
-      
-      case 'analytics':
-        return <ReportsStatistics />
 
       case 'objectifs':
         return <ObjectifsManagement />
@@ -264,10 +276,7 @@ function AppModern() {
       
       case 'help':
         return (
-          <div className="page-header">
-            <h1 className="page-title">❓ Aide</h1>
-            <p className="page-subtitle">Documentation et support</p>
-          </div>
+          <HelpGuide userProfile={userProfile} />
         )
       
       default:

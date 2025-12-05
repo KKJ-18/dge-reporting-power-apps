@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { AnalyseEngagementsService } from '../../services/AnalyseEngagementsService';
-import './FormSuiviTransmission.css';
 
 interface FormAdminEngagementsProps {
   activityName: string;

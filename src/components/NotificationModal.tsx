@@ -1,5 +1,5 @@
 import React from 'react';
-import './NotificationModal.css';
+
 
 interface NotificationModalProps {
   isOpen: boolean;

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AnalyseDelaisCreditService } from '../../services/AnalyseDelaisCreditService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
-import './FormEvaluationDelais.css';
 
 interface FormData {
   delaiMoyenDceJour: number;

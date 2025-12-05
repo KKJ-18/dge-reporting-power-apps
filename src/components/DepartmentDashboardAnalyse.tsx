@@ -26,7 +26,7 @@ import FormSuiviRegularisation from './forms/FormSuiviRegularisation';
 import FormDelaisCreditClassique from './forms/FormDelaisCreditClassique';
 
 import './DepartmentDashboard.css';
-import './forms/CommonForm.css'; // Style unifié pour tous les formulaires
+
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
 interface DepartmentDashboardAnalyseProps {
