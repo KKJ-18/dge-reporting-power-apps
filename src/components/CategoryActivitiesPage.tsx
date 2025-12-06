@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { CategoryData, ActivityItem, DepartmentData } from '../config/departmentsData';
 import { UserProfile } from '../services/UserProfileService';
-import Modal from './Modal';
-import { useObjectifValidation } from '../hooks/useObjectifValidation';
+import ModalTailwind from './ModalTailwind';
 
 // Import des formulaires spécialisés pour autres catégories
 import FormSuiviTransmission from './forms/FormSuiviTransmission';
@@ -135,11 +134,8 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
   category,
   department,
   userProfile,
-  onNavigateToObjectifs,
   onBack
 }) => {
-  const { isValidating, validateBeforeSubmit } = useObjectifValidation();
-  const [showObjectifAlert, setShowObjectifAlert] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityItem | null>(null);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
@@ -153,15 +149,7 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
     }
   };
 
-  const handleActivityClickWithValidation = async (activity: ActivityItem) => {
-    const today = new Date();
-    const isValid = await validateBeforeSubmit(activity.label as any, today);
-    
-    if (!isValid) {
-      setShowObjectifAlert(true);
-      return;
-    }
-
+  const handleActivityClick = (activity: ActivityItem) => {
     setSelectedActivity(activity);
     setIsActivityModalOpen(true);
   };
@@ -292,10 +280,9 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
               <div
                 key={activity.id}
                 className="activity-card"
-                onClick={() => handleActivityClickWithValidation(activity)}
+                onClick={() => handleActivityClick(activity)}
                 style={{
-                  cursor: isValidating ? 'wait' : 'pointer',
-                  opacity: isValidating ? 0.6 : 1,
+                  cursor: 'pointer',
                   borderLeftColor: department.color,
                 }}
               >
@@ -330,7 +317,7 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
         </div>
 
         {/* Modal pour le formulaire */}
-        <Modal
+        <ModalTailwind
           isOpen={isActivityModalOpen}
           onClose={handleCloseActivityModal}
           title=""
@@ -338,49 +325,7 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
           hideHeader
         >
           {renderActivityForm()}
-        </Modal>
-
-        {/* Modal: Alerte Objectifs Manquants */}
-        {showObjectifAlert && (
-          <div className="objectif-alert-overlay">
-            <div className="objectif-alert-modal">
-              <div className="alert-icon">⚠️</div>
-              <h3 className="alert-title">Objectifs Requis</h3>
-              <p className="alert-message">
-                Vous devez <strong>définir vos objectifs de la journée</strong> avant de remplir vos activités.
-              </p>
-              <div className="alert-actions">
-                <button
-                  className="btn-cancel"
-                  onClick={() => setShowObjectifAlert(false)}
-                >
-                  Annuler
-                </button>
-                <button
-                  className="btn-objectifs"
-                  onClick={() => {
-                    setShowObjectifAlert(false);
-                    if (onNavigateToObjectifs) {
-                      onNavigateToObjectifs();
-                    }
-                  }}
-                >
-                  📋 Définir mes objectifs
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Indicateur de chargement */}
-        {isValidating && (
-          <div className="loading-overlay">
-            <div className="loading-modal">
-              <div className="spinner"></div>
-              <p>Vérification des objectifs...</p>
-            </div>
-          </div>
-        )}
+        </ModalTailwind>
       </div>
     </DepartmentFormWrapper>
   );

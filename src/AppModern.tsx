@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import './AppModern.css'
-import Sidebar from './components/Sidebar'
-import HomePageModern from './components/HomePageModern'
+import Sidebar from './components/SidebarTailwind'
+import HomePageModern from './components/HomePageModernTailwind'
 import HomePage from './components/HomePage'
 import CreditClassiqueForm from './components/forms/CreditClassiqueForm'
 import CreditProgrammeForm from './components/forms/CreditProgrammeForm'
@@ -11,9 +10,9 @@ import ActivitesAnnexesForm from './components/forms/ActivitesAnnexesForm'
 import UserProfile from './components/UserProfile'
 import CategoryManager from './components/CategoryManager'
 import ActivityManagerModern from './components/ActivityManagerModern'
-import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyse'
-import DepartmentDashboardDSE from './components/DepartmentDashboardDSE'
-import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNP'
+import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyseTailwind'
+import DepartmentDashboardDSE from './components/DepartmentDashboardDSETailwind'
+import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNPTailwind'
 import DirectorDashboard from './components/DirectorDashboard'
 import ReportsDashboard from './components/ReportsDashboard'
 import ObjectifsManagement from './components/ObjectifsManagement'
@@ -98,47 +97,77 @@ function AppModern() {
     return null;
   }, [activeModule, userProfile]);
 
-  // Écran de chargement ultra moderne
+  // Écran de chargement Tailwind - Centré sur toute la page
   if (loadingProfile) {
     return (
-      <div className="modern-loader-container">
-        <div className="modern-loader-card">
-          <div className="modern-spinner">
-            <div className="spinner-ring"></div>
-            <div className="spinner-ring"></div>
-            <div className="spinner-ring"></div>
-            <div className="spinner-core"></div>
+      <div className="fixed inset-0 min-h-screen w-full bg-gradient-to-br from-neutral-50 via-white to-neutral-100 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-modal p-8 flex flex-col items-center gap-6 max-w-sm w-full mx-4 animate-scale-in">
+          {/* Spinner moderne */}
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 border-4 border-neutral-200 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-transparent border-t-primary-600 rounded-full animate-spin"></div>
+            <div className="absolute inset-2 border-4 border-transparent border-t-primary-400 rounded-full animate-spin" style={{ animationDuration: '0.8s', animationDirection: 'reverse' }}></div>
+            <div className="absolute inset-4 bg-primary-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-lg">📊</span>
+            </div>
           </div>
-          <div className="modern-loader-text">
-            Chargement de votre profil
+          
+          {/* Texte */}
+          <div className="text-center">
+            <h2 className="text-lg font-bold text-neutral-800 mb-1">Chargement en cours</h2>
+            <p className="text-sm text-neutral-500">Préparation de votre espace de travail...</p>
           </div>
-          <div className="loader-progress"></div>
+          
+          {/* Barre de progression animée */}
+          <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full"
+              style={{ 
+                animation: 'progressBar 2s ease-in-out infinite',
+                width: '100%',
+                transformOrigin: 'left'
+              }}
+            ></div>
+          </div>
+          <style>{`
+            @keyframes progressBar {
+              0% { transform: scaleX(0); }
+              50% { transform: scaleX(0.7); }
+              100% { transform: scaleX(1); }
+            }
+          `}</style>
         </div>
       </div>
     );
   }
 
-  // Écran d'erreur
+  // Écran d'erreur Tailwind
   if (profileError || !userProfile) {
     return (
-      <div className="app-container">
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          flexDirection: 'column',
-          gap: '1rem',
-          padding: '2rem'
-        }}>
-          <div style={{ fontSize: '3rem' }}>⚠️</div>
-          <h2>Erreur de chargement</h2>
-          <p>{profileError || 'Impossible de charger votre profil'}</p>
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-modal p-8 flex flex-col items-center gap-6 max-w-md w-full animate-scale-in">
+          {/* Icône erreur */}
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+            <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          
+          {/* Texte */}
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-neutral-800 mb-2">Erreur de chargement</h2>
+            <p className="text-neutral-600">{profileError || 'Impossible de charger votre profil'}</p>
+          </div>
+          
+          {/* Bouton */}
           <button 
-            className="btn btn-primary"
+            className="btn-primary flex items-center gap-2"
             onClick={() => window.location.reload()}
           >
-            🔄 Réessayer
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Réessayer
           </button>
         </div>
       </div>
@@ -291,32 +320,28 @@ function AppModern() {
   }
 
   return (
-    <div className="app-container">
+    <div className="min-h-screen bg-neutral-50">
       <Sidebar
         activeModule={activeModule}
         onModuleChange={setActiveModule}
         userProfile={userProfile}
       />
       
-      <main className="main-content">
-        {renderMainContent()}
+      {/* Main content - full width with sidebar offset */}
+      <main className="ml-64 min-h-screen">
+        <div className="p-4 lg:p-6 w-full">
+          {renderMainContent()}
+        </div>
         
         {/* Zone de debug pour le développement */}
         {import.meta.env.DEV && (
-          <div style={{
-            marginTop: '2rem',
-            padding: '1rem',
-            background: 'rgba(0, 0, 0, 0.05)',
-            borderRadius: '12px',
-            fontSize: '0.875rem',
-            opacity: 0.7
-          }}>
-            <strong>🛠️ Debug Info:</strong>
-            <div style={{ marginTop: '0.5rem' }}>
-              Module actif: <strong>{activeModule}</strong> | 
-              Période: <strong>{selectedPeriod || 'Non définie'}</strong> |
-              Département: <strong>{userProfile.departement || 'N/A'}</strong> |
-              Directeur: <strong>{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong>
+          <div className="ml-6 mr-6 mb-6 p-4 bg-neutral-100 rounded-xl text-sm text-neutral-600">
+            <strong className="text-neutral-800">🛠️ Debug Info:</strong>
+            <div className="mt-2 flex flex-wrap gap-4">
+              <span>Module: <strong className="text-primary-600">{activeModule}</strong></span>
+              <span>Période: <strong className="text-primary-600">{selectedPeriod || 'Non définie'}</strong></span>
+              <span>Département: <strong className="text-primary-600">{userProfile.departement || 'N/A'}</strong></span>
+              <span>Directeur: <strong className="text-primary-600">{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong></span>
             </div>
           </div>
         )}

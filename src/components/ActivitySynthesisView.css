@@ -1,9 +1,8 @@
 /* ActivitySynthesisView.css - Ultra Modern & Refined */
 
 .activity-synthesis-container {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1.5rem;
+  width: 100%;
   background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
   min-height: 100vh;
 }

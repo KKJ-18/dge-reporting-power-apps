@@ -5,8 +5,7 @@
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 1.5rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .weekly-report-loading {

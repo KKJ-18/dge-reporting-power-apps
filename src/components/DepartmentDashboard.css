@@ -1,9 +1,8 @@
 /* Department Dashboard Styles */
 
 .department-dashboard {
-  padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  padding: 1.5rem;
+  width: 100%;
 }
 
 /* Header */

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DepartmentData, CategoryData, ActivityItem } from '../config/departmentsData';
 import { UserProfile } from '../services/UserProfileService';
-import { useObjectifValidation } from '../hooks/useObjectifValidation';
 import Modal from './Modal';
 
 // Import des formulaires spécialisés DSE
@@ -160,33 +159,20 @@ function detectFormType(categoryName: string, activityLabel: string): {
 }
 
 const DepartmentDashboardDSE: React.FC<DepartmentDashboardDSEProps> = ({ 
-  department,
-  onNavigateToObjectifs
+  department
   // userProfile disponible mais non utilisé pour l'instant
 }) => {
-  const { isValidating, validateBeforeSubmit } = useObjectifValidation();
   const [selectedCategory, setSelectedCategory] = useState<CategoryData | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<ActivityItem | null>(null);
   const [showActivitiesModal, setShowActivitiesModal] = useState(false);
   const [showActivityFormModal, setShowActivityFormModal] = useState(false);
-  const [showObjectifAlert, setShowObjectifAlert] = useState(false);
 
   const handleCategoryClick = (category: CategoryData) => {
     setSelectedCategory(category);
     setShowActivitiesModal(true);
   };
 
-  const handleActivityClickWithValidation = async (activity: ActivityItem) => {
-    // Valider les objectifs avant d'ouvrir le formulaire
-    const today = new Date();
-    const isValid = await validateBeforeSubmit(activity.label as any, today);
-    
-    if (!isValid) {
-      setShowObjectifAlert(true);
-      return; // ❌ Bloquer l'ouverture du formulaire
-    }
-
-    // ✅ Objectifs validés - Ouvrir le formulaire
+  const handleActivityClick = (activity: ActivityItem) => {
     setSelectedActivity(activity);
     setShowActivitiesModal(false);
     setShowActivityFormModal(true);
@@ -342,8 +328,8 @@ const DepartmentDashboardDSE: React.FC<DepartmentDashboardDSEProps> = ({
               <div
                 key={activity.id}
                 className="activity-selector-card"
-                onClick={() => handleActivityClickWithValidation(activity)}
-                style={{ cursor: isValidating ? 'wait' : 'pointer', opacity: isValidating ? 0.6 : 1 }}
+                onClick={() => handleActivityClick(activity)}
+                style={{ cursor: 'pointer' }}
               >
                 <div className="activity-number">{index + 1}</div>
                 <div className="activity-info">
@@ -371,175 +357,6 @@ const DepartmentDashboardDSE: React.FC<DepartmentDashboardDSEProps> = ({
       >
         {renderActivityForm()}
       </Modal>
-
-      {/* Modal: Alerte Objectifs Manquants */}
-      {showObjectifAlert && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(17, 24, 39, 0.75)',
-          backdropFilter: 'blur(10px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10000,
-          padding: '1rem',
-          animation: 'fadeIn 0.3s ease-out',
-        }}>
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '24px',
-            padding: 'clamp(2rem, 5vw, 3rem)',
-            maxWidth: '550px',
-            width: '100%',
-            textAlign: 'center',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
-            border: '3px solid #F59E0B',
-            animation: 'slideUp 0.4s ease-out',
-          }}>
-            <div style={{ 
-              fontSize: '5rem', 
-              marginBottom: '1.5rem',
-              animation: 'bounce 0.6s ease-in-out',
-            }}>⚠️</div>
-            <h3 style={{ 
-              fontSize: 'clamp(1.75rem, 5vw, 2.25rem)', 
-              fontWeight: '800', 
-              color: '#F59E0B',
-              marginBottom: '1rem',
-              letterSpacing: '-0.02em',
-            }}>
-              Objectifs Requis
-            </h3>
-            <p style={{ 
-              color: '#6B7280', 
-              fontSize: 'clamp(1rem, 3vw, 1.125rem)',
-              lineHeight: '1.7',
-              marginBottom: '2.5rem',
-              maxWidth: '420px',
-              margin: '0 auto 2.5rem',
-            }}>
-              Vous devez <strong style={{ color: '#374151' }}>définir vos objectifs de la journée</strong> avant de remplir vos activités. 
-              Accédez au module Objectifs pour commencer.
-            </p>
-            <div style={{ 
-              display: 'flex', 
-              gap: '1rem', 
-              justifyContent: 'center', 
-              flexWrap: 'wrap',
-            }}>
-              <button
-                onClick={() => setShowObjectifAlert(false)}
-                style={{
-                  padding: '1rem 2rem',
-                  border: '2px solid #E5E7EB',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  backgroundColor: '#F9FAFB',
-                  color: '#6B7280',
-                  transition: 'all 0.2s ease',
-                  minWidth: '120px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F3F4F6';
-                  e.currentTarget.style.borderColor = '#D1D5DB';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F9FAFB';
-                  e.currentTarget.style.borderColor = '#E5E7EB';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => {
-                  setShowObjectifAlert(false);
-                  if (onNavigateToObjectifs) {
-                    onNavigateToObjectifs();
-                  }
-                }}
-                style={{
-                  padding: '1rem 2.5rem',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  backgroundColor: '#F59E0B',
-                  color: '#FFFFFF',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 6px -1px rgba(245, 158, 11, 0.3)',
-                  minWidth: '180px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#D97706';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(245, 158, 11, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F59E0B';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(245, 158, 11, 0.3)';
-                }}
-              >
-                📋 Définir mes objectifs
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Indicateur de chargement pendant validation */}
-      {isValidating && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(17, 24, 39, 0.5)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-        }}>
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '2rem 3rem',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '1rem',
-          }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              border: '4px solid #F3F4F6',
-              borderTop: '4px solid #F59E0B',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-            }} />
-            <p style={{ 
-              color: '#6B7280', 
-              fontSize: '1rem',
-              fontWeight: '600',
-              margin: 0,
-            }}>
-              Vérification des objectifs...
-            </p>
-          </div>
-        </div>
-      )}
       </div>
     </DepartmentFormWrapper>
   );
