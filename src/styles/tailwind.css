@@ -146,6 +146,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-neutral-50);
   color: var(--color-neutral-900);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* Focus visible pour accessibilité */

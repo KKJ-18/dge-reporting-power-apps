@@ -320,15 +320,15 @@ function AppModern() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="flex min-h-screen w-full bg-neutral-50">
       <Sidebar
         activeModule={activeModule}
         onModuleChange={setActiveModule}
         userProfile={userProfile}
       />
       
-      {/* Main content - full width with sidebar offset */}
-      <main className="ml-64 min-h-screen">
+      {/* Main content - prend tout l'espace restant après la sidebar */}
+      <main className="flex-1 ml-64 min-h-screen">
         <div className="p-4 lg:p-6 w-full">
           {renderMainContent()}
         </div>
