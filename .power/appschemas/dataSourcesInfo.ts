@@ -498,6 +498,12 @@ export const dataSourcesInfo = {
     "primaryKey": "ID",
     "apis": {}
   },
+  "action recouvrement": {
+    "tableId": "4e73ebaf-faa0-4655-8b1a-86db749dbdcf",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
   "activitestransversales": {
     "tableId": "c98ff885-2780-4f8e-8103-9ed428fe0e99",
     "version": "",
@@ -548,6 +554,12 @@ export const dataSourcesInfo = {
   },
   "category": {
     "tableId": "ce9cbf69-be65-47c6-a064-f16f5c9d49a0",
+    "version": "",
+    "primaryKey": "ID",
+    "apis": {}
+  },
+  "clients en anomalie": {
+    "tableId": "fc5ef975-e295-4bf9-824d-86dc1a4c6ad0",
     "version": "",
     "primaryKey": "ID",
     "apis": {}

@@ -1,0 +1,1103 @@
+{
+  "name": "4e73ebaf-faa0-4655-8b1a-86db749dbdcf",
+  "title": "Action Recouvrement",
+  "x-ms-permission": "read-write",
+  "x-ms-capabilities": {
+    "sortRestrictions": {
+      "sortable": true,
+      "unsortableProperties": [
+        "{Identifier}",
+        "{IsFolder}",
+        "{Thumbnail}",
+        "{Link}",
+        "{Name}",
+        "{FilenameWithExtension}",
+        "{Path}",
+        "{FullPath}",
+        "{ModerationStatus}",
+        "{ModerationComment}",
+        "{ContentType}",
+        "{HasAttachments}",
+        "{Attachments}",
+        "{VersionNumber}",
+        "{TriggerWindowStartToken}",
+        "{TriggerWindowEndToken}"
+      ]
+    },
+    "filterRestrictions": {
+      "filterable": true,
+      "nonFilterableProperties": [
+        "Lienpi_x00e8_cejointe",
+        "{Identifier}",
+        "{IsFolder}",
+        "{Thumbnail}",
+        "{Link}",
+        "{Name}",
+        "{FilenameWithExtension}",
+        "{Path}",
+        "{FullPath}",
+        "{ModerationStatus}",
+        "{ModerationComment}",
+        "{ContentType}",
+        "{HasAttachments}",
+        "{Attachments}",
+        "{VersionNumber}",
+        "{TriggerWindowStartToken}",
+        "{TriggerWindowEndToken}"
+      ]
+    },
+    "isOnlyServerPagable": true,
+    "filterFunctionSupport": [
+      "and",
+      "or",
+      "eq",
+      "startswith",
+      "gt",
+      "ge",
+      "lt",
+      "le",
+      "ne"
+    ],
+    "serverPagingOptions": [
+      "top",
+      "skiptoken"
+    ],
+    "odataVersion": 3
+  },
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "ID": {
+          "title": "ID",
+          "description": "ID de l\u2019\u00E9l\u00E9ment de liste. Utilisez cette valeur pour sp\u00E9cifier l\u2019\u00E9l\u00E9ment sur lequel agir dans les autres actions li\u00E9es \u00E0 la liste.",
+          "type": "integer",
+          "format": "int64",
+          "x-ms-keyType": "primary",
+          "x-ms-keyOrder": 1,
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq"
+            ]
+          }
+        },
+        "Title": {
+          "title": "",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Statut#Id": {
+          "title": "Statut Id",
+          "type": "integer",
+          "format": "int64",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Statut": {
+          "title": "Statut",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "x-ms-sp": {
+              "IsChoice": true
+            },
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Value": {
+              "title": "Value",
+              "type": "string",
+              "default": "Planifier",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "3b7c6182-891d-4a3a-b6ac-c18be0aec9b7"
+                },
+                "value-path": "Value",
+                "value-title": "Value",
+                "value-collection": "value"
+              }
+            },
+            "Id": {
+              "title": "Id",
+              "type": "integer",
+              "format": "int64",
+              "x-ms-visibility": "internal",
+              "default": 1,
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "Value"
+          }
+        },
+        "Typedaction#Id": {
+          "title": "Type d\u0027action Id",
+          "type": "integer",
+          "format": "int64",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Typedaction": {
+          "title": "Type d\u0027action",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "x-ms-sp": {
+              "IsChoice": true
+            },
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Value": {
+              "title": "Value",
+              "type": "string",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "794bb0bb-d165-4fb0-b10b-641014c403c7"
+                },
+                "value-path": "Value",
+                "value-title": "Value",
+                "value-collection": "value"
+              }
+            },
+            "Id": {
+              "title": "Id",
+              "type": "integer",
+              "format": "int64",
+              "x-ms-visibility": "internal",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "Value"
+          }
+        },
+        "DatePlanification": {
+          "title": "Date Planification",
+          "type": "string",
+          "format": "date-time",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "DateExc_x00e9_cution": {
+          "title": "Date Exc\u00E9cution",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "Matricule": {
+          "title": "Matricule",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Created": {
+          "title": "Cr\u00E9\u00E9",
+          "description": "Date de cr\u00E9ation de cet \u00E9l\u00E9ment.",
+          "type": "string",
+          "format": "date-time",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "Author#Claims": {
+          "title": "Cr\u00E9\u00E9 par Claims",
+          "type": "string",
+          "description": "Identificateur interne de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Author": {
+          "title": "Cr\u00E9\u00E9 par",
+          "description": "Utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+          "type": "object",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            },
+            "Claims": {
+              "title": "Claims",
+              "type": "string",
+              "description": "Identificateur interne de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "x-ms-permission": "read-only",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "1df5e554-ec7e-46a6-901d-d85a3881cb18"
+                },
+                "value-path": "Claims",
+                "value-title": "DisplayName",
+                "value-collection": "value"
+              }
+            },
+            "DisplayName": {
+              "title": "DisplayName",
+              "type": "string",
+              "description": "Nom de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "Title"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Email": {
+              "title": "Email",
+              "type": "string",
+              "description": "Adresse de courrier de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "format": "email",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "EMail"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Picture": {
+              "title": "Picture",
+              "type": "string",
+              "description": "Cr\u00E9er un lien vers une image de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "format": "uri",
+              "x-ms-media-kind": "image",
+              "x-ms-media-default-folder-path": "/sites/Reportingdesactivitscommerciales",
+              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales",
+              "x-ms-permission": "read-only"
+            },
+            "Department": {
+              "title": "Department",
+              "type": "string",
+              "description": "Nom du service de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "x-ms-permission": "read-only"
+            },
+            "JobTitle": {
+              "title": "JobTitle",
+              "type": "string",
+              "description": "Poste de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "DisplayName",
+            "subtitleProperty": "Email",
+            "thumbnailProperty": "Picture"
+          }
+        },
+        "DateprochaineAction": {
+          "title": "Date prochaine Action",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "NomClient": {
+          "title": "Nom Client",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "NombreActionPlaniif_x00e9_": {
+          "title": "Nombre Action Planiif\u00E9",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "default": 1.0,
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "Origineimpay_x00e9_": {
+          "title": "Origine impay\u00E9",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Collegueayantprispart#Claims": {
+          "title": "Collegue ayant pris part Claims",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Collegueayantprispart": {
+          "title": "Collegue ayant pris part",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Claims": {
+              "title": "Claims",
+              "type": "string",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "05a6ff44-85cc-43c0-8d12-b9a647e8353a"
+                },
+                "value-path": "Claims",
+                "value-title": "DisplayName",
+                "value-collection": "value"
+              }
+            },
+            "DisplayName": {
+              "title": "DisplayName",
+              "type": "string",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "Title"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Email": {
+              "title": "Email",
+              "type": "string",
+              "format": "email",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "EMail"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Picture": {
+              "title": "Picture",
+              "type": "string",
+              "format": "uri",
+              "x-ms-media-kind": "image",
+              "x-ms-media-default-folder-path": "/sites/Reportingdesactivitscommerciales",
+              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales",
+              "x-ms-permission": "read-only"
+            },
+            "Department": {
+              "title": "Department",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            },
+            "JobTitle": {
+              "title": "JobTitle",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "DisplayName",
+            "subtitleProperty": "Email",
+            "thumbnailProperty": "Picture"
+          }
+        },
+        "Lienpi_x00e8_cejointe": {
+          "title": "Lien pi\u00E8ce jointe",
+          "type": "string",
+          "format": "uri",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc"
+        },
+        "Modified": {
+          "title": "Modifi\u00E9",
+          "description": "Date de derni\u00E8re modification de cet \u00E9l\u00E9ment.",
+          "type": "string",
+          "format": "date-time",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "EmailGFC": {
+          "title": "EmailGFC",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "OData__ColorTag": {
+          "title": "Balise de couleur",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "ComplianceAssetId": {
+          "title": "ID de ressource de conformit\u00E9",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Editor#Claims": {
+          "title": "Modifi\u00E9 par Claims",
+          "type": "string",
+          "description": "Identificateur interne de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Editor": {
+          "title": "Modifi\u00E9 par",
+          "description": "Utilisateur ayant modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+          "type": "object",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            },
+            "Claims": {
+              "title": "Claims",
+              "type": "string",
+              "description": "Identificateur interne de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "x-ms-permission": "read-only",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "d31655d1-1d5b-4511-95a1-7a09e9b75bf2"
+                },
+                "value-path": "Claims",
+                "value-title": "DisplayName",
+                "value-collection": "value"
+              }
+            },
+            "DisplayName": {
+              "title": "DisplayName",
+              "type": "string",
+              "description": "Nom de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "Title"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Email": {
+              "title": "Email",
+              "type": "string",
+              "description": "Adresse de courrier de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "format": "email",
+              "x-ms-permission": "read-only",
+              "x-ms-capabilities": {
+                "x-ms-sp": {
+                  "OdataQueryName": "EMail"
+                },
+                "filterFunctions": [
+                  "eq",
+                  "startswith"
+                ]
+              }
+            },
+            "Picture": {
+              "title": "Picture",
+              "type": "string",
+              "description": "Cr\u00E9er un lien vers une image de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "format": "uri",
+              "x-ms-media-kind": "image",
+              "x-ms-media-default-folder-path": "/sites/Reportingdesactivitscommerciales",
+              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales",
+              "x-ms-permission": "read-only"
+            },
+            "Department": {
+              "title": "Department",
+              "type": "string",
+              "description": "Nom du service de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "x-ms-permission": "read-only"
+            },
+            "JobTitle": {
+              "title": "JobTitle",
+              "type": "string",
+              "description": "Poste de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "DisplayName",
+            "subtitleProperty": "Email",
+            "thumbnailProperty": "Picture"
+          }
+        },
+        "{Identifier}": {
+          "title": "Identificateur",
+          "description": "Valeur qui peut \u00EAtre utilis\u00E9e dans des actions li\u00E9es au fichier dans le cadre de la s\u00E9lection d\u2019un fichier.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{IsFolder}": {
+          "title": "EstUnDossier",
+          "description": "True si l\u2019\u00E9l\u00E9ment est un dossier, false dans le cas contraire.",
+          "type": "boolean",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{Thumbnail}": {
+          "title": "Miniature",
+          "description": "URL vers les miniatures de l\u2019\u00E9l\u00E9ment dans 3\u00A0tailles diff\u00E9rentes, le cas \u00E9ch\u00E9ant.",
+          "type": "object",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none",
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            },
+            "Small": {
+              "title": "Small",
+              "type": "string",
+              "description": "URL vers une miniature pr\u00E9sentant une version fortement compress\u00E9e de l\u2019\u00E9l\u00E9ment, si cela est possible.",
+              "x-ms-permission": "read-only"
+            },
+            "Medium": {
+              "title": "Medium",
+              "type": "string",
+              "description": "URL vers la miniature de taille standard de l\u2019\u00E9l\u00E9ment, le cas \u00E9ch\u00E9ant.",
+              "x-ms-permission": "read-only"
+            },
+            "Large": {
+              "title": "Large",
+              "type": "string",
+              "description": "URL vers la miniature la plus grande de l\u2019\u00E9l\u00E9ment, le cas \u00E9ch\u00E9ant.",
+              "x-ms-permission": "read-only"
+            }
+          }
+        },
+        "{Link}": {
+          "title": "Lien vers l\u2019\u00E9l\u00E9ment",
+          "description": "Lien qui peut \u00EAtre utilis\u00E9 pour acc\u00E9der au fichier ou \u00E0 l\u2019\u00E9l\u00E9ment de liste. Seules les personnes disposant des autorisations d\u2019acc\u00E8s \u00E0 l\u2019\u00E9l\u00E9ment pourront ouvrir le lien.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{Name}": {
+          "title": "Nom",
+          "description": "Nom de fichier de l\u2019\u00E9l\u00E9ment dans les biblioth\u00E8ques de documents, nom complet de l\u2019\u00E9l\u00E9ment dans les listes.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{FilenameWithExtension}": {
+          "title": "Nom de fichier avec l\u2019extension",
+          "description": "Pour les biblioth\u00E8ques, renvoie le nom du fichier sans l\u2019extension. Pour les listes, renvoie la propri\u00E9t\u00E9 de titre.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{Path}": {
+          "title": "Chemin d\u2019acc\u00E8s au dossier",
+          "description": "Chemin d\u2019acc\u00E8s au dossier dans lequel se trouve l\u2019\u00E9l\u00E9ment, relatif \u00E0 l\u2019adresse du site.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{FullPath}": {
+          "title": "Chemin d\u0027acc\u00E8s complet",
+          "description": "Chemin d\u2019acc\u00E8s complet d\u2019un \u00E9l\u00E9ment, d\u2019un dossier ou d\u2019un fichier",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{ModerationStatus}": {
+          "title": "\u00C9tat d\u2019approbation du contenu",
+          "description": "\u00C9tat d\u2019approbation du contenu. Il peut s\u2019agir d\u2019une des options suivantes: brouillon, en attente, approuv\u00E9 ou rejet\u00E9",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{ModerationComment}": {
+          "title": "Commentaires associ\u00E9s \u00E0 l\u2019approbation de contenu de cet \u00E9l\u00E9ment de liste",
+          "description": "Commentaires associ\u00E9s \u00E0 la mod\u00E9ration de l\u2019\u00E9l\u00E9ment de liste.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{ContentType}#Id": {
+          "title": "Type de contenu Id",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "{ContentType}": {
+          "title": "Type de contenu",
+          "description": "Nom du type de contenu de l\u2019\u00E9l\u00E9ment.",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "none",
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Id": {
+              "title": "Id",
+              "type": "string",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "4651e8f2-38c9-4ad0-8def-41f743f76f30"
+                },
+                "value-path": "Id",
+                "value-title": "Name",
+                "value-collection": "value"
+              }
+            },
+            "Name": {
+              "title": "Name",
+              "type": "string",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "Name"
+          }
+        },
+        "{HasAttachments}": {
+          "title": "Comporte des pi\u00E8ces jointes",
+          "description": "Indique la pr\u00E9sence de pi\u00E8ces jointes dans l\u2019\u00E9l\u00E9ment.",
+          "type": "boolean",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{Attachments}@odata.type": {
+          "title": "{Attachments}",
+          "type": "string",
+          "x-ms-visibility": "internal",
+          "x-ms-permission": "read-write"
+        },
+        "{Attachments}": {
+          "title": "Pi\u00E8ces jointes",
+          "description": "Ne renvoie jamais de donn\u00E9es. Utilisez les points de terminaison de pi\u00E8ces jointes pour acc\u00E9der aux pi\u00E8ces jointes des \u00E9l\u00E9ments.",
+          "x-ms-permission": "read-write",
+          "targetEntity": "attachments",
+          "format": "x-ms-containedMediaEntity",
+          "x-ms-visibility": "internal",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "format": "x-ms-mediaEntity",
+            "x-ms-sort": "none",
+            "properties": {
+              "@odata.type": {
+                "title": "@odata.type",
+                "x-ms-visibility": "internal",
+                "type": "string",
+                "x-ms-permission": "read-write"
+              },
+              "Id": {
+                "title": "Id",
+                "type": "string",
+                "x-ms-keyType": "primary",
+                "x-ms-keyOrder": 1,
+                "x-ms-permission": "read-only"
+              },
+              "AbsoluteUri": {
+                "title": "AbsoluteUri",
+                "type": "string",
+                "format": "uri",
+                "x-ms-permission": "read-only"
+              },
+              "DisplayName": {
+                "title": "DisplayName",
+                "type": "string",
+                "x-ms-permission": "read-only"
+              }
+            }
+          },
+          "@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListItemAttachment)"
+        },
+        "{VersionNumber}": {
+          "title": "Num\u00E9ro de version",
+          "description": "Num\u00E9ro de version du fichier ou de l\u2019\u00E9l\u00E9ment de liste.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{TriggerWindowStartToken}": {
+          "title": "Jeton de d\u00E9marrage de la fen\u00EAtre du d\u00E9clencheur",
+          "description": "Jeton exprimant l\u2019heure de la derni\u00E8re v\u00E9rification de flux. Utilisez cette option si vous voulez v\u00E9rifier si une ou plusieurs colonnes ont \u00E9t\u00E9 modifi\u00E9es depuis le dernier contr\u00F4le de flux.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        },
+        "{TriggerWindowEndToken}": {
+          "title": "Jeton de fin de la fen\u00EAtre du d\u00E9clencheur",
+          "description": "Jeton exprimant l\u2019heure de la v\u00E9rification de flux actuelle. Utilisez cette option si vous voulez v\u00E9rifier si une ou plusieurs colonnes ont \u00E9t\u00E9 modifi\u00E9es depuis le dernier contr\u00F4le de flux.",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "none"
+        }
+      },
+      "x-ms-relationships": {
+        "Statut": {
+          "targetEntity": "Statut",
+          "referentialConstraints": {
+            "Statut#Id": {
+              "referencedProperty": "Id"
+            }
+          }
+        },
+        "Typedaction": {
+          "targetEntity": "Typedaction",
+          "referentialConstraints": {
+            "Typedaction#Id": {
+              "referencedProperty": "Id"
+            }
+          }
+        },
+        "Author": {
+          "targetEntity": "Author",
+          "referentialConstraints": {
+            "Author#Claims": {
+              "referencedProperty": "Claims"
+            }
+          }
+        },
+        "Collegueayantprispart": {
+          "targetEntity": "Collegueayantprispart",
+          "referentialConstraints": {
+            "Collegueayantprispart#Claims": {
+              "referencedProperty": "Claims"
+            }
+          }
+        },
+        "Editor": {
+          "targetEntity": "Editor",
+          "referentialConstraints": {
+            "Editor#Claims": {
+              "referencedProperty": "Claims"
+            }
+          }
+        },
+        "{ContentType}": {
+          "targetEntity": "4651e8f2-38c9-4ad0-8def-41f743f76f30",
+          "referentialConstraints": {
+            "{ContentType}#Id": {
+              "referencedProperty": "Id"
+            }
+          }
+        }
+      },
+      "x-ms-displayFormat": {
+        "propertiesDisplayOrder": [
+          "Title",
+          "Statut",
+          "Typedaction",
+          "DatePlanification",
+          "DateExc_x00e9_cution",
+          "Matricule",
+          "DateprochaineAction",
+          "NomClient",
+          "NombreActionPlaniif_x00e9_",
+          "Origineimpay_x00e9_",
+          "Collegueayantprispart",
+          "Lienpi_x00e8_cejointe",
+          "EmailGFC",
+          "{Attachments}"
+        ],
+        "propertiesCompactDisplayOrder": [
+          "Title",
+          "Statut",
+          "Typedaction",
+          "DatePlanification",
+          "DateExc_x00e9_cution",
+          "Matricule",
+          "Created",
+          "Author",
+          "DateprochaineAction",
+          "NomClient",
+          "NombreActionPlaniif_x00e9_",
+          "Origineimpay_x00e9_",
+          "Collegueayantprispart",
+          "Lienpi_x00e8_cejointe",
+          "Modified",
+          "EmailGFC"
+        ],
+        "propertiesTabularDisplayOrder": [
+          "Title",
+          "Statut",
+          "Typedaction",
+          "DatePlanification",
+          "DateExc_x00e9_cution",
+          "Matricule",
+          "Created",
+          "Author",
+          "DateprochaineAction",
+          "NomClient",
+          "NombreActionPlaniif_x00e9_",
+          "Origineimpay_x00e9_",
+          "Collegueayantprispart",
+          "Lienpi_x00e8_cejointe",
+          "Modified",
+          "EmailGFC"
+        ]
+      }
+    }
+  },
+  "referencedEntities": {
+    "Statut": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/Statut",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "Typedaction": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/Typedaction",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "Author": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/Author",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "Collegueayantprispart": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/Collegueayantprispart",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "Editor": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/Editor",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
+      "lookupEndpoint": {
+        "path": "/tables/4e73ebaf-faa0-4655-8b1a-86db749dbdcf/entities/%257bContentType%257d",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    }
+  },
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales/Lists/Action Recouvrement/AllItems.aspx"
+}

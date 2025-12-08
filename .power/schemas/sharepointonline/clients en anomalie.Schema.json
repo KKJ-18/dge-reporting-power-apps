@@ -1,12 +1,11 @@
 {
-  "name": "aa6f2e72-1797-4fd8-a444-dbf91c06ef2d",
-  "title": "SuiviAnomalies",
+  "name": "fc5ef975-e295-4bf9-824d-86dc1a4c6ad0",
+  "title": "Clients en Anomalie",
   "x-ms-permission": "read-write",
   "x-ms-capabilities": {
     "sortRestrictions": {
       "sortable": true,
       "unsortableProperties": [
-        "OrigineAnomalie",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -28,7 +27,6 @@
     "filterRestrictions": {
       "filterable": true,
       "nonFilterableProperties": [
-        "OrigineAnomalie",
         "{Identifier}",
         "{IsFolder}",
         "{Thumbnail}",
@@ -73,7 +71,7 @@
       "properties": {
         "ID": {
           "title": "ID",
-          "description": "List item id. Use this value for specifying the item to act on in other list related actions.",
+          "description": "ID de l\u2019\u00E9l\u00E9ment de liste. Utilisez cette valeur pour sp\u00E9cifier l\u2019\u00E9l\u00E9ment sur lequel agir dans les autres actions li\u00E9es \u00E0 la liste.",
           "type": "integer",
           "format": "int64",
           "x-ms-keyType": "primary",
@@ -99,71 +97,8 @@
           },
           "maxLength": 255
         },
-        "OrigineAnomalie": {
-          "title": "OrigineAnomalie",
-          "type": "string",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "none"
-        },
-        "NombreClient": {
-          "title": "NombreClient",
-          "type": "number",
-          "format": "double",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
-        },
-        "VolumeGlobalEngagement": {
-          "title": "VolumeGlobalEngagement",
-          "type": "number",
-          "format": "double",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
-        },
-        "VolumeAnomalie": {
-          "title": "VolumeAnomalie",
-          "type": "number",
-          "format": "double",
-          "x-ms-permission": "read-write",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          },
-          "maximum": 1.7976931348623157E+308,
-          "minimum": -1.7976931348623157E+308
-        },
-        "Agence": {
-          "title": "Agence",
+        "Matricule": {
+          "title": "Matricule",
           "type": "string",
           "x-ms-permission": "read-write",
           "x-ms-sort": "asc,desc",
@@ -175,9 +110,240 @@
           },
           "maxLength": 255
         },
-        "Created": {
-          "title": "Created",
-          "description": "When this item was created.",
+        "EmailGFC": {
+          "title": "EmailGFC",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Nomagence": {
+          "title": "Nom agence",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Montant": {
+          "title": "Montant",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "P_x00e9_riodicit_x00e9_": {
+          "title": "P\u00E9riodicit\u00E9",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Date": {
+          "title": "Date",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "StatutAction#Id": {
+          "title": "Statut Action Id",
+          "type": "integer",
+          "format": "int64",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "StatutAction": {
+          "title": "Statut Action",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "x-ms-sp": {
+              "IsChoice": true
+            },
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Value": {
+              "title": "Value",
+              "type": "string",
+              "default": "Aucun",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "d0cfb3cf-b1d5-4f20-810d-94ec153274b9"
+                },
+                "value-path": "Value",
+                "value-title": "Value",
+                "value-collection": "value"
+              }
+            },
+            "Id": {
+              "title": "Id",
+              "type": "integer",
+              "format": "int64",
+              "x-ms-visibility": "internal",
+              "default": 0,
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "Value"
+          }
+        },
+        "TypeClient": {
+          "title": "Type Client",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Typedossier": {
+          "title": "Type dossier",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "TotalSains": {
+          "title": "Total Sains",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "TotalTr_x00e9_sorerie": {
+          "title": "Total Tr\u00E9sorerie",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "TotalNPL": {
+          "title": "Total NPL",
+          "type": "number",
+          "format": "double",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          },
+          "maximum": 1.7976931348623157E+308,
+          "minimum": -1.7976931348623157E+308
+        },
+        "NomGFC": {
+          "title": "Nom GFC",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Modified": {
+          "title": "Modifi\u00E9",
+          "description": "Date de derni\u00E8re modification de cet \u00E9l\u00E9ment.",
           "type": "string",
           "format": "date-time",
           "x-ms-permission": "read-only",
@@ -193,16 +359,47 @@
             ]
           }
         },
-        "Author#Claims": {
-          "title": "Created By Claims",
+        "Created": {
+          "title": "Cr\u00E9\u00E9",
+          "description": "Date de cr\u00E9ation de cet \u00E9l\u00E9ment.",
           "type": "string",
-          "description": "Internal identifier for the user who created this item.",
+          "format": "date-time",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "Numerodossier": {
+          "title": "Numero dossier",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Author#Claims": {
+          "title": "Cr\u00E9\u00E9 par Claims",
+          "type": "string",
+          "description": "Identificateur interne de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
           "x-ms-permission": "read-only",
           "x-ms-visibility": "internal"
         },
         "Author": {
-          "title": "Created By",
-          "description": "The user who created this item.",
+          "title": "Cr\u00E9\u00E9 par",
+          "description": "Utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
           "type": "object",
           "x-ms-permission": "read-only",
           "x-ms-sort": "asc,desc",
@@ -221,7 +418,7 @@
             "Claims": {
               "title": "Claims",
               "type": "string",
-              "description": "Internal identifier for the user who created this item.",
+              "description": "Identificateur interne de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "x-ms-permission": "read-only",
               "x-ms-dynamic-values": {
                 "operationId": "GetEntityValues",
@@ -242,7 +439,7 @@
             "DisplayName": {
               "title": "DisplayName",
               "type": "string",
-              "description": "The name of the user who created this item.",
+              "description": "Nom de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "x-ms-permission": "read-only",
               "x-ms-capabilities": {
                 "x-ms-sp": {
@@ -257,7 +454,7 @@
             "Email": {
               "title": "Email",
               "type": "string",
-              "description": "Email address of the user who created this item.",
+              "description": "Adresse de courrier de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "format": "email",
               "x-ms-permission": "read-only",
               "x-ms-capabilities": {
@@ -273,23 +470,23 @@
             "Picture": {
               "title": "Picture",
               "type": "string",
-              "description": "Link to a picture of the user who created this item.",
+              "description": "Cr\u00E9er un lien vers une image de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "format": "uri",
               "x-ms-media-kind": "image",
-              "x-ms-media-default-folder-path": "/sites/DGEReportingActivity",
-              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity",
+              "x-ms-media-default-folder-path": "/sites/Reportingdesactivitscommerciales",
+              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales",
               "x-ms-permission": "read-only"
             },
             "Department": {
               "title": "Department",
               "type": "string",
-              "description": "Department name of the user who created this item.",
+              "description": "Nom du service de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "x-ms-permission": "read-only"
             },
             "JobTitle": {
               "title": "JobTitle",
               "type": "string",
-              "description": "Job title of the user who created this item.",
+              "description": "Poste de l\u2019utilisateur qui a cr\u00E9\u00E9 cet \u00E9l\u00E9ment.",
               "x-ms-permission": "read-only"
             }
           },
@@ -299,60 +496,16 @@
             "thumbnailProperty": "Picture"
           }
         },
-        "OData__ColorTag": {
-          "title": "Color Tag",
-          "type": "string",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "startswith"
-            ]
-          },
-          "maxLength": 255
-        },
-        "ComplianceAssetId": {
-          "title": "Compliance Asset Id",
-          "type": "string",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "startswith"
-            ]
-          },
-          "maxLength": 255
-        },
-        "Modified": {
-          "title": "Modified",
-          "description": "When this item was last changed.",
-          "type": "string",
-          "format": "date-time",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          }
-        },
         "Editor#Claims": {
-          "title": "Modified By Claims",
+          "title": "Modifi\u00E9 par Claims",
           "type": "string",
-          "description": "Internal identifier for the user who last changed this item.",
+          "description": "Identificateur interne de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
           "x-ms-permission": "read-only",
           "x-ms-visibility": "internal"
         },
         "Editor": {
-          "title": "Modified By",
-          "description": "The user who last changed this item.",
+          "title": "Modifi\u00E9 par",
+          "description": "Utilisateur ayant modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
           "type": "object",
           "x-ms-permission": "read-only",
           "x-ms-sort": "asc,desc",
@@ -371,7 +524,7 @@
             "Claims": {
               "title": "Claims",
               "type": "string",
-              "description": "Internal identifier for the user who last changed this item.",
+              "description": "Identificateur interne de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "x-ms-permission": "read-only",
               "x-ms-dynamic-values": {
                 "operationId": "GetEntityValues",
@@ -392,7 +545,7 @@
             "DisplayName": {
               "title": "DisplayName",
               "type": "string",
-              "description": "The name of the user who last changed this item.",
+              "description": "Nom de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "x-ms-permission": "read-only",
               "x-ms-capabilities": {
                 "x-ms-sp": {
@@ -407,7 +560,7 @@
             "Email": {
               "title": "Email",
               "type": "string",
-              "description": "Email address of the user who last changed this item.",
+              "description": "Adresse de courrier de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "format": "email",
               "x-ms-permission": "read-only",
               "x-ms-capabilities": {
@@ -423,23 +576,23 @@
             "Picture": {
               "title": "Picture",
               "type": "string",
-              "description": "Link to a picture of the user who last changed this item.",
+              "description": "Cr\u00E9er un lien vers une image de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "format": "uri",
               "x-ms-media-kind": "image",
-              "x-ms-media-default-folder-path": "/sites/DGEReportingActivity",
-              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity",
+              "x-ms-media-default-folder-path": "/sites/Reportingdesactivitscommerciales",
+              "x-ms-media-base-url": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales",
               "x-ms-permission": "read-only"
             },
             "Department": {
               "title": "Department",
               "type": "string",
-              "description": "Department name of the user who last changed this item.",
+              "description": "Nom du service de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "x-ms-permission": "read-only"
             },
             "JobTitle": {
               "title": "JobTitle",
               "type": "string",
-              "description": "Job title of the user who last changed this item.",
+              "description": "Poste de l\u2019utilisateur qui a modifi\u00E9 cet \u00E9l\u00E9ment en dernier.",
               "x-ms-permission": "read-only"
             }
           },
@@ -449,23 +602,62 @@
             "thumbnailProperty": "Picture"
           }
         },
+        "R_x00e9_seau": {
+          "title": "R\u00E9seau",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "OData__ColorTag": {
+          "title": "Balise de couleur",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "ComplianceAssetId": {
+          "title": "ID de ressource de conformit\u00E9",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
         "{Identifier}": {
-          "title": "Identifier",
-          "description": "Value that can be used in file related actions for selecting a file.",
+          "title": "Identificateur",
+          "description": "Valeur qui peut \u00EAtre utilis\u00E9e dans des actions li\u00E9es au fichier dans le cadre de la s\u00E9lection d\u2019un fichier.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{IsFolder}": {
-          "title": "IsFolder",
-          "description": "True when the item is a folder, false otherwise.",
+          "title": "EstUnDossier",
+          "description": "True si l\u2019\u00E9l\u00E9ment est un dossier, false dans le cas contraire.",
           "type": "boolean",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{Thumbnail}": {
-          "title": "Thumbnail",
-          "description": "URL to the thumbnails of the item in 3 different sizes, if available.",
+          "title": "Miniature",
+          "description": "URL vers les miniatures de l\u2019\u00E9l\u00E9ment dans 3\u00A0tailles diff\u00E9rentes, le cas \u00E9ch\u00E9ant.",
           "type": "object",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none",
@@ -479,81 +671,81 @@
             "Small": {
               "title": "Small",
               "type": "string",
-              "description": "URL to the small, highly compressed size thumbnail of the item, if available.",
+              "description": "URL vers une miniature pr\u00E9sentant une version fortement compress\u00E9e de l\u2019\u00E9l\u00E9ment, si cela est possible.",
               "x-ms-permission": "read-only"
             },
             "Medium": {
               "title": "Medium",
               "type": "string",
-              "description": "URL to the standard size thumbnail of the item, if available.",
+              "description": "URL vers la miniature de taille standard de l\u2019\u00E9l\u00E9ment, le cas \u00E9ch\u00E9ant.",
               "x-ms-permission": "read-only"
             },
             "Large": {
               "title": "Large",
               "type": "string",
-              "description": "URL to the largest size thumbnail of the item, if available.",
+              "description": "URL vers la miniature la plus grande de l\u2019\u00E9l\u00E9ment, le cas \u00E9ch\u00E9ant.",
               "x-ms-permission": "read-only"
             }
           }
         },
         "{Link}": {
-          "title": "Link to item",
-          "description": "Link that can be used to get to the file or list item. Only people with permissions to the item will be able to open the link.",
+          "title": "Lien vers l\u2019\u00E9l\u00E9ment",
+          "description": "Lien qui peut \u00EAtre utilis\u00E9 pour acc\u00E9der au fichier ou \u00E0 l\u2019\u00E9l\u00E9ment de liste. Seules les personnes disposant des autorisations d\u2019acc\u00E8s \u00E0 l\u2019\u00E9l\u00E9ment pourront ouvrir le lien.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{Name}": {
-          "title": "Name",
-          "description": "File name of the item in document libraries, display name of the item in lists.",
+          "title": "Nom",
+          "description": "Nom de fichier de l\u2019\u00E9l\u00E9ment dans les biblioth\u00E8ques de documents, nom complet de l\u2019\u00E9l\u00E9ment dans les listes.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{FilenameWithExtension}": {
-          "title": "File name with extension",
-          "description": "For libraries, returns file name including extension. For lists, returns the title property.",
+          "title": "Nom de fichier avec l\u2019extension",
+          "description": "Pour les biblioth\u00E8ques, renvoie le nom du fichier sans l\u2019extension. Pour les listes, renvoie la propri\u00E9t\u00E9 de titre.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{Path}": {
-          "title": "Folder path",
-          "description": "Path to the folder the item is in, relative to the site address.",
+          "title": "Chemin d\u2019acc\u00E8s au dossier",
+          "description": "Chemin d\u2019acc\u00E8s au dossier dans lequel se trouve l\u2019\u00E9l\u00E9ment, relatif \u00E0 l\u2019adresse du site.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{FullPath}": {
-          "title": "Full Path",
-          "description": "Full path of an item or a folder or a file",
+          "title": "Chemin d\u0027acc\u00E8s complet",
+          "description": "Chemin d\u2019acc\u00E8s complet d\u2019un \u00E9l\u00E9ment, d\u2019un dossier ou d\u2019un fichier",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{ModerationStatus}": {
-          "title": "Content approval status",
-          "description": "The content approval status. It can be one of the following: Draft, Pending, Approved, or Rejected",
+          "title": "\u00C9tat d\u2019approbation du contenu",
+          "description": "\u00C9tat d\u2019approbation du contenu. Il peut s\u2019agir d\u2019une des options suivantes: brouillon, en attente, approuv\u00E9 ou rejet\u00E9",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{ModerationComment}": {
-          "title": "Comments associated with the content approval of this list item",
-          "description": "The comments associated with moderation of the list item.",
+          "title": "Commentaires associ\u00E9s \u00E0 l\u2019approbation de contenu de cet \u00E9l\u00E9ment de liste",
+          "description": "Commentaires associ\u00E9s \u00E0 la mod\u00E9ration de l\u2019\u00E9l\u00E9ment de liste.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{ContentType}#Id": {
-          "title": "Content type Id",
+          "title": "Type de contenu Id",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-visibility": "internal"
         },
         "{ContentType}": {
-          "title": "Content type",
-          "description": "Name of the Content type of the item.",
+          "title": "Type de contenu",
+          "description": "Nom du type de contenu de l\u2019\u00E9l\u00E9ment.",
           "type": "object",
           "x-ms-permission": "read-write",
           "x-ms-sort": "none",
@@ -594,8 +786,8 @@
           }
         },
         "{HasAttachments}": {
-          "title": "Has attachments",
-          "description": "Indicates the presence of attachments in the item.",
+          "title": "Comporte des pi\u00E8ces jointes",
+          "description": "Indique la pr\u00E9sence de pi\u00E8ces jointes dans l\u2019\u00E9l\u00E9ment.",
           "type": "boolean",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
@@ -607,8 +799,8 @@
           "x-ms-permission": "read-write"
         },
         "{Attachments}": {
-          "title": "Attachments",
-          "description": "Never returns any data. Use Attachment endpoints to access item attachments.",
+          "title": "Pi\u00E8ces jointes",
+          "description": "Ne renvoie jamais de donn\u00E9es. Utilisez les points de terminaison de pi\u00E8ces jointes pour acc\u00E9der aux pi\u00E8ces jointes des \u00E9l\u00E9ments.",
           "x-ms-permission": "read-write",
           "targetEntity": "attachments",
           "format": "x-ms-containedMediaEntity",
@@ -648,28 +840,36 @@
           "@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListItemAttachment)"
         },
         "{VersionNumber}": {
-          "title": "Version number",
-          "description": "The version number of the file or the list item.",
+          "title": "Num\u00E9ro de version",
+          "description": "Num\u00E9ro de version du fichier ou de l\u2019\u00E9l\u00E9ment de liste.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{TriggerWindowStartToken}": {
-          "title": "Trigger Window Start Token",
-          "description": "A token expressing the time of the last flow check. Use this if you want to check if one or more columns were modified since the last flow check.",
+          "title": "Jeton de d\u00E9marrage de la fen\u00EAtre du d\u00E9clencheur",
+          "description": "Jeton exprimant l\u2019heure de la derni\u00E8re v\u00E9rification de flux. Utilisez cette option si vous voulez v\u00E9rifier si une ou plusieurs colonnes ont \u00E9t\u00E9 modifi\u00E9es depuis le dernier contr\u00F4le de flux.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         },
         "{TriggerWindowEndToken}": {
-          "title": "Trigger Window End Token",
-          "description": "A token expressing the time of the current flow check. Use this if you want to check if one or more columns were modified since the last flow check.",
+          "title": "Jeton de fin de la fen\u00EAtre du d\u00E9clencheur",
+          "description": "Jeton exprimant l\u2019heure de la v\u00E9rification de flux actuelle. Utilisez cette option si vous voulez v\u00E9rifier si une ou plusieurs colonnes ont \u00E9t\u00E9 modifi\u00E9es depuis le dernier contr\u00F4le de flux.",
           "type": "string",
           "x-ms-permission": "read-only",
           "x-ms-sort": "none"
         }
       },
       "x-ms-relationships": {
+        "StatutAction": {
+          "targetEntity": "StatutAction",
+          "referentialConstraints": {
+            "StatutAction#Id": {
+              "referencedProperty": "Id"
+            }
+          }
+        },
         "Author": {
           "targetEntity": "Author",
           "referentialConstraints": {
@@ -698,40 +898,85 @@
       "x-ms-displayFormat": {
         "propertiesDisplayOrder": [
           "Title",
-          "OrigineAnomalie",
-          "NombreClient",
-          "VolumeGlobalEngagement",
-          "VolumeAnomalie",
-          "Agence",
+          "Matricule",
+          "EmailGFC",
+          "Nomagence",
+          "Montant",
+          "P_x00e9_riodicit_x00e9_",
+          "Date",
+          "StatutAction",
+          "TypeClient",
+          "Typedossier",
+          "TotalSains",
+          "TotalTr_x00e9_sorerie",
+          "TotalNPL",
+          "NomGFC",
+          "Numerodossier",
+          "R_x00e9_seau",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
           "Title",
-          "OrigineAnomalie",
-          "NombreClient",
-          "VolumeGlobalEngagement",
-          "VolumeAnomalie",
-          "Agence",
+          "Matricule",
+          "EmailGFC",
+          "Nomagence",
+          "Montant",
+          "P_x00e9_riodicit_x00e9_",
+          "Date",
+          "StatutAction",
+          "TypeClient",
+          "Typedossier",
+          "TotalSains",
+          "TotalTr_x00e9_sorerie",
+          "TotalNPL",
+          "NomGFC",
+          "Modified",
           "Created",
-          "Author"
+          "Numerodossier",
+          "ID",
+          "Author",
+          "Editor",
+          "R_x00e9_seau"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
-          "OrigineAnomalie",
-          "NombreClient",
-          "VolumeGlobalEngagement",
-          "VolumeAnomalie",
-          "Agence",
+          "Matricule",
+          "EmailGFC",
+          "Nomagence",
+          "Montant",
+          "P_x00e9_riodicit_x00e9_",
+          "Date",
+          "StatutAction",
+          "TypeClient",
+          "Typedossier",
+          "TotalSains",
+          "TotalTr_x00e9_sorerie",
+          "TotalNPL",
+          "NomGFC",
+          "Modified",
           "Created",
-          "Author"
+          "Numerodossier",
+          "ID",
+          "Author",
+          "Editor",
+          "R_x00e9_seau"
         ]
       }
     }
   },
   "referencedEntities": {
+    "StatutAction": {
+      "lookupEndpoint": {
+        "path": "/tables/fc5ef975-e295-4bf9-824d-86dc1a4c6ad0/entities/StatutAction",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
     "Author": {
       "lookupEndpoint": {
-        "path": "/tables/aa6f2e72-1797-4fd8-a444-dbf91c06ef2d/entities/Author",
+        "path": "/tables/fc5ef975-e295-4bf9-824d-86dc1a4c6ad0/entities/Author",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -740,7 +985,7 @@
     },
     "Editor": {
       "lookupEndpoint": {
-        "path": "/tables/aa6f2e72-1797-4fd8-a444-dbf91c06ef2d/entities/Editor",
+        "path": "/tables/fc5ef975-e295-4bf9-824d-86dc1a4c6ad0/entities/Editor",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -749,7 +994,7 @@
     },
     "4651e8f2-38c9-4ad0-8def-41f743f76f30": {
       "lookupEndpoint": {
-        "path": "/tables/aa6f2e72-1797-4fd8-a444-dbf91c06ef2d/entities/%257bContentType%257d",
+        "path": "/tables/fc5ef975-e295-4bf9-824d-86dc1a4c6ad0/entities/%257bContentType%257d",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false
@@ -757,5 +1002,5 @@
       }
     }
   },
-  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/DGEReportingActivity/Lists/SuiviAnomalies/AllItems.aspx"
+  "webUrl": "https://afrilandfirstbankcmr.sharepoint.com/sites/Reportingdesactivitscommerciales/Lists/Clients en Anomalie/AllItems.aspx"
 }

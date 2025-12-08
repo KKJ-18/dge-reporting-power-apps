@@ -48,7 +48,9 @@
         "accords",
         "contrats",
         "detailsurmepclient",
-        "volumeprovisions"
+        "volumeprovisions",
+        "action recouvrement",
+        "clients en anomalie"
       ],
       "authenticationType": null,
       "sharedConnectionId": null,
@@ -135,6 +137,16 @@
             },
             "volumeprovisions": {
               "tableName": "5aff8808-67d4-46d9-ab47-e7b9f82bf6a8"
+            }
+          }
+        },
+        "https%253A%252F%252Fafrilandfirstbankcmr.sharepoint.com%252Fsites%252FReportingdesactivitscommerciales": {
+          "dataSources": {
+            "action recouvrement": {
+              "tableName": "4e73ebaf-faa0-4655-8b1a-86db749dbdcf"
+            },
+            "clients en anomalie": {
+              "tableName": "fc5ef975-e295-4bf9-824d-86dc1a4c6ad0"
             }
           }
         }
