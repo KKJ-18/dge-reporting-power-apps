@@ -63,6 +63,8 @@ const CATEGORY_TO_DEPARTMENT: Record<string, 'DA' | 'DSE' | 'DPNP'> = {
   'Suivi des provisions': 'DPNP',
   'Recherche clients en anomalie à l\'étranger': 'DPNP',
   'Recherche clients en anomalie à l\u2019étranger': 'DPNP',  // Apostrophe typographique (U+2019)
+  'Suivi des actions de recouvrement pour les GFC': 'DPNP',
+  'Suivi des actions de recouvrements pour les GFC': 'DPNP',  // Variante avec 's' au pluriel
   
   // ========================================
   // "Activités annexes" est commune à TOUS les départements
@@ -98,6 +100,8 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Suivi des provisions': '💼',
   'Recherche clients en anomalie à l\'étranger': '🌍',
   'Recherche clients en anomalie à l\u2019étranger': '🌍',  // Apostrophe typographique (U+2019)
+  'Suivi des actions de recouvrement pour les GFC': '📋',
+  'Suivi des actions de recouvrements pour les GFC': '📋',  // Variante avec 's' au pluriel
   
   // Commun à tous les départements
   'Activités annexes': '📎',

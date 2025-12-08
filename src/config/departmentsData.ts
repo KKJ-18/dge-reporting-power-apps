@@ -135,6 +135,15 @@ const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
       ]
     },
     {
+      id: 'suivi-recouvrement-gfc',
+      name: 'Suivi des actions de recouvrement pour les GFC',
+      icon: '📋',
+      activities: [
+        { id: 'recherche-clients', label: 'Rechercher clients en anomalie', frequency: 'Journalière' },
+        { id: 'actions-recouvrement', label: 'Enregistrer actions de recouvrement', frequency: 'Journalière' },
+      ]
+    },
+    {
       id: 'activites-annexes',
       name: 'Activités annexes',
       icon: '📎',

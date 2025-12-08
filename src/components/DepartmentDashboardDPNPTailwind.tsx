@@ -14,6 +14,7 @@ import FormVolumeProvisions from './forms/FormVolumeProvisions';
 import FormRechercherClientAnomalie from './forms/FormRechercherClientAnomalie';
 import FormVisiteClientele from './forms/FormVisiteClientele';
 import FormActivitesAnnexes from './forms/FormActivitesAnnexes';
+import SuiviRecouvrementGFC from './SuiviRecouvrementGFC';
 
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
 
@@ -104,8 +105,21 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
   const [selectedActivity, setSelectedActivity] = useState<ActivityItem | null>(null);
   const [showActivitiesModal, setShowActivitiesModal] = useState(false);
   const [showActivityFormModal, setShowActivityFormModal] = useState(false);
+  const [showRecouvrementView, setShowRecouvrementView] = useState(false);
 
   const handleCategoryClick = (category: CategoryData) => {
+    // Vérifier si c'est la catégorie "Suivi des actions de recouvrement pour les GFC"
+    console.log('🔍 Catégorie cliquée:', { id: category.id, name: category.name });
+    
+    if (category.id === 'suivi-recouvrement-gfc' || 
+        category.id === 'suivi-des-actions-de-recouvrement-pour-les-gfc' ||
+        category.name === 'Suivi des actions de recouvrement pour les GFC' ||
+        category.name.toLowerCase().includes('suivi des actions de recouvrement')) {
+      console.log('✅ Redirection vers SuiviRecouvrementGFC');
+      setShowRecouvrementView(true);
+      return;
+    }
+    
     setSelectedCategory(category);
     setShowActivitiesModal(true);
   };
@@ -175,6 +189,11 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
         );
     }
   };
+
+  // Afficher SuiviRecouvrementGFC si sélectionné
+  if (showRecouvrementView) {
+    return <SuiviRecouvrementGFC onClose={() => setShowRecouvrementView(false)} />;
+  }
 
   return (
     <DepartmentFormWrapper departmentColor={department.color}>

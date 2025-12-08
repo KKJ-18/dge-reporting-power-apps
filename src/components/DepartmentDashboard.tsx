@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DepartmentData, CategoryData, ActivityItem } from '../config/departmentsData';
 import { UserProfile } from '../services/UserProfileService';
 import Modal from './Modal';
+import SuiviRecouvrementGFC from './SuiviRecouvrementGFC';
 import './DepartmentDashboard.css';
 
 interface DepartmentDashboardProps {
@@ -23,6 +24,7 @@ interface ActivityEntry {
 const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({ department, userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showRecouvrementView, setShowRecouvrementView] = useState(false);
   const [currentPeriod, setCurrentPeriod] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -32,6 +34,18 @@ const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({ department, u
   const [error, setError] = useState<string | null>(null);
 
   const handleCategoryClick = (category: CategoryData) => {
+    // Vérifier si c'est la catégorie "Suivi des actions de recouvrement pour les GFC"
+    console.log('🔍 Catégorie cliquée:', { id: category.id, name: category.name });
+    
+    if (category.id === 'suivi-recouvrement-gfc' || 
+        category.id === 'suivi-des-actions-de-recouvrement-pour-les-gfc' ||
+        category.name === 'Suivi des actions de recouvrement pour les GFC' ||
+        category.name.toLowerCase().includes('suivi des actions de recouvrement')) {
+      console.log('✅ Redirection vers SuiviRecouvrementGFC');
+      setShowRecouvrementView(true);
+      return;
+    }
+    
     setSelectedCategory(category);
     setIsModalOpen(true);
     setError(null);
@@ -161,132 +175,139 @@ const DepartmentDashboard: React.FC<DepartmentDashboardProps> = ({ department, u
 
   return (
     <div className="department-dashboard">
-      {/* Header */}
-      <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
-        <div className="header-content">
-          <div className="header-icon" style={{ backgroundColor: `${department.color}15` }}>
-            <span style={{ fontSize: '3rem' }}>{department.icon}</span>
-          </div>
-          <div className="header-info">
-            <h1 className="dashboard-title">{department.fullName}</h1>
-            <p className="dashboard-subtitle">
-              {department.categories.length} catégories • {' '}
-              {department.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités
-            </p>
-          </div>
-        </div>
-        
-        <div className="period-selector">
-          <label htmlFor="period">Période de reporting:</label>
-          <input
-            type="month"
-            id="period"
-            value={currentPeriod}
-            onChange={(e) => setCurrentPeriod(e.target.value)}
-            className="period-input"
-          />
-        </div>
-      </div>
-
-      {/* Categories Grid */}
-      <div className="categories-grid">
-        {department.categories.map((category) => (
-          <div
-            key={category.id}
-            className="category-card"
-            onClick={() => handleCategoryClick(category)}
-            style={{ borderTopColor: department.color }}
-          >
-            <div className="category-header">
-              <span className="category-icon">{category.icon}</span>
-              <h3 className="category-name">{category.name}</h3>
+      {/* Afficher la vue de suivi de recouvrement si sélectionnée */}
+      {showRecouvrementView ? (
+        <SuiviRecouvrementGFC onClose={() => setShowRecouvrementView(false)} />
+      ) : (
+        <>
+          {/* Header */}
+          <div className="dashboard-header" style={{ borderLeftColor: department.color }}>
+            <div className="header-content">
+              <div className="header-icon" style={{ backgroundColor: `${department.color}15` }}>
+                <span style={{ fontSize: '3rem' }}>{department.icon}</span>
+              </div>
+              <div className="header-info">
+                <h1 className="dashboard-title">{department.fullName}</h1>
+                <p className="dashboard-subtitle">
+                  {department.categories.length} catégories • {' '}
+                  {department.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités
+                </p>
+              </div>
             </div>
             
-            <div className="category-stats">
-              <div className="stat-item">
-                <span className="stat-value">{category.activities.length}</span>
-                <span className="stat-label">Activités</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-value">0</span>
-                <span className="stat-label">Saisies</span>
-              </div>
-            </div>
-
-            <div className="category-footer">
-              <button className="btn-view-category">
-                📝 Saisir les données
-              </button>
+            <div className="period-selector">
+              <label htmlFor="period">Période de reporting:</label>
+              <input
+                type="month"
+                id="period"
+                value={currentPeriod}
+                onChange={(e) => setCurrentPeriod(e.target.value)}
+                className="period-input"
+              />
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Modal pour la saisie des activités */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedCategory ? `${selectedCategory.icon} ${selectedCategory.name}` : ''}
-        size="lg"
-      >
-        <form onSubmit={handleSubmit} className="activity-form">
-          {error && (
-            <div className="alert alert-error">
-              <span>⚠️ {error}</span>
-              <button type="button" onClick={() => setError(null)}>✕</button>
-            </div>
-          )}
+          {/* Categories Grid */}
+          <div className="categories-grid">
+            {department.categories.map((category) => (
+              <div
+                key={category.id}
+                className="category-card"
+                onClick={() => handleCategoryClick(category)}
+                style={{ borderTopColor: department.color }}
+              >
+                <div className="category-header">
+                  <span className="category-icon">{category.icon}</span>
+                  <h3 className="category-name">{category.name}</h3>
+                </div>
+                
+                <div className="category-stats">
+                  <div className="stat-item">
+                    <span className="stat-value">{category.activities.length}</span>
+                    <span className="stat-label">Activités</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-value">0</span>
+                    <span className="stat-label">Saisies</span>
+                  </div>
+                </div>
 
-          <div className="form-period-info">
-            <span className="period-badge">
-              📅 Période: {new Date(currentPeriod + '-01').toLocaleDateString('fr-FR', { 
-                month: 'long', 
-                year: 'numeric' 
-              })}
-            </span>
-          </div>
-
-          <div className="activities-list">
-            {selectedCategory?.activities.map((activity, index) => (
-              <div key={activity.id} className="activity-item">
-                <label className="activity-label">
-                  <span className="activity-number">{index + 1}.</span>
-                  {activity.label}
-                  {activity.unit && <span className="activity-unit">({activity.unit})</span>}
-                </label>
-                {renderInputField(activity)}
+                <div className="category-footer">
+                  <button className="btn-view-category">
+                    📝 Saisir les données
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handleCloseModal}
-              disabled={saving}
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={saving}
-            >
-              {saving ? (
-                <>
-                  <span className="spinner-small"></span>
-                  Enregistrement...
-                </>
-              ) : (
-                <>
-                  💾 Enregistrer
-                </>
+          {/* Modal pour la saisie des activités */}
+          <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            title={selectedCategory ? `${selectedCategory.icon} ${selectedCategory.name}` : ''}
+            size="lg"
+          >
+            <form onSubmit={handleSubmit} className="activity-form">
+              {error && (
+                <div className="alert alert-error">
+                  <span>⚠️ {error}</span>
+                  <button type="button" onClick={() => setError(null)}>✕</button>
+                </div>
               )}
-            </button>
-          </div>
-        </form>
-      </Modal>
+
+              <div className="form-period-info">
+                <span className="period-badge">
+                  📅 Période: {new Date(currentPeriod + '-01').toLocaleDateString('fr-FR', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                  })}
+                </span>
+              </div>
+
+              <div className="activities-list">
+                {selectedCategory?.activities.map((activity, index) => (
+                  <div key={activity.id} className="activity-item">
+                    <label className="activity-label">
+                      <span className="activity-number">{index + 1}.</span>
+                      {activity.label}
+                      {activity.unit && <span className="activity-unit">({activity.unit})</span>}
+                    </label>
+                    {renderInputField(activity)}
+                  </div>
+                ))}
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                  disabled={saving}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <>
+                      <span className="spinner-small"></span>
+                      Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      💾 Enregistrer
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </Modal>
+        </>
+      )}
     </div>
   );
 };
