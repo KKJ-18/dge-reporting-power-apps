@@ -404,6 +404,89 @@
   min-height: 100px;
 }
 
+/* Actions précédentes */
+.previous-actions-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.previous-actions-section h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.loading-small {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.previous-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.previous-action-item {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  transition: box-shadow 0.2s;
+}
+
+.previous-action-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.action-type {
+  font-weight: 600;
+  color: #0d6efd;
+  font-size: 14px;
+}
+
+.action-date {
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.action-details {
+  margin-bottom: 10px;
+}
+
+.action-comment {
+  margin: 0 0 8px 0;
+  color: #212529;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.action-origin {
+  margin: 0;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.action-origin strong {
+  color: #495057;
+}
+
 /* Actions du formulaire */
 .form-actions {
   display: flex;

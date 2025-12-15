@@ -3,7 +3,24 @@ import { ClientsenAnomalieService } from '../services/ClientsenAnomalieService';
 import { ActionRecouvrementService } from '../services/ActionRecouvrementService';
 import { ClientsenAnomalie } from '../Models/ClientsenAnomalieModel';
 import { ActionRecouvrement } from '../Models/ActionRecouvrementModel';
+import FileDownloader from './FileDownloader';
 import './SuiviRecouvrementGFC.css';
+
+/**
+ * Composant de Suivi des Actions de Recouvrement pour les GFC
+ * 
+ * Fonctionnalités:
+ * - Recherche de clients en anomalie (StatutAction = "Aucun")
+ * - Pagination côté serveur (supporte 100k+ éléments)
+ * - Formulaire d'enregistrement d'actions avec 7 types d'actions
+ * - Upload de fichiers en base64 (max 10 MB)
+ * - Incrémentation automatique du compteur d'actions
+ * - Mise à jour automatique du statut client
+ * 
+ * Note technique:
+ * Les fichiers sont stockés en base64 dans un champ SharePoint "PieceJointeBase64"
+ * car Power Apps SDK ne supporte pas l'upload direct de pièces jointes.
+ */
 
 interface SuiviRecouvrementGFCProps {
   onClose?: () => void;
@@ -29,6 +46,10 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
   // État pour l'upload de fichier
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
+  
+  // État pour les actions précédentes du client
+  const [previousActions, setPreviousActions] = useState<ActionRecouvrement[]>([]);
+  const [loadingPreviousActions, setLoadingPreviousActions] = useState(false);
 
   // États pour le formulaire d'action
   const [formData, setFormData] = useState({
@@ -137,15 +158,75 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Gestion de l'upload de fichier
+  // Gestion de l'upload de fichier avec conversion en base64
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Vérifier la taille (max 2 MB pour base64 car SharePoint limite à ~750KB encodé)
+      // 2 MB en binaire = ~2.7 MB en base64, mais SharePoint accepte jusqu'à ~750KB
+      const maxSizeBytes = 500 * 1024; // 500 KB max pour être sûr
+      
+      if (file.size > maxSizeBytes) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const maxSizeMB = (maxSizeBytes / (1024 * 1024)).toFixed(2);
+        setError(`Le fichier est trop volumineux (${sizeMB} MB). Limite : ${maxSizeMB} MB pour le stockage base64.`);
+        event.target.value = ''; // Reset input
+        return;
+      }
+      
+      setError(null); // Clear any previous errors
       setUploadedFile(file);
-      // Dans un environnement réel, vous uploaderiez le fichier vers SharePoint
-      // et obtiendriez une URL. Pour l'instant, on simule avec un nom
       setUploadedFileUrl(file.name);
       setFormData(prev => ({ ...prev, Lienpi_x00e8_cejointe: file.name }));
+      console.log(`📎 Fichier sélectionné: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+    }
+  };
+
+  // Fonction pour convertir et uploader le fichier en base64
+  const uploadFileAsBase64 = async (itemId: string, file: File): Promise<boolean> => {
+    try {
+      console.log(`📎 Conversion fichier en base64: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+      
+      // Convertir le fichier en base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          const base64Data = result.split(',')[1]; // Extraire uniquement la partie base64
+          resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const base64SizeKB = (base64.length / 1024).toFixed(2);
+      console.log(`✅ Fichier converti en base64 (taille encodée: ${base64SizeKB} KB)`);
+      
+      // Vérification supplémentaire de la taille encodée
+      if (base64.length > 700 * 1024) { // 700 KB encodé max
+        console.error(`❌ Base64 trop volumineux: ${base64SizeKB} KB (limite: 700 KB)`);
+        return false;
+      }
+
+      // Mettre à jour l'enregistrement avec le base64
+      console.log(`📤 Envoi vers SharePoint (Action ID: ${itemId})...`);
+      const updateResult = await ActionRecouvrementService.update(itemId, {
+        PieceJointeBase64: base64,
+        NomFichier: file.name,
+        TypeFichier: file.type,
+        TailleFichier: file.size
+      });
+
+      if (updateResult.success) {
+        console.log('✅ Fichier uploadé avec succès vers SharePoint');
+      } else {
+        console.error('❌ Échec mise à jour SharePoint:', updateResult);
+      }
+
+      return updateResult.success;
+    } catch (error) {
+      console.error('❌ Erreur conversion base64:', error);
+      return false;
     }
   };
 
@@ -155,6 +236,11 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
     setShowClientSearch(false);
     setError(null);
     setSuccessMessage(null);
+    
+    // Charger les actions précédentes
+    if (client.Matricule) {
+      loadPreviousActions(client.Matricule);
+    }
     
     // Réinitialiser le formulaire avec les données du client
     setFormData({
@@ -166,6 +252,29 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       Lienpi_x00e8_cejointe: '',
       DateprochaineAction: ''
     });
+    setUploadedFile(null);
+    setUploadedFileUrl('');
+  };
+  
+  // Charger les actions précédentes du client
+  const loadPreviousActions = async (matricule: string) => {
+    setLoadingPreviousActions(true);
+    try {
+      const result = await ActionRecouvrementService.getAll({
+        filter: `Matricule eq '${matricule}'`,
+        orderby: 'Created desc',
+        top: 5 // Afficher les 5 dernières actions
+      });
+      
+      if (result.success && result.data) {
+        setPreviousActions(result.data);
+        console.log('✅ Actions précédentes chargées:', result.data.length);
+      }
+    } catch (error) {
+      console.error('❌ Erreur chargement actions précédentes:', error);
+    } finally {
+      setLoadingPreviousActions(false);
+    }
   };
 
   // Gérer les changements dans le formulaire
@@ -214,39 +323,86 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
     setSuccessMessage(null);
 
     try {
-      // 1. Créer l'action de recouvrement
+      // 1. Récupérer le nombre d'actions planifiées précédentes pour ce matricule
+      console.log('🔍 Recherche actions précédentes pour matricule:', selectedClient.Matricule);
+      let nombreActionsPlanifiees = 1; // Par défaut 1 si aucune action précédente
+      
+      try {
+        const previousActionsResult = await ActionRecouvrementService.getAll({
+          filter: `Matricule eq '${selectedClient.Matricule}'`,
+          orderby: 'Created desc',
+          top: 1
+        });
+        
+        if (previousActionsResult.success && previousActionsResult.data && previousActionsResult.data.length > 0) {
+          const lastAction = previousActionsResult.data[0];
+          const lastNumber = lastAction.NombreActionPlaniif_x00e9_ || 0;
+          nombreActionsPlanifiees = lastNumber + 1;
+          console.log(`✅ Dernière action trouvée: ${lastNumber}, nouvelle valeur: ${nombreActionsPlanifiees}`);
+        } else {
+          console.log('ℹ️ Aucune action précédente trouvée, initialisation à 1');
+        }
+      } catch (err) {
+        console.warn('⚠️ Erreur récupération actions précédentes, utilisation valeur par défaut:', err);
+      }
+
+      // 2. Créer l'action de recouvrement avec le nombre incrémenté
       const actionData: any = {
         Title: formData.Title,
         DateExc_x00e9_cution: formData.DateExc_x00e9_cution,
         Origineimpay_x00e9_: formData.Origineimpay_x00e9_,
         Matricule: selectedClient.Matricule,
         NomClient: selectedClient.Title,
-        EmailGFC: selectedClient.EmailGFC || ''
+        EmailGFC: selectedClient.EmailGFC || '',
+        NombreActionPlaniif_x00e9_: nombreActionsPlanifiees
       };
 
       // Ajouter les champs optionnels seulement s'ils ont une valeur
       if (formData.DatePlanification) {
         actionData.DatePlanification = formData.DatePlanification;
       }
-      if (formData.Lienpi_x00e8_cejointe) {
-        actionData.Lienpi_x00e8_cejointe = formData.Lienpi_x00e8_cejointe;
-      }
       if (formData.DateprochaineAction) {
         actionData.DateprochaineAction = formData.DateprochaineAction;
       }
-      if (formData.Typedaction) {
-        actionData.Typedaction = formData.Typedaction; // Chaîne simple, pas d'objet
-      }
-
-      console.log('📤 Envoi action recouvrement:', actionData);
       
-      const createResult = await ActionRecouvrementService.create(actionData);
-
-      if (!createResult.success) {
-        throw new Error('Échec de la création de l\'action de recouvrement');
+      // Type d'action : colonne Choice dans SharePoint (doit être un objet avec Value)
+      if (formData.Typedaction) {
+        actionData.Typedaction = { Value: formData.Typedaction };
       }
 
-      // 2. Mettre à jour le StatutAction du client en anomalie
+      console.log('📤 Envoi action recouvrement:', JSON.stringify(actionData, null, 2));
+
+      const createResult = await ActionRecouvrementService.create(actionData);
+      console.log('📥 Résultat création (raw):', createResult);
+
+      if (!createResult || !createResult.success) {
+        // Log détaillé pour debugging
+        console.error('❌ Échec création - createResult:', createResult);
+        if ((createResult as any)?.error) {
+          console.error('❌ Détails erreur serveur:', JSON.stringify((createResult as any).error, null, 2));
+        }
+        const serverMsg = (createResult && (createResult as any).error) 
+          ? JSON.stringify((createResult as any).error) 
+          : 'Aucun détail d\'erreur';
+        throw new Error('Échec de la création de l\'action de recouvrement: ' + serverMsg);
+      }
+
+      const newActionId = (createResult.data as any)?.ID;
+      console.log('✅ Action créée avec ID:', newActionId);
+
+      // 3. Upload du fichier en base64 si présent
+      if (uploadedFile && newActionId) {
+        console.log(`📎 Tentative upload fichier: ${uploadedFile.name}`);
+        const uploadSuccess = await uploadFileAsBase64(newActionId.toString(), uploadedFile);
+        
+        if (uploadSuccess) {
+          console.log('✅ Fichier uploadé avec succès en base64');
+        } else {
+          console.warn('⚠️ Échec upload fichier, mais l\'action est créée');
+        }
+      }
+
+      // 4. Mettre à jour le StatutAction du client en anomalie
       const updateResult = await ClientsenAnomalieService.update(
         selectedClient.ID!.toString(),
         {
@@ -255,16 +411,18 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       );
 
       if (!updateResult.success) {
-        console.warn('Attention: Action créée mais mise à jour du statut client échouée');
+        console.warn('⚠️ Action créée mais mise à jour du statut client échouée');
       }
 
-      // 3. Afficher le succès et réinitialiser
+      // 4. Afficher le succès et réinitialiser
       setSuccessMessage('✅ Action de recouvrement enregistrée avec succès !');
       
       // Réinitialiser après 2 secondes
       setTimeout(() => {
         setSelectedClient(null);
         setShowClientSearch(true);
+        setUploadedFile(null);
+        setUploadedFileUrl('');
         setFormData({
           DatePlanification: '',
           DateExc_x00e9_cution: '',
@@ -274,12 +432,22 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
           Lienpi_x00e8_cejointe: '',
           DateprochaineAction: ''
         });
-        loadClientsEnAnomalie(); // Recharger la liste
+        // Pas besoin de recharger car on retourne à la recherche
       }, 2000);
 
-    } catch (err) {
-      console.error('Erreur lors de l\'enregistrement:', err);
-      setError('Une erreur est survenue lors de l\'enregistrement de l\'action');
+    } catch (err: any) {
+      // Log complet pour debugging
+      console.error("Erreur lors de l'enregistrement:", err);
+      if (err && err.response) {
+        try {
+          console.error('Erreur response data:', err.response.data || err.response);
+        } catch (e) {
+          console.error('Impossible de lire err.response', e);
+        }
+      }
+      // Si createResult retournait une structure d'erreur, elle aura déjà été loggée
+      const errMsg = err?.message || 'Une erreur est survenue lors de l\'enregistrement de l\'action';
+      setError(errMsg);
     } finally {
       setSaving(false);
     }
@@ -567,9 +735,51 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
                 )}
               </div>
               <small className="form-hint">
-                Formats acceptés : PDF, Word, Images (max 10 MB)
+                📎 Le fichier sera converti et stocké en base64 dans SharePoint (max 500 KB). Formats : PDF, Word, Images.
               </small>
             </div>
+
+            {/* Actions précédentes */}
+            {previousActions.length > 0 && (
+              <div className="previous-actions-section">
+                <h4>📋 Actions précédentes ({previousActions.length})</h4>
+                {loadingPreviousActions ? (
+                  <div className="loading-small">Chargement...</div>
+                ) : (
+                  <div className="previous-actions-list">
+                    {previousActions.map((action, index) => (
+                      <div key={action.ID || index} className="previous-action-item">
+                        <div className="action-header">
+                          <span className="action-type">
+                            {(action.Typedaction as any)?.Value || action.Typedaction || 'N/A'}
+                          </span>
+                          <span className="action-date">
+                            {action.DateExc_x00e9_cution 
+                              ? new Date(action.DateExc_x00e9_cution).toLocaleDateString('fr-FR')
+                              : 'N/A'}
+                          </span>
+                        </div>
+                        <div className="action-details">
+                          <p className="action-comment">{action.Title || 'Aucun commentaire'}</p>
+                          {action.Origineimpay_x00e9_ && (
+                            <p className="action-origin"><strong>Origine:</strong> {action.Origineimpay_x00e9_}</p>
+                          )}
+                        </div>
+                        {action.PieceJointeBase64 && (
+                          <FileDownloader 
+                            actionId={action.ID!.toString()}
+                            fileName={action.NomFichier}
+                            fileType={action.TypeFichier}
+                            fileSize={action.TailleFichier}
+                            showDetails={true}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="form-actions">
               <button
