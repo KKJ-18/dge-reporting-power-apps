@@ -14,12 +14,14 @@ export interface DetailsDossiers {
   ObjetCommentaire?: string;
   Commentaire?: string;
   Comite?: string;
+  "Author#Claims"?: string;
+  Author?: Record<string, unknown>;
+  Created?: string;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;
-  Created?: string;
-  "Author#Claims"?: string;
-  Author?: Record<string, unknown>;
   "Editor#Claims"?: string;
   Editor?: Record<string, unknown>;
   "{Identifier}"?: string;
