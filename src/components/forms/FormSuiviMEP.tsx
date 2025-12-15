@@ -4,6 +4,7 @@ import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
 
 interface FormData {
+  date: string;
   dossiersAttentePrecedent: number;
   mouvementMois: number;
   stockRestant: number;
@@ -25,6 +26,7 @@ const FormSuiviMEP: React.FC<FormSuiviMEPProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
+    date: new Date().toISOString().split('T')[0],
     dossiersAttentePrecedent: 0,
     mouvementMois: 0,
     stockRestant: 0,
@@ -70,6 +72,7 @@ const FormSuiviMEP: React.FC<FormSuiviMEPProps> = ({
     try {
       const dataToSave = {
         Title: activityName,
+        Date: formData.date,
         DossiersAttentePrecedent: formData.dossiersAttentePrecedent,
         MouvementMois: formData.mouvementMois,
         StockRestant: formData.stockRestant,
@@ -133,6 +136,22 @@ const FormSuiviMEP: React.FC<FormSuiviMEPProps> = ({
           <p className="section-info">
             Suivez l'évolution des dossiers en attente de mise en place.
           </p>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="date">
+                Date <span className="required">*</span>
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
 
           <div className="form-row">
             <div className="form-group">

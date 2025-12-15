@@ -4,7 +4,7 @@ import { UserProfile } from '../services/UserProfileService';
 import ModalTailwind from './ModalTailwind';
 
 // Import des formulaires spécialisés DPNP
-import FormDossiersRestructuration from './forms/FormDossiersRestructuration';
+import FormDossiersRestructurationV2 from './forms/FormDossiersRestructurationV2';
 import FormSuiviAnomalies from './forms/FormSuiviAnomalies';
 import FormFormationUnites from './forms/FormFormationUnites';
 import FormSuiviDepassements from './forms/FormSuiviDepassements';
@@ -157,7 +157,7 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
 
     switch (config.formType) {
       case 'dossiers-restructuration':
-        return <FormDossiersRestructuration {...commonProps} specificType={config.specificType as DossiersRestructurationType} />;
+        return <FormDossiersRestructurationV2 {...commonProps} specificType={config.specificType as DossiersRestructurationType} />;
       case 'suivi-anomalies':
         return <FormSuiviAnomalies {...commonProps} specificType={config.specificType as AnomaliesType} />;
       case 'formation-unites':

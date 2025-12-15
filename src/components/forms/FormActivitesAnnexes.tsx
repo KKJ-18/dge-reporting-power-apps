@@ -20,6 +20,7 @@ interface FormationFormData {
   libelle: string;
   duree: number;
   dateValidation: string;
+  date: string;
 }
 
 interface ActiviteTransversaleFormData {
@@ -60,6 +61,7 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
     libelle: '',
     duree: 0,
     dateValidation: '',
+    date: new Date().toISOString().split('T')[0],
   });
 
   const [activiteData, setActiviteData] = useState<ActiviteTransversaleFormData>({
@@ -140,7 +142,7 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
         return false;
       }
     } else if (activityType === 'formations') {
-      if (!formationData.libelle || !formationData.dateValidation || formationData.duree <= 0) {
+      if (!formationData.libelle || !formationData.dateValidation || !formationData.date || formationData.duree <= 0) {
         setError('Veuillez remplir tous les champs obligatoires');
         return false;
       }
@@ -186,6 +188,7 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
           Libelle: formationData.libelle,
           Duree: formationData.duree,
           DateValidation: formationData.dateValidation,
+          Date: formationData.date,
         };
         console.log('💾 Sauvegarde formation:', dataToSave);
         result = await FormationsService.create(dataToSave);
@@ -334,6 +337,20 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
             <h3>🎓 Formation</h3>
 
             <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="date">
+                  Date <span className="required">*</span>
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={formationData.date}
+                  onChange={handleFormationChange}
+                  required
+                />
+              </div>
+
               <div className="form-group full-width">
                 <label htmlFor="libelle">
                   Libellé de la formation <span className="required">*</span>

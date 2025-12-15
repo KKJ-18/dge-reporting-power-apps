@@ -25,6 +25,8 @@ const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({
     DureeDepassementJours: 0,
     VolumeDepassement: 0,
     Agence: '',
+    Date: format(new Date(), 'yyyy-MM-dd'),
+    Reference: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -59,7 +61,9 @@ const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({
         DateDepassement: formData.DateDepassement,
         DureeDepassementJours: formData.DureeDepassementJours,
         VolumeDepassement: formData.VolumeDepassement,
-        Agence: formData.Agence
+        Agence: formData.Agence,
+        Date: formData.Date,
+        Reference: formData.Reference
       };
       
       console.log('📤 Envoi SuiviDepassements vers SharePoint:', record);
@@ -190,6 +194,28 @@ const FormSuiviDepassements: React.FC<FormSuiviDepassementsProps> = ({
                 required
               />
             )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Date *</label>
+            <input 
+              type="date"
+              className="form-input"
+              value={formData.Date}
+              onChange={(e) => setFormData({ ...formData, Date: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Référence</label>
+            <input 
+              type="text"
+              className="form-input"
+              value={formData.Reference}
+              onChange={(e) => setFormData({ ...formData, Reference: e.target.value })}
+              placeholder="Numéro de référence"
+            />
           </div>
 
         </div>

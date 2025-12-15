@@ -18,6 +18,7 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
     NombreAgence: 0,
     SujetFormation: '',
     NombrePersonnesFormees: 0,
+    Date: new Date().toISOString().split('T')[0],
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -31,6 +32,7 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
         NombreAgence: formData.NombreAgence,
         SujetFormation: formData.SujetFormation,
         NombrePersonnesFormees: formData.NombrePersonnesFormees,
+        Date: formData.Date,
       };
 
       console.log('📤 Envoi FormationUnites vers SharePoint:', record);
@@ -91,6 +93,17 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
       <form onSubmit={handleSubmit} className="form-body">
         <div className="form-section">
           
+          <div className="form-group">
+            <label className="form-label">Date *</label>
+            <input 
+              type="date" 
+              className="form-input"
+              value={formData.Date}
+              onChange={(e) => setFormData({ ...formData, Date: e.target.value })}
+              required
+            />
+          </div>
+
           <div className="form-group">
             <label className="form-label">Nombre d'agences *</label>
             <input 

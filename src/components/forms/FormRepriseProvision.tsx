@@ -23,6 +23,8 @@ const FormRepriseProvision: React.FC<Props> = ({
     AgenceCompteReclasser: '',
     MontantGlobalReclasser: 0,
     VolumeProvisionReprendre: 0,
+    Date: new Date().toISOString().split('T')[0],
+    Reference: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -58,6 +60,8 @@ const FormRepriseProvision: React.FC<Props> = ({
         AgenceCompteReclasser: formData.AgenceCompteReclasser,
         MontantGlobalReclasser: formData.MontantGlobalReclasser,
         VolumeProvisionReprendre: formData.VolumeProvisionReprendre,
+        Date: formData.Date,
+        Reference: formData.Reference,
       };
 
       console.log('📤 Envoi RepriseProvision vers SharePoint:', record);
@@ -182,6 +186,28 @@ const FormRepriseProvision: React.FC<Props> = ({
               placeholder="0"
               required
               onFocus={(e) => e.currentTarget.select()}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Date *</label>
+            <input
+              type="date"
+              className="form-input"
+              value={formData.Date}
+              onChange={(e) => setFormData({ ...formData, Date: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Référence</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.Reference}
+              onChange={(e) => setFormData({ ...formData, Reference: e.target.value })}
+              placeholder="Numéro de référence"
             />
           </div>
 

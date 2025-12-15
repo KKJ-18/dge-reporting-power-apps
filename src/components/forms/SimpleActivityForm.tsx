@@ -11,6 +11,7 @@ interface SimpleActivityFormProps {
 }
 
 interface FormData {
+  date: string;
   dateReception: string;
   nombreDossiers: number;
   montantTotal: number;
@@ -29,6 +30,7 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
   onCancel
 }) => {
   const [formData, setFormData] = useState<FormData>({
+    date: new Date().toISOString().split('T')[0],
     dateReception: new Date().toISOString().split('T')[0],
     nombreDossiers: 0,
     montantTotal: 0
@@ -51,6 +53,7 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
     try {
       await AnalyseDossiersComitesService.create({
         Title: activityName,
+        Date: formData.date,
         Nombre: formData.nombreDossiers,
         Montant: formData.montantTotal,
         DateReception: formData.dateReception
@@ -82,6 +85,16 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
             <h3 className="card-title">ℹ️ Informations générales</h3>
           </div>
           <div className="card-content">
+            <div className="field-group">
+              <label>Date *</label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleChange('date', e.target.value)}
+                required
+              />
+            </div>
+
             <div className="field-group">
               <label>Date de réception *</label>
               <input

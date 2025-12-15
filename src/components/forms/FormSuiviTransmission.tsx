@@ -4,6 +4,7 @@ import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
 
 interface FormData {
+  date: string;
   nombre: number;
   montant: number;
   dateReception: string;
@@ -30,6 +31,7 @@ const FormSuiviTransmission: React.FC<FormSuiviTransmissionProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
+    date: new Date().toISOString().split('T')[0],
     nombre: 0,
     montant: 0,
     dateReception: '',
@@ -99,6 +101,7 @@ const FormSuiviTransmission: React.FC<FormSuiviTransmissionProps> = ({
     try {
       const dataToSave = {
         Title: activityName,
+        Date: formData.date,
         Nombre: formData.nombre,
         Montant: formData.montant,
         DateReception: formData.dateReception,
@@ -188,6 +191,20 @@ const FormSuiviTransmission: React.FC<FormSuiviTransmissionProps> = ({
           <h3>📅 Dates</h3>
 
           <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="date">
+                Date <span className="required">*</span>
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
             <div className="form-group">
               <label htmlFor="dateReception">
                 Date de réception <span className="required">*</span>

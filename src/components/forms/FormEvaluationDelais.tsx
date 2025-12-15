@@ -4,6 +4,7 @@ import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
 
 interface FormData {
+  date: string;
   delaiMoyenDceJour: number;
   delaiMoyenUniteJour: number;
   delaiMoyenDrisqueJour: number;
@@ -27,6 +28,7 @@ const FormEvaluationDelais: React.FC<FormEvaluationDelaisProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
+    date: new Date().toISOString().split('T')[0],
     delaiMoyenDceJour: 0,
     delaiMoyenUniteJour: 0,
     delaiMoyenDrisqueJour: 0,
@@ -71,6 +73,7 @@ const FormEvaluationDelais: React.FC<FormEvaluationDelaisProps> = ({
     try {
       const dataToSave = {
         Title: activityName,
+        Date: formData.date,
         DelaiMoyenDceJour: formData.delaiMoyenDceJour,
         DelaiMoyenUniteJour: formData.delaiMoyenUniteJour,
         DelaiMoyenDrisqueJour: formData.delaiMoyenDrisqueJour,
@@ -124,6 +127,22 @@ const FormEvaluationDelais: React.FC<FormEvaluationDelaisProps> = ({
           <p className="section-info">
             Saisissez les délais moyens d'exécution pour chaque étape du processus de crédit.
           </p>
+
+          <div className="form-row" style={{marginBottom: '1.5rem'}}>
+            <div className="form-group">
+              <label htmlFor="date">
+                Date <span className="required">*</span>
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
 
           <div className="delais-grid">
             <div className="form-group">
