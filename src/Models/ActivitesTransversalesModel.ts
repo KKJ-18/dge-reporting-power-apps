@@ -10,6 +10,7 @@ export interface ActivitesTransversales {
   DateValidation?: string;
   DateTransmissionQualite?: string;
   Resultat?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

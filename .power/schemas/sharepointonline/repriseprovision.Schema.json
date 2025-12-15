@@ -167,6 +167,49 @@
           },
           "maxLength": 255
         },
+        "AgenceDebitCouvrir": {
+          "title": "AgenceDebitCouvrir",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Reference": {
+          "title": "Reference",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Date": {
+          "title": "Date",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
         "OData__ColorTag": {
           "title": "Color Tag",
           "type": "string",
@@ -694,6 +737,9 @@
           "NombreCompte",
           "VolumeProvisionReprendre",
           "AgenceCompteReclasser",
+          "AgenceDebitCouvrir",
+          "Reference",
+          "Date",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
@@ -701,14 +747,20 @@
           "MontantGlobalReclasser",
           "NombreCompte",
           "VolumeProvisionReprendre",
-          "AgenceCompteReclasser"
+          "AgenceCompteReclasser",
+          "AgenceDebitCouvrir",
+          "Reference",
+          "Date"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
           "MontantGlobalReclasser",
           "NombreCompte",
           "VolumeProvisionReprendre",
-          "AgenceCompteReclasser"
+          "AgenceCompteReclasser",
+          "AgenceDebitCouvrir",
+          "Reference",
+          "Date"
         ]
       }
     }

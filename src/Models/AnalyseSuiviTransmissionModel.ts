@@ -11,6 +11,8 @@ export interface AnalyseSuiviTransmission {
   DateReception?: string;
   DateTransmission?: string;
   DateComite?: string;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

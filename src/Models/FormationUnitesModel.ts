@@ -9,12 +9,13 @@ export interface FormationUnites {
   NombreAgence?: number;
   NombrePersonnesFormees?: number;
   SujetFormation?: string;
-  OData__ColorTag?: string;
-  ComplianceAssetId?: string;
-  Modified?: string;
   Created?: string;
   "Author#Claims"?: string;
   Author?: Record<string, unknown>;
+  Date?: string;
+  OData__ColorTag?: string;
+  ComplianceAssetId?: string;
+  Modified?: string;
   "Editor#Claims"?: string;
   Editor?: Record<string, unknown>;
   "{Identifier}"?: string;

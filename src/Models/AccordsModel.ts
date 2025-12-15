@@ -12,6 +12,8 @@ export interface Accords {
   MontanPret?: number;
   MontantAccorde?: number;
   MontantDemande?: number;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

@@ -8,12 +8,12 @@ export interface Objectif {
   Title?: string;
   Date?: string;
   Nombre?: number;
-  OData__ColorTag?: string;
-  ComplianceAssetId?: string;
-  Modified?: string;
   Created?: string;
   "Author#Claims"?: string;
   Author?: Record<string, unknown>;
+  OData__ColorTag?: string;
+  ComplianceAssetId?: string;
+  Modified?: string;
   "Editor#Claims"?: string;
   Editor?: Record<string, unknown>;
   "{Identifier}"?: string;

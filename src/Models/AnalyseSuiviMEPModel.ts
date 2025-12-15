@@ -9,6 +9,8 @@ export interface AnalyseSuiviMEP {
   DossiersAttentePrecedent?: number;
   MouvementMois?: number;
   StockRestant?: number;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

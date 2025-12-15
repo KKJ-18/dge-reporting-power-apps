@@ -133,50 +133,6 @@
           "maximum": 1.7976931348623157E+308,
           "minimum": -1.7976931348623157E+308
         },
-        "OData__ColorTag": {
-          "title": "Color Tag",
-          "type": "string",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "startswith"
-            ]
-          },
-          "maxLength": 255
-        },
-        "ComplianceAssetId": {
-          "title": "Compliance Asset Id",
-          "type": "string",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "startswith"
-            ]
-          },
-          "maxLength": 255
-        },
-        "Modified": {
-          "title": "Modified",
-          "description": "When this item was last changed.",
-          "type": "string",
-          "format": "date-time",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          }
-        },
         "Created": {
           "title": "Created",
           "description": "When this item was created.",
@@ -299,6 +255,50 @@
             "titleProperty": "DisplayName",
             "subtitleProperty": "Email",
             "thumbnailProperty": "Picture"
+          }
+        },
+        "OData__ColorTag": {
+          "title": "Color Tag",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "ComplianceAssetId": {
+          "title": "Compliance Asset Id",
+          "type": "string",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
+        "Modified": {
+          "title": "Modified",
+          "description": "When this item was last changed.",
+          "type": "string",
+          "format": "date-time",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
           }
         },
         "Editor#Claims": {
@@ -663,12 +663,16 @@
         "propertiesCompactDisplayOrder": [
           "Title",
           "Date",
-          "Nombre"
+          "Nombre",
+          "Created",
+          "Author"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
           "Date",
-          "Nombre"
+          "Nombre",
+          "Created",
+          "Author"
         ]
       }
     }

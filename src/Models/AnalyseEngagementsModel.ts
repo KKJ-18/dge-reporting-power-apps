@@ -11,6 +11,8 @@ export interface AnalyseEngagements {
   Nombre?: number;
   Montant?: number;
   Segment?: string;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

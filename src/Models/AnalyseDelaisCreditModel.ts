@@ -11,6 +11,8 @@ export interface AnalyseDelaisCredit {
   DelaiMoyenDrisqueJour?: number;
   DelaiMoyenDconfJour?: number;
   DelaiMoyenChaineJour?: number;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

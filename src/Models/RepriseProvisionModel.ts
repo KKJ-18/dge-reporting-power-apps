@@ -10,6 +10,9 @@ export interface RepriseProvision {
   NombreCompte?: number;
   VolumeProvisionReprendre?: number;
   AgenceCompteReclasser?: string;
+  AgenceDebitCouvrir?: string;
+  Reference?: string;
+  Date?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;

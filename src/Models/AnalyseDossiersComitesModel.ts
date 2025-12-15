@@ -10,12 +10,14 @@ export interface AnalyseDossiersComites {
   Montant?: number;
   DateReception?: string;
   TypeComite?: string;
-  OData__ColorTag?: string;
-  ComplianceAssetId?: string;
-  Modified?: string;
   Created?: string;
   "Author#Claims"?: string;
   Author?: Record<string, unknown>;
+  Reference?: string;
+  Date?: string;
+  OData__ColorTag?: string;
+  ComplianceAssetId?: string;
+  Modified?: string;
   "Editor#Claims"?: string;
   Editor?: Record<string, unknown>;
   "{Identifier}"?: string;
