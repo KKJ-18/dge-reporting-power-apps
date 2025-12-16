@@ -184,6 +184,36 @@
           "maximum": 1.7976931348623157E+308,
           "minimum": -1.7976931348623157E+308
         },
+        "Date": {
+          "title": "Date",
+          "type": "string",
+          "format": "date",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "Reference": {
+          "title": "Reference",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
         "OData__ColorTag": {
           "title": "Color Tag",
           "type": "string",
@@ -712,6 +742,8 @@
           "VolumeGlobalEngagements",
           "VolumeAnomalies",
           "MontantSollicite",
+          "Reference",
+          "Date",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
@@ -720,7 +752,9 @@
           "DateEntree",
           "VolumeGlobalEngagements",
           "VolumeAnomalies",
-          "MontantSollicite"
+          "MontantSollicite",
+          "Date",
+          "Reference"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
@@ -728,7 +762,9 @@
           "DateEntree",
           "VolumeGlobalEngagements",
           "VolumeAnomalies",
-          "MontantSollicite"
+          "MontantSollicite",
+          "Date",
+          "Reference"
         ]
       }
     }

@@ -11,6 +11,8 @@ export interface SuiviDossiersRestructuration {
   VolumeGlobalEngagements?: number;
   VolumeAnomalies?: number;
   MontantSollicite?: number;
+  Date?: string;
+  Reference?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;
