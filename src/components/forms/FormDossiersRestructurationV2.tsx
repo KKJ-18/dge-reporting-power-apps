@@ -199,7 +199,7 @@ const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props
         VolumeGlobalEngagements: totals.volumeGlobal,
         VolumeAnomalies: totals.volumeAnomalies,
         MontantSollicite: totals.volumeGlobal,
-        Reference: reference,
+        // Reference: reference, // TODO: À activer après ajout colonne Reference dans SharePoint
       };
 
       console.log('💾 Sauvegarde principale:', mainData);
@@ -219,8 +219,9 @@ const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props
           Decision: dossier.statut,
           Commentaire: dossier.commentaire,
           Comite: formData.agence,
-          ObjetCommentaire: reference, // Lien via référence
-          DetailDecision: `Référence: ${reference} | Date entrée: ${formData.dateEntree}`,
+          Reference: reference, // Lien via référence unique
+          DetailDecision: dossier.statut, // Statut actuel du dossier
+          Date: formData.dateEntree,
         };
 
         console.log('💾 Sauvegarde détail:', detailData);
