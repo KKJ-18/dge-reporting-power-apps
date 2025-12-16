@@ -199,7 +199,8 @@ const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props
         VolumeGlobalEngagements: totals.volumeGlobal,
         VolumeAnomalies: totals.volumeAnomalies,
         MontantSollicite: totals.volumeGlobal,
-        // Reference: reference, // TODO: À activer après ajout colonne Reference dans SharePoint
+        Date: formData.dateEntree,
+        Reference: reference,
       };
 
       console.log('💾 Sauvegarde principale:', mainData);
