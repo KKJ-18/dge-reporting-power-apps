@@ -7,9 +7,6 @@ import { useNotification } from '../../hooks/useNotification';
 
 interface FormDossiersRestructurationV2Props {
   activityName: string;
-  specificType: 'dossiers-recus' | 'dossiers-complements' | 'dossier-analyse' | 'dossier-attente-comite' 
-    | 'dossier-attente-decision' | 'dossier-accord' | 'dossier-renvoye' | 'dossier-avis-conformite' 
-    | 'attente-comite-credit' | 'remboursement-echeance';
   onClose: () => void;
   onSave: () => void;
 }
@@ -25,7 +22,6 @@ interface DossierClient {
 
 const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props> = ({
   activityName,
-  specificType,
   onClose,
   onSave,
 }) => {
@@ -105,7 +101,7 @@ const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props
   };
 
   const handleDossierChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setCurrentDossier((prev) => ({
