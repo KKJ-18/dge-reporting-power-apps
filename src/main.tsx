@@ -9,6 +9,8 @@ import './styles/theme.css'
 import './styles/forms.css'
 import './styles/modals.css'
 import './styles/components.css'
+// Nouveau design moderne épuré (CommercePilot style)
+import './styles/modern-design.css'
 import AppModern from './AppModern.tsx'
 import PowerProvider from './PowerProvider.tsx'
 createRoot(document.getElementById('root')!).render(

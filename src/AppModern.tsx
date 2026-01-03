@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import Sidebar from './components/SidebarTailwind'
-import HomePageModern from './components/HomePageModernTailwind'
+import Sidebar from './components/SidebarModern'
 import HomePage from './components/HomePage'
 import CreditClassiqueForm from './components/forms/CreditClassiqueForm'
 import CreditProgrammeForm from './components/forms/CreditProgrammeForm'
@@ -19,6 +18,8 @@ import ObjectifsManagement from './components/ObjectifsManagement'
 import DiagnosticPanel from './components/DiagnosticPanel'
 import CategoryActivitiesPage from './components/CategoryActivitiesPage'
 import HelpGuide from './components/HelpGuide'
+import SuiviRecouvrementGFC from './components/SuiviRecouvrementGFC'
+import DashboardModern from './components/DashboardModern'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
 import { NotificationService } from './services/NotificationService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
@@ -175,6 +176,12 @@ function AppModern() {
   }
 
   const renderMainContent = () => {
+    // Route spéciale pour "Suivi des actions de recouvrement pour les GFC"
+    if (activeModule === 'category-suivi-recouvrement-gfc' || 
+        activeModule === 'category-suivi-des-actions-de-recouvrement-pour-les-gfc') {
+      return <SuiviRecouvrementGFC onClose={() => setActiveModule('home')} />;
+    }
+    
     // Route pour les catégories d'activités
     if (activeModule.startsWith('category-') && userProfile?.departement && currentCategory) {
       const department = getDepartment(userProfile.departement);
@@ -192,7 +199,7 @@ function AppModern() {
     switch (activeModule) {
       case 'home':
         return (
-          <HomePageModern
+          <DashboardModern
             onModuleSelect={handleModuleSelect}
           />
         )
@@ -320,32 +327,38 @@ function AppModern() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-neutral-50">
+    <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
       <Sidebar
         activeModule={activeModule}
         onModuleChange={setActiveModule}
         userProfile={userProfile}
       />
       
-      {/* Main content - prend tout l'espace restant après la sidebar */}
-      <main className="flex-1 ml-64 min-h-screen">
-        <div className="p-4 lg:p-6 w-full">
-          {renderMainContent()}
-        </div>
+      {/* Main content */}
+      <div style={{ marginLeft: '180px', minHeight: '100vh' }}>
+        {renderMainContent()}
         
         {/* Zone de debug pour le développement */}
         {import.meta.env.DEV && (
-          <div className="ml-6 mr-6 mb-6 p-4 bg-neutral-100 rounded-xl text-sm text-neutral-600">
-            <strong className="text-neutral-800">🛠️ Debug Info:</strong>
-            <div className="mt-2 flex flex-wrap gap-4">
-              <span>Module: <strong className="text-primary-600">{activeModule}</strong></span>
-              <span>Période: <strong className="text-primary-600">{selectedPeriod || 'Non définie'}</strong></span>
-              <span>Département: <strong className="text-primary-600">{userProfile.departement || 'N/A'}</strong></span>
-              <span>Directeur: <strong className="text-primary-600">{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong></span>
+          <div style={{ 
+            margin: '24px', 
+            padding: '16px', 
+            background: 'white', 
+            borderRadius: '8px', 
+            border: '1px solid #E2E8F0',
+            fontSize: '13px',
+            color: '#64748B'
+          }}>
+            <strong style={{ color: '#1E293B' }}>🛠️ Debug Info:</strong>
+            <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+              <span>Module: <strong style={{ color: '#E63946' }}>{activeModule}</strong></span>
+              <span>Période: <strong style={{ color: '#E63946' }}>{selectedPeriod || 'Non définie'}</strong></span>
+              <span>Département: <strong style={{ color: '#E63946' }}>{userProfile.departement || 'N/A'}</strong></span>
+              <span>Directeur: <strong style={{ color: '#E63946' }}>{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong></span>
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* 🔧 Panneau de diagnostic Power SDK */}
       <DiagnosticPanel />

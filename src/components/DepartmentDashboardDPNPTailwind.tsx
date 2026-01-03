@@ -125,6 +125,21 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
   };
 
   const handleActivityClick = (activity: ActivityItem) => {
+    // Vérifier si l'activité appartient à la catégorie recouvrement
+    if (selectedCategory && 
+        (selectedCategory.id === 'suivi-recouvrement-gfc' || 
+         selectedCategory.name.toLowerCase().includes('suivi des actions de recouvrement'))) {
+      console.log('✅ Activité de recouvrement - Redirection vers SuiviRecouvrementGFC');
+      // Fermer tous les modals et réinitialiser les états
+      setShowActivitiesModal(false);
+      setShowActivityFormModal(false);
+      setSelectedCategory(null);
+      setSelectedActivity(null);
+      // Puis afficher la vue recouvrement
+      setShowRecouvrementView(true);
+      return;
+    }
+    
     setSelectedActivity(activity);
     setShowActivitiesModal(false);
     setShowActivityFormModal(true);
@@ -192,8 +207,11 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
 
   // Afficher SuiviRecouvrementGFC si sélectionné
   if (showRecouvrementView) {
+    console.log('🎯 Affichage de SuiviRecouvrementGFC - showRecouvrementView:', showRecouvrementView);
     return <SuiviRecouvrementGFC onClose={() => setShowRecouvrementView(false)} />;
   }
+
+  console.log('📊 Affichage du dashboard - showRecouvrementView:', showRecouvrementView, 'showActivitiesModal:', showActivitiesModal);
 
   return (
     <DepartmentFormWrapper departmentColor={department.color}>
