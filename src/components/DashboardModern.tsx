@@ -513,6 +513,21 @@ const styles = {
     padding: '40px',
     color: '#9CA3AF',
   },
+  quickAccessCard: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px 16px',
+    borderRadius: '12px',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    textAlign: 'center' as const,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    minHeight: '140px',
+    outline: 'none',
+  },
 };
 
 // Couleurs pour les métriques
@@ -1277,6 +1292,227 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           <div style={{ ...styles.metricIcon, background: metricColors.purple.bg }}>
             🎯
           </div>
+        </div>
+      </div>
+
+      {/* Accès Rapides aux Activités */}
+      <div style={styles.card}>
+        <div style={styles.cardHeader}>
+          <h3 style={styles.cardTitle}>🚀 Accès Rapides</h3>
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+          gap: '16px',
+          padding: '20px'
+        }}>
+          {/* Carte - Saisie d'Activités */}
+          <button
+            style={{
+              ...styles.quickAccessCard,
+              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+            }}
+            onClick={() => onModuleSelect?.('activities')}
+          >
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+              Nouvelle Saisie
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+              Enregistrer une activité
+            </div>
+          </button>
+
+          {/* Carte - Synthèse */}
+          <button
+            style={{
+              ...styles.quickAccessCard,
+              background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
+            }}
+            onClick={() => onModuleSelect?.('synthesis')}
+          >
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+              Synthèse
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+              Vue d'ensemble des activités
+            </div>
+          </button>
+
+          {/* Carte - Rapports */}
+          <button
+            style={{
+              ...styles.quickAccessCard,
+              background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
+            }}
+            onClick={() => onModuleSelect?.('reports')}
+          >
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📈</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+              Rapports
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+              Analyses et statistiques
+            </div>
+          </button>
+
+          {/* Carte - Catégories d'Activités selon département */}
+          {userProfile?.departement === 'DA' && (
+            <>
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #6B46C1 0%, #553C9A 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-credit-classique')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>💰</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Crédit Classique
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Dossiers de crédit
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-credit-programme')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎯</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Crédit Programme
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Programmes de crédit
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-admin-engagements')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Admin Engagements
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Gestion des engagements
+                </div>
+              </button>
+            </>
+          )}
+
+          {userProfile?.departement === 'DSE' && (
+            <>
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-situation-mep')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>✅</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Situation MEP
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Mise en place
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-accords-classement')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📋</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Accords
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Accords de classement
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-contrats')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📄</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Contrats
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Gestion des contrats
+                </div>
+              </button>
+            </>
+          )}
+
+          {userProfile?.departement === 'DPNP' && (
+            <>
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-recouvrement')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>💸</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Recouvrement
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Actions de recouvrement
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-anomalies')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>⚠️</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Anomalies
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Suivi des anomalies
+                </div>
+              </button>
+
+              <button
+                style={{
+                  ...styles.quickAccessCard,
+                  background: 'linear-gradient(135deg, #EA580C 0%, #C2410C 100%)',
+                }}
+                onClick={() => onModuleSelect?.('category-restructuration')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔄</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Restructuration
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Dossiers de restructuration
+                </div>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
