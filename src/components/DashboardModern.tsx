@@ -1344,7 +1344,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           </button>
 
           {/* Carte - Catégories d'Activités selon département */}
-          {userProfile?.departement === 'DA' && (
+          {/* Le Directeur voit toutes les cartes, les autres voient seulement leur département */}
+          {(userProfile?.isDirecteur || userProfile?.departement === 'DA') && (
             <>
               <button
                 className="quick-access-card"
@@ -1358,7 +1359,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Crédit Classique
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Dossiers de crédit
+                  {userProfile?.isDirecteur ? 'DA - Dossiers de crédit' : 'Dossiers de crédit'}
                 </div>
               </button>
 
@@ -1374,7 +1375,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Crédit Programme
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Programmes de crédit
+                  {userProfile?.isDirecteur ? 'DA - Programmes de crédit' : 'Programmes de crédit'}
                 </div>
               </button>
 
@@ -1390,13 +1391,13 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Admin Engagements
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Gestion des engagements
+                  {userProfile?.isDirecteur ? 'DA - Gestion engagements' : 'Gestion des engagements'}
                 </div>
               </button>
             </>
           )}
 
-          {userProfile?.departement === 'DSE' && (
+          {(userProfile?.isDirecteur || userProfile?.departement === 'DSE') && (
             <>
               <button
                 className="quick-access-card"
@@ -1410,7 +1411,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Situation MEP
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Mise en place
+                  {userProfile?.isDirecteur ? 'DSE - Mise en place' : 'Mise en place'}
                 </div>
               </button>
 
@@ -1426,7 +1427,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Accords
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Accords de classement
+                  {userProfile?.isDirecteur ? 'DSE - Accords de classement' : 'Accords de classement'}
                 </div>
               </button>
 
@@ -1442,13 +1443,13 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Contrats
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Gestion des contrats
+                  {userProfile?.isDirecteur ? 'DSE - Gestion des contrats' : 'Gestion des contrats'}
                 </div>
               </button>
             </>
           )}
 
-          {userProfile?.departement === 'DPNP' && (
+          {(userProfile?.isDirecteur || userProfile?.departement === 'DPNP') && (
             <>
               <button
                 className="quick-access-card"
@@ -1462,7 +1463,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Recouvrement
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Actions de recouvrement
+                  {userProfile?.isDirecteur ? 'DPNP - Actions recouvrement' : 'Actions de recouvrement'}
                 </div>
               </button>
 
@@ -1478,7 +1479,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Anomalies
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Suivi des anomalies
+                  {userProfile?.isDirecteur ? 'DPNP - Suivi des anomalies' : 'Suivi des anomalies'}
                 </div>
               </button>
 
@@ -1494,7 +1495,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
                   Restructuration
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Dossiers de restructuration
+                  {userProfile?.isDirecteur ? 'DPNP - Dossiers restructuration' : 'Dossiers de restructuration'}
                 </div>
               </button>
             </>
