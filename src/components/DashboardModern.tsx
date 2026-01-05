@@ -1343,159 +1343,54 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
             </div>
           </button>
 
-          {/* Carte - Catégories d'Activités selon département */}
-          {/* Le Directeur voit toutes les cartes, les autres voient seulement leur département */}
-          {(userProfile?.isDirecteur || userProfile?.departement === 'DA') && (
+          {/* Cartes Départements - Pour le Directeur uniquement */}
+          {userProfile?.isDirecteur && (
             <>
               <button
                 className="quick-access-card"
                 style={{
-                  background: 'linear-gradient(135deg, #6B46C1 0%, #553C9A 100%)',
+                  background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
                 }}
-                onClick={() => onModuleSelect?.('category-credit-classique')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>💰</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Crédit Classique
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DA - Dossiers de crédit' : 'Dossiers de crédit'}
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-credit-programme')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎯</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Crédit Programme
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DA - Programmes de crédit' : 'Programmes de crédit'}
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-admin-engagements')}
+                onClick={() => onModuleSelect?.('department-DA')}
               >
                 <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
                 <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Admin Engagements
+                  Département DA
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DA - Gestion engagements' : 'Gestion des engagements'}
-                </div>
-              </button>
-            </>
-          )}
-
-          {(userProfile?.isDirecteur || userProfile?.departement === 'DSE') && (
-            <>
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-situation-mep')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>✅</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Situation MEP
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DSE - Mise en place' : 'Mise en place'}
+                  Direction de l'Analyse
                 </div>
               </button>
 
               <button
                 className="quick-access-card"
                 style={{
-                  background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+                  background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
                 }}
-                onClick={() => onModuleSelect?.('category-accords-classement')}
+                onClick={() => onModuleSelect?.('department-DSE')}
               >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📋</div>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🏦</div>
                 <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Accords
+                  Département DSE
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DSE - Accords de classement' : 'Accords de classement'}
+                  Surveillance des Engagements
                 </div>
               </button>
 
               <button
                 className="quick-access-card"
                 style={{
-                  background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+                  background: 'linear-gradient(135deg, #d83b01 0%, #a52c00 100%)',
                 }}
-                onClick={() => onModuleSelect?.('category-contrats')}
+                onClick={() => onModuleSelect?.('department-DPNP')}
               >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📄</div>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🏛️</div>
                 <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Contrats
+                  Département DPNP
                 </div>
                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DSE - Gestion des contrats' : 'Gestion des contrats'}
-                </div>
-              </button>
-            </>
-          )}
-
-          {(userProfile?.isDirecteur || userProfile?.departement === 'DPNP') && (
-            <>
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-recouvrement')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>💸</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Recouvrement
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DPNP - Actions recouvrement' : 'Actions de recouvrement'}
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-anomalies')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>⚠️</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Anomalies
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DPNP - Suivi des anomalies' : 'Suivi des anomalies'}
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #EA580C 0%, #C2410C 100%)',
-                }}
-                onClick={() => onModuleSelect?.('category-restructuration')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔄</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Restructuration
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  {userProfile?.isDirecteur ? 'DPNP - Dossiers restructuration' : 'Dossiers de restructuration'}
+                  Prêts Non Performants
                 </div>
               </button>
             </>
