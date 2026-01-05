@@ -7,6 +7,7 @@ import { ContratsService } from '../services/ContratsService';
 import { SituationMEPService } from '../services/SituationMEPService';
 import { UserProfileService, type UserProfile } from '../services/UserProfileService';
 import ModernLoader from './ModernLoader';
+import './DashboardModern.css';
 
 interface DashboardModernProps {
   onModuleSelect?: (moduleId: string) => void;
@@ -512,21 +513,6 @@ const styles = {
     textAlign: 'center' as const,
     padding: '40px',
     color: '#9CA3AF',
-  },
-  quickAccessCard: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '24px 16px',
-    borderRadius: '12px',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    textAlign: 'center' as const,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-    minHeight: '140px',
-    outline: 'none',
   },
 };
 
@@ -1308,8 +1294,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         }}>
           {/* Carte - Saisie d'Activités */}
           <button
+            className="quick-access-card"
             style={{
-              ...styles.quickAccessCard,
               background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
             }}
             onClick={() => onModuleSelect?.('activities')}
@@ -1325,8 +1311,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
           {/* Carte - Synthèse */}
           <button
+            className="quick-access-card"
             style={{
-              ...styles.quickAccessCard,
               background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
             }}
             onClick={() => onModuleSelect?.('synthesis')}
@@ -1342,8 +1328,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
           {/* Carte - Rapports */}
           <button
+            className="quick-access-card"
             style={{
-              ...styles.quickAccessCard,
               background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
             }}
             onClick={() => onModuleSelect?.('reports')}
@@ -1361,8 +1347,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           {userProfile?.departement === 'DA' && (
             <>
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #6B46C1 0%, #553C9A 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-credit-classique')}
@@ -1377,8 +1363,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-credit-programme')}
@@ -1393,8 +1379,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-admin-engagements')}
@@ -1413,8 +1399,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           {userProfile?.departement === 'DSE' && (
             <>
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-situation-mep')}
@@ -1429,8 +1415,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-accords-classement')}
@@ -1445,8 +1431,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-contrats')}
@@ -1465,8 +1451,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           {userProfile?.departement === 'DPNP' && (
             <>
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-recouvrement')}
@@ -1481,8 +1467,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-anomalies')}
@@ -1497,8 +1483,8 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               </button>
 
               <button
+                className="quick-access-card"
                 style={{
-                  ...styles.quickAccessCard,
                   background: 'linear-gradient(135deg, #EA580C 0%, #C2410C 100%)',
                 }}
                 onClick={() => onModuleSelect?.('category-restructuration')}
