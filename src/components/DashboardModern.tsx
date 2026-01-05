@@ -6,6 +6,7 @@ import { AccordsService } from '../services/AccordsService';
 import { ContratsService } from '../services/ContratsService';
 import { SituationMEPService } from '../services/SituationMEPService';
 import { UserProfileService, type UserProfile } from '../services/UserProfileService';
+import ModernLoader from './ModernLoader';
 
 interface DashboardModernProps {
   onModuleSelect?: (moduleId: string) => void;
@@ -530,6 +531,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
   const [searchText, setSearchText] = useState('');
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('month');
   const [chartView, setChartView] = useState<'monthly' | 'weekly'>('weekly');
+  const [departementFilter, setDepartementFilter] = useState<'all' | 'DA' | 'DSE' | 'DPNP'>('all'); // Pour le Directeur
   
   // Données
   const [stats, setStats] = useState<DashboardStats>({
@@ -584,9 +586,43 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
         const { startDate, endDate } = getDateRange();
 
+        // **FILTRAGE SELON LE RÔLE**
+        // Directeur : Toutes les données
+        // Chef de département : Données de son département
+        // Agent : Ses propres données uniquement
+        
+        const isDirecteur = profile.isDirecteur;
+        const isChef = profile.fonction?.toLowerCase().includes('chef') || false;
+        const userDepartement = profile.departement;
+        const userEmail = profile.email;
+
         // 2. Charger les visites clientèle
         const visitesResult = await VisiteClienteleService.getAll();
-        const visites = visitesResult?.data || visitesResult?.value || [];
+        let visites = visitesResult?.data || visitesResult?.value || [];
+        
+        // Filtrer selon le rôle
+        if (!isDirecteur) {
+          if (isChef && userDepartement) {
+            // Chef : Voir toutes les visites de son département
+            visites = visites.filter((v: any) => 
+              v.Departement?.Value === userDepartement || 
+              v.Departement === userDepartement
+            );
+          } else {
+            // Agent : Voir uniquement ses propres visites
+            visites = visites.filter((v: any) => 
+              v.Author?.EMail === userEmail || 
+              v.CreatedBy?.EMail === userEmail ||
+              v.Author?.Email === userEmail
+            );
+          }
+        } else if (departementFilter !== 'all') {
+          // Directeur avec filtre de département
+          visites = visites.filter((v: any) => 
+            v.Departement?.Value === departementFilter || 
+            v.Departement === departementFilter
+          );
+        }
         
         // Filtrer par période et transformer
         const visitesFiltered = visites.filter((v: any) => {
@@ -620,7 +656,29 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
         // 3. Charger les objectifs
         const objectifsResult = await ObjectifService.getAll();
-        const objectifs = objectifsResult?.data || objectifsResult?.value || [];
+        let objectifs = objectifsResult?.data || objectifsResult?.value || [];
+        
+        // Filtrer selon le rôle
+        if (!isDirecteur) {
+          if (isChef && userDepartement) {
+            objectifs = objectifs.filter((o: any) => 
+              o.Departement?.Value === userDepartement || 
+              o.Departement === userDepartement
+            );
+          } else {
+            objectifs = objectifs.filter((o: any) => 
+              o.Author?.EMail === userEmail || 
+              o.CreatedBy?.EMail === userEmail ||
+              o.Author?.Email === userEmail
+            );
+          }
+        } else if (departementFilter !== 'all') {
+          // Directeur avec filtre de département
+          objectifs = objectifs.filter((o: any) => 
+            o.Departement?.Value === departementFilter || 
+            o.Departement === departementFilter
+          );
+        }
         
         // Calculer l'objectif mensuel (somme des objectifs du mois)
         const objectifsMois = objectifs.filter((o: any) => {
@@ -631,7 +689,29 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
         // 4. Charger les actions de recouvrement
         const recouvrementResult = await ActionRecouvrementService.getAll();
-        const recouvrements = recouvrementResult?.data || recouvrementResult?.value || [];
+        let recouvrements = recouvrementResult?.data || recouvrementResult?.value || [];
+        
+        // Filtrer selon le rôle
+        if (!isDirecteur) {
+          if (isChef && userDepartement) {
+            recouvrements = recouvrements.filter((r: any) => 
+              r.Departement?.Value === userDepartement || 
+              r.Departement === userDepartement
+            );
+          } else {
+            recouvrements = recouvrements.filter((r: any) => 
+              r.Author?.EMail === userEmail || 
+              r.CreatedBy?.EMail === userEmail ||
+              r.Author?.Email === userEmail
+            );
+          }
+        } else if (departementFilter !== 'all') {
+          // Directeur avec filtre de département
+          recouvrements = recouvrements.filter((r: any) => 
+            r.Departement?.Value === departementFilter || 
+            r.Departement === departementFilter
+          );
+        }
         
         // Calculer le taux de recouvrement
         const recouvrementsPeriode = recouvrements.filter((r: any) => {
@@ -647,7 +727,29 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
         // 5. Charger les accords (dossiers en cours)
         const accordsResult = await AccordsService.getAll();
-        const accords = accordsResult?.data || accordsResult?.value || [];
+        let accords = accordsResult?.data || accordsResult?.value || [];
+        
+        // Filtrer selon le rôle
+        if (!isDirecteur) {
+          if (isChef && userDepartement) {
+            accords = accords.filter((a: any) => 
+              a.Departement?.Value === userDepartement || 
+              a.Departement === userDepartement
+            );
+          } else {
+            accords = accords.filter((a: any) => 
+              a.Author?.EMail === userEmail || 
+              a.CreatedBy?.EMail === userEmail ||
+              a.Author?.Email === userEmail
+            );
+          }
+        } else if (departementFilter !== 'all') {
+          // Directeur avec filtre de département
+          accords = accords.filter((a: any) => 
+            a.Departement?.Value === departementFilter || 
+            a.Departement === departementFilter
+          );
+        }
         const accordsEnCours = accords.filter((a: any) => 
           a.Statut?.Value === 'En cours' || a.Statut?.Value === 'En attente' || !a.Statut
         ).length;
@@ -834,7 +936,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
     };
 
     loadData();
-  }, [periodFilter, getDateRange]);
+  }, [periodFilter, departementFilter, getDateRange]);
 
   // Fonction pour déterminer le statut d'une visite
   const getVisiteStatus = (visite: any): 'Complétée' | 'Planifiée' | 'En attente' => {
@@ -849,9 +951,15 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
   // Filtrage par recherche
   const filteredVisites = useMemo(() => {
-    if (!searchText) return visitesRecentes;
+    let result = visitesRecentes;
+    
+    // Filtrer par département (pour Directeur) - déjà filtré au niveau du chargement
+    // Le filtre est déjà appliqué dans loadData(), donc pas besoin ici
+    
+    // Filtrer par recherche
+    if (!searchText) return result;
     const search = searchText.toLowerCase();
-    return visitesRecentes.filter(v => 
+    return result.filter(v => 
       v.client.toLowerCase().includes(search) ||
       v.date.toLowerCase().includes(search) ||
       v.statut.toLowerCase().includes(search)
@@ -939,13 +1047,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
   };
 
   if (loading) {
-    return (
-      <div style={styles.container}>
-        <div style={styles.loadingOverlay}>
-          <span>⏳ Chargement des données...</span>
-        </div>
-      </div>
-    );
+    return <ModernLoader message="Chargement de votre tableau de bord..." />;
   }
 
   if (error) {
@@ -972,11 +1074,30 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           <div style={styles.breadcrumb}>
             <span style={styles.breadcrumbLink}>Accueil</span>
             <span> › </span>
-            <span>Tableau de bord - {userProfile?.departement || 'DGE'}</span>
+            <span>
+              {userProfile?.isDirecteur 
+                ? 'Tableau de bord - Direction' 
+                : userProfile?.fonction?.toLowerCase().includes('chef')
+                ? `Tableau de bord - ${userProfile.departement || 'Chef de département'}`
+                : `Tableau de bord - ${userProfile?.departement || 'Mes activités'}`
+              }
+            </span>
           </div>
-          <h1 style={styles.title}>Tableau de bord</h1>
+          <h1 style={styles.title}>
+            {userProfile?.isDirecteur 
+              ? '📊 Vue Globale - Direction' 
+              : userProfile?.fonction?.toLowerCase().includes('chef')
+              ? `📋 Département ${userProfile.departement}`
+              : '📝 Mes Activités'
+            }
+          </h1>
           <p style={styles.subtitle}>
-            Vue d'ensemble de vos activités - {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+            {userProfile?.isDirecteur 
+              ? 'Vue consolidée de tous les départements'
+              : userProfile?.fonction?.toLowerCase().includes('chef')
+              ? `Gestion et suivi de votre département`
+              : 'Suivi de vos activités personnelles'
+            } - {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
           </p>
         </div>
         
@@ -1013,8 +1134,22 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
       </div>
 
-      {/* Filtres */}
+      {/* Filtres - Adaptés selon le rôle */}
       <div style={styles.filterBar}>
+        {/* Sélecteur de département (uniquement pour Directeur) */}
+        {userProfile?.isDirecteur && (
+          <select 
+            style={styles.select}
+            value={departementFilter}
+            onChange={(e) => setDepartementFilter(e.target.value as any)}
+          >
+            <option value="all">🌍 Tous les départements</option>
+            <option value="DA">📊 DA - Département Analyse</option>
+            <option value="DSE">✅ DSE - Surveillance Engagements</option>
+            <option value="DPNP">💰 DPNP - Prêts Non Performants</option>
+          </select>
+        )}
+
         <div style={styles.periodTabs}>
           <button
             style={{
@@ -1045,10 +1180,28 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           </button>
         </div>
 
+        {/* Bouton Exporter - Visible pour tous */}
         <button style={styles.exportButton} onClick={handleExport}>
           <span>📥</span>
           <span>Exporter</span>
         </button>
+        
+        {/* Filtre département - Uniquement pour le Directeur */}
+        {userProfile?.isDirecteur && (
+          <select 
+            style={styles.select}
+            value={userProfile.departement || 'all'}
+            onChange={(e) => {
+              // Logique pour changer de vue département
+              console.log('Changement de département:', e.target.value);
+            }}
+          >
+            <option value="all">Tous les départements</option>
+            <option value="DA">DA - Département Analyse</option>
+            <option value="DSE">DSE - Surveillance des Engagements</option>
+            <option value="DPNP">DPNP - Prêts Non Performants</option>
+          </select>
+        )}
       </div>
 
       {/* Métriques - Adaptées selon le rôle */}

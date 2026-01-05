@@ -13,7 +13,7 @@ import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyseT
 import DepartmentDashboardDSE from './components/DepartmentDashboardDSETailwind'
 import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNPTailwind'
 import DirectorDashboard from './components/DirectorDashboard'
-import ReportsDashboard from './components/ReportsDashboard'
+import ReportsDashboardModern from './components/ReportsDashboardModern'
 import ObjectifsManagement from './components/ObjectifsManagement'
 import DiagnosticPanel from './components/DiagnosticPanel'
 import CategoryActivitiesPage from './components/CategoryActivitiesPage'
@@ -275,7 +275,7 @@ function AppModern() {
       
       // Nouveau module unifié Rapports & Analyses
       case 'reports-dashboard':
-        return <ReportsDashboard userProfile={userProfile} />
+        return <ReportsDashboardModern userProfile={userProfile} />
       
       case 'validation':
         return (

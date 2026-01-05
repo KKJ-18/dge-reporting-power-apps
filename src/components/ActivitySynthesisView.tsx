@@ -807,7 +807,35 @@ const ActivitySynthesisView: React.FC = () => {
       )}
 
       {/* Statistiques rapides */}
-      {allRecords.length > 0 && (
+      {isLoading && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '60px 20px',
+          gap: '16px',
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '4px solid #FEE2E2',
+            borderTop: '4px solid #DC2626',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }}></div>
+          <p style={{ color: '#6B7280', fontSize: '14px' }}>Chargement des données...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* Statistiques rapides */}
+      {!isLoading && allRecords.length > 0 && (
         <div className="quick-stats">
           <div className="stat-card">
             <div className="stat-icon">📊</div>
@@ -846,7 +874,7 @@ const ActivitySynthesisView: React.FC = () => {
       )}
 
       {/* Onglets de vue */}
-      {allRecords.length > 0 && (
+      {!isLoading && allRecords.length > 0 && (
         <div className="view-tabs">
           <button
             className={`view-tab ${viewMode === 'detailed' ? 'active' : ''}`}
@@ -871,9 +899,20 @@ const ActivitySynthesisView: React.FC = () => {
 
       {/* Contenu principal */}
       <div className="synthesis-content">
-        {viewMode === 'detailed' && renderDetailedView()}
-        {viewMode === 'user-summary' && renderUserSummaryView()}
-        {viewMode === 'department-summary' && renderDepartmentSummaryView()}
+        {!isLoading && allRecords.length === 0 && (
+          <div className="empty-state" style={{ padding: '60px 20px', textAlign: 'center' }}>
+            <div style={{ fontSize: '64px', marginBottom: '16px' }}>📊</div>
+            <h3 style={{ color: '#1F2937', marginBottom: '8px' }}>Aucune donnée disponible</h3>
+            <p style={{ color: '#6B7280' }}>Chargez des données en cliquant sur "Charger les données"</p>
+          </div>
+        )}
+        {!isLoading && allRecords.length > 0 && (
+          <>
+            {viewMode === 'detailed' && renderDetailedView()}
+            {viewMode === 'user-summary' && renderUserSummaryView()}
+            {viewMode === 'department-summary' && renderDepartmentSummaryView()}
+          </>
+        )}
       </div>
 
       {/* Modal de détails */}

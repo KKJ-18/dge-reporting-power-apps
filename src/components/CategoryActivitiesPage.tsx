@@ -3,30 +3,28 @@ import { CategoryData, ActivityItem, DepartmentData } from '../config/department
 import { UserProfile } from '../services/UserProfileService';
 import ModalTailwind from './ModalTailwind';
 
-// Import des formulaires spécialisés pour autres catégories
-import FormSuiviTransmission from './forms/FormSuiviTransmission';
-import FormEvaluationDelais from './forms/FormEvaluationDelais';
+// Import du formulaire universel pour les dossiers avec détails clients
+import FormDossiersRestructurationV2 from './forms/FormDossiersRestructurationV2';
+
+// Import des formulaires DA (Département Analyse)
 import FormAdminEngagementsAnalyse from './forms/FormAdminEngagementsAnalyse';
 import FormSuiviMEP from './forms/FormSuiviMEP';
 import FormActivitesAnnexes from './forms/FormActivitesAnnexes';
 
-// Import des formulaires individuels pour Crédit Classique
-import FormDossiersRecus from './forms/FormDossiersRecus';
-import FormDossiersComites from './forms/FormDossiersComites';
+// Import des formulaires Crédit Classique spécifiques (non-dossiers)
 import FormFAR from './forms/FormFAR';
 import FormNotesCirculation from './forms/FormNotesCirculation';
-import FormDossiersAnalyse from './forms/FormDossiersAnalyse';
-import FormDossiersRisque from './forms/FormDossiersRisque';
-import FormDossiersRenvoyes from './forms/FormDossiersRenvoyes';
-import FormDossiersConformite from './forms/FormDossiersConformite';
-import FormDossiersAttenteComite from './forms/FormDossiersAttenteComite';
 import FormSCRG from './forms/FormSCRG';
 import FormSuiviRegularisation from './forms/FormSuiviRegularisation';
 import FormDelaisCreditClassique from './forms/FormDelaisCreditClassique';
 
+// Formulaire générique pour les autres activités
+import SimpleActivityForm from './forms/SimpleActivityForm';
+
 import './CategoryActivitiesPage.css';
 
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
+
 
 interface CategoryActivitiesPageProps {
   category: CategoryData;
@@ -37,15 +35,103 @@ interface CategoryActivitiesPageProps {
 }
 
 type ActivityType = 'visites' | 'formations' | 'procedures' | 'etudes';
+type FormType = 'credit-classique' | 'credit-programme' | 'admin-engagements' | 'suivi-mep' | 'activites-annexes' |
+  'situation-mep-dse' | 'accords-dse' | 'contrats-dse' | 'restructuration-dpnp' | 'anomalies-dpnp' |
+  'visite-clientele' | 'formation-unites' | 'recherche-anomalie';
+
 type CreditClassiqueFormType = 'dossiers-recus' | 'dossiers-comites' | 'far' | 'notes-circulation' | 
   'dossiers-analyse' | 'dossiers-risque' | 'dossiers-renvoyes' | 'dossiers-conformite' | 
   'dossiers-attente-comite' | 'scrg' | 'suivi-regularisation' | 'delais-credit';
 
 /**
+ * Mapping exact des activités SharePoint vers les formulaires
+ * Basé sur les noms exacts qui viennent de la base de données
+ */
+const ACTIVITY_TO_FORM_MAP: Record<string, {
+  formType: FormType;
+  creditClassiqueType?: CreditClassiqueFormType;
+  props?: any;
+}> = {
+  // ========== DÉPARTEMENT DA: CRÉDIT CLASSIQUE ==========
+  'Dossiers reçus des unités': { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' },
+  'Dossiers présentés aux différents comités de crédit': { formType: 'credit-classique', creditClassiqueType: 'dossiers-comites' },
+  'FAR': { formType: 'credit-classique', creditClassiqueType: 'far' },
+  'Note de circulation': { formType: 'credit-classique', creditClassiqueType: 'notes-circulation' },
+  'Dossiers en cours d\'analyse': { formType: 'credit-classique', creditClassiqueType: 'dossiers-analyse' },
+  'Dossiers en attente de l\'avis de risque': { formType: 'credit-classique', creditClassiqueType: 'dossiers-risque' },
+  'Dossiers renvoyés': { formType: 'credit-classique', creditClassiqueType: 'dossiers-renvoyes' },
+  'Dossiers en attente de l\'avis de la conformité': { formType: 'credit-classique', creditClassiqueType: 'dossiers-conformite' },
+  'Dossiers en attente du comité de crédit': { formType: 'credit-classique', creditClassiqueType: 'dossiers-attente-comite' },
+  'Dossiers CONSEIL en attente avis du SCRG': { formType: 'credit-classique', creditClassiqueType: 'scrg' },
+  'Suivi de la régularisation CC4, CCCA': { formType: 'credit-classique', creditClassiqueType: 'suivi-regularisation' },
+  'Evaluation des délais de traitement des crédits classiques': { formType: 'credit-classique', creditClassiqueType: 'delais-credit' },
+  
+  // ========== DÉPARTEMENT DA: CRÉDIT PROGRAMME ==========
+  'Dossiers de programme reçus des unités': { formType: 'credit-programme' },
+  'Dossiers de programme présentés aux différents comités de crédit': { formType: 'credit-programme', props: { requiresComite: true } },
+  'Dossiers de programme transmis à la DSE': { formType: 'credit-programme' },
+  'Evaluation des délais de traitement des crédits programmes': { formType: 'credit-programme' },
+  
+  // ========== DÉPARTEMENT DA: ADMINISTRATION DES ENGAGEMENTS ==========
+  'Mise à jour des montants des engagements après versements': { formType: 'admin-engagements' },
+  'Levée des réserves': { formType: 'admin-engagements' },
+  'Avenant': { formType: 'admin-engagements' },
+  'Mise en place partielle': { formType: 'admin-engagements' },
+  'Caducité': { formType: 'admin-engagements' },
+  'Mainlevée': { formType: 'admin-engagements' },
+  
+  // ========== DÉPARTEMENT DA: SUIVI MEP ==========
+  'Dossiers de crédits classiques en cours de MEP': { formType: 'suivi-mep' },
+  'Dossiers de crédit programme en cours de MEP': { formType: 'suivi-mep' },
+  
+  // ========== DÉPARTEMENT DSE: SITUATION MISE EN PLACE ==========
+  'Crédits amortissables': { formType: 'situation-mep-dse' },
+  'Découvert': { formType: 'situation-mep-dse' },
+  'Acceptations': { formType: 'situation-mep-dse' },
+  'Cautions': { formType: 'situation-mep-dse' },
+  'Affacturage': { formType: 'situation-mep-dse' },
+  'Restructuration': { formType: 'situation-mep-dse' },
+  
+  // ========== DÉPARTEMENT DSE: ACCORDS DE CLASSEMENT ==========
+  'Autorisation de mobilisation de créances commerciales': { formType: 'accords-dse' },
+  'Accord de classement': { formType: 'accords-dse' },
+  
+  // ========== DÉPARTEMENT DSE: CONTRATS ==========
+  'Avance sur facture': { formType: 'contrats-dse' },
+  'Préfinancement': { formType: 'contrats-dse' },
+  
+  // ========== DÉPARTEMENT DPNP: RESTRUCTURATION ==========
+  'Dossiers de restructuration reçus': { formType: 'restructuration-dpnp' },
+  'Dossiers de restructuration présentés aux différents comités': { formType: 'restructuration-dpnp' },
+  'Dossiers de restructuration transmis à la DSE': { formType: 'restructuration-dpnp' },
+  
+  // ========== DÉPARTEMENT DPNP: ANOMALIES ==========
+  'Suivi des anomalies clients sur les engagements par trésorerie': { formType: 'anomalies-dpnp' },
+  'Suivi des anomalies clients leasing': { formType: 'anomalies-dpnp' },
+  'Clients appelés pour régularisation': { formType: 'anomalies-dpnp' },
+  'Clients régularisés': { formType: 'anomalies-dpnp' },
+  
+  // ========== DÉPARTEMENT DPNP: RECHERCHE CLIENTS ==========
+  'Clients en anomalie': { formType: 'recherche-anomalie' },
+  
+  // ========== DÉPARTEMENT DPNP: VISITES ==========
+  'Visites de proximité auprès des unités': { formType: 'visite-clientele' },
+  
+  // ========== DÉPARTEMENT DPNP: FORMATIONS ==========
+  'Formations auprès des unités': { formType: 'formation-unites' },
+  
+  // ========== ACTIVITÉS ANNEXES (Tous départements) ==========
+  'Visites terrain': { formType: 'activites-annexes', props: { activityType: 'visites' } },
+  'Formations': { formType: 'activites-annexes', props: { activityType: 'formations' } },
+  'Elaboration de procédures': { formType: 'activites-annexes', props: { activityType: 'procedures' } },
+  'Etudes': { formType: 'activites-annexes', props: { activityType: 'etudes' } },
+};
+
+/**
  * Détecte automatiquement le type de formulaire basé sur la catégorie et le nom de l'activité
  */
 function detectFormType(categoryName: string, activityLabel: string): {
-  formType: 'credit-classique' | 'suivi-transmission' | 'evaluation-delais' | 'admin-engagements' | 'suivi-mep' | 'activites-annexes';
+  formType: FormType;
   creditClassiqueType?: CreditClassiqueFormType;
   props?: {
     requiresComite?: boolean;
@@ -53,8 +139,19 @@ function detectFormType(categoryName: string, activityLabel: string): {
     activityType?: ActivityType;
   };
 } {
-  const categoryLower = categoryName.toLowerCase();
+  // 1. Essayer d'abord le mapping exact
+  if (ACTIVITY_TO_FORM_MAP[activityLabel]) {
+    return ACTIVITY_TO_FORM_MAP[activityLabel];
+  }
+  
+  // 2. RÈGLE AUTOMATIQUE : Si l'activité contient "dossier(s)", utiliser le formulaire avec détails clients
   const activityLower = activityLabel.toLowerCase();
+  if (activityLower.includes('dossier') || activityLower.includes('dossiers')) {
+    return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus', props: { requiresDetails: true } };
+  }
+  
+  // 3. Fallback sur l'ancien système de pattern matching
+  const categoryLower = categoryName.toLowerCase();
 
   // Crédit Classique - Mapping individuel pour chaque activité
   if (categoryLower.includes('crédit classique') || categoryLower.includes('credit classique')) {
@@ -99,11 +196,7 @@ function detectFormType(categoryName: string, activityLabel: string): {
 
   // Crédit Programme
   if (categoryLower.includes('crédit programme') || categoryLower.includes('credit programme')) {
-    if (activityLower.includes('délai') || activityLower.includes('delai')) {
-      return { formType: 'evaluation-delais' };
-    }
-    const requiresComite = activityLower.includes('comité') || activityLower.includes('comite');
-    return { formType: 'suivi-transmission', props: { requiresComite } };
+    return { formType: 'credit-programme' };
   }
 
   // Administration des Engagements
@@ -175,26 +268,81 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
     };
 
     switch (config.formType) {
+      // ========== CRÉDIT CLASSIQUE (DA) ==========
       case 'credit-classique':
+        // Si requiresDetails est true, utiliser le formulaire avec détails clients
+        if (config.props?.requiresDetails) {
+          return (
+            <FormDossiersRestructurationV2
+              activityName={selectedActivity.label}
+              onClose={handleCloseActivityModal}
+              onSave={handleActivitySave}
+            />
+          );
+        }
+        
+        // Sinon utiliser les formulaires spécifiques
         switch (config.creditClassiqueType) {
           case 'dossiers-recus':
-            return <FormDossiersRecus {...commonProps} />;
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
           case 'dossiers-comites':
-            return <FormDossiersComites {...commonProps} />;
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
+          case 'dossiers-analyse':
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
+          case 'dossiers-risque':
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
+          case 'dossiers-renvoyes':
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
+          case 'dossiers-conformite':
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
+          case 'dossiers-attente-comite':
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
           case 'far':
             return <FormFAR {...commonProps} />;
           case 'notes-circulation':
             return <FormNotesCirculation {...commonProps} />;
-          case 'dossiers-analyse':
-            return <FormDossiersAnalyse {...commonProps} />;
-          case 'dossiers-risque':
-            return <FormDossiersRisque {...commonProps} />;
-          case 'dossiers-renvoyes':
-            return <FormDossiersRenvoyes {...commonProps} />;
-          case 'dossiers-conformite':
-            return <FormDossiersConformite {...commonProps} />;
-          case 'dossiers-attente-comite':
-            return <FormDossiersAttenteComite {...commonProps} />;
           case 'scrg':
             return <FormSCRG {...commonProps} />;
           case 'suivi-regularisation':
@@ -202,26 +350,72 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
           case 'delais-credit':
             return <FormDelaisCreditClassique {...commonProps} />;
           default:
-            return <FormDossiersRecus {...commonProps} />;
+            return (
+              <FormDossiersRestructurationV2
+                activityName={selectedActivity.label}
+                onClose={handleCloseActivityModal}
+                onSave={handleActivitySave}
+              />
+            );
         }
 
-      case 'suivi-transmission':
+      // ========== CRÉDIT PROGRAMME (DA) ==========
+      case 'credit-programme':
         return (
-          <FormSuiviTransmission
-            {...commonProps}
-            requiresComite={config.props?.requiresComite || false}
+          <FormDossiersRestructurationV2
+            activityName={selectedActivity.label}
+            onClose={handleCloseActivityModal}
+            onSave={handleActivitySave}
           />
         );
 
-      case 'evaluation-delais':
-        return <FormEvaluationDelais {...commonProps} />;
-
+      // ========== ADMINISTRATION ENGAGEMENTS (DA) ==========
       case 'admin-engagements':
         return <FormAdminEngagementsAnalyse {...commonProps} />;
 
+      // ========== SUIVI MEP (DA) ==========
       case 'suivi-mep':
         return <FormSuiviMEP {...commonProps} />;
 
+      // ========== SITUATION MEP (DSE) ==========
+      case 'situation-mep-dse':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== ACCORDS (DSE) ==========
+      case 'accords-dse':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== CONTRATS (DSE) ==========
+      case 'contrats-dse':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== RESTRUCTURATION (DPNP) ==========
+      case 'restructuration-dpnp':
+        return (
+          <FormDossiersRestructurationV2
+            activityName={selectedActivity.label}
+            onClose={handleCloseActivityModal}
+            onSave={handleActivitySave}
+          />
+        );
+
+      // ========== ANOMALIES (DPNP) ==========
+      case 'anomalies-dpnp':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== VISITE CLIENTÈLE (DPNP) ==========
+      case 'visite-clientele':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== FORMATION UNITÉS (DPNP) ==========
+      case 'formation-unites':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== RECHERCHE ANOMALIE (DPNP) ==========
+      case 'recherche-anomalie':
+        return <SimpleActivityForm {...commonProps} />;
+
+      // ========== ACTIVITÉS ANNEXES (Tous départements) ==========
       case 'activites-annexes':
         return (
           <FormActivitesAnnexes
@@ -234,6 +428,10 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
         return (
           <div className="form-error">
             <p>⚠️ Type de formulaire inconnu: {config.formType}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>
+              Catégorie: {category.name}<br />
+              Activité: {selectedActivity.label}
+            </p>
           </div>
         );
     }

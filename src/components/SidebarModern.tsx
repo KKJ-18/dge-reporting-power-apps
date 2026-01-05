@@ -147,11 +147,13 @@ const styles = {
     whiteSpace: 'nowrap' as const,
     overflow: 'hidden' as const,
     textOverflow: 'ellipsis' as const,
+    outline: 'none', // Supprimer l'outline par défaut
   },
   navItemActive: {
     background: '#DC2626',
     color: '#FFFFFF',
     fontWeight: 600,
+    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.25)', // Ombre subtile au lieu de bordure
   },
   navItemHover: {
     background: '#FEF2F2',
