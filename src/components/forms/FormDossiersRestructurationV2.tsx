@@ -209,7 +209,7 @@ const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props
       // 2. Créer les détails dans DetailsDossiers
       for (const dossier of dossiers) {
         const detailData = {
-          Title: `${activityName} - ${dossier.nomClient}`,
+          Title: activityName,
           NomClient: dossier.nomClient,
           Matricule: dossier.matricule,
           MontantSollicite: dossier.volumeAnomalie,

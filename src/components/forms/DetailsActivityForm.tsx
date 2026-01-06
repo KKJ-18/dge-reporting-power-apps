@@ -93,7 +93,7 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
       if (formData.details && formData.details.length > 0) {
         for (const detail of formData.details) {
           await DetailsDossiersService.create({
-            Title: `${activityName} - ${detail.nomClient}`,
+            Title: activityName,
             NomClient: detail.nomClient,
             Matricule: detail.matricule,
             MontantSollicite: detail.montantSollicite,

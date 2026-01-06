@@ -119,7 +119,7 @@ const FormSuiviAnomalieClient: React.FC<FormSuiviAnomalieClientProps> = ({
 
     try {
       const dataToSave = {
-        Title: `${activityName} - ${formData.nomClient}`,
+        Title: activityName,
         NomClient: formData.nomClient,
         Matricule: formData.matricule,
         MontantSollicite: formData.volumeAnomalie,
