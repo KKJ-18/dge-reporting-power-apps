@@ -9,7 +9,7 @@ export interface ActivityItem {
   requiresCount?: boolean;
   requiresComment?: boolean;
   requiresDetails?: boolean; // Nouveau: indique si l'activité nécessite des détails de dossiers
-  detailsType?: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg';
+  detailsType?: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep';
 }
 
 export interface CategoryItem {
@@ -112,7 +112,7 @@ const CATEGORY_ICONS: Record<string, string> = {
  * Mapping des activités qui nécessitent des détails de dossiers
  * Format: { "Nom de l'activité": "type de détails" }
  */
-const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg'> = {
+const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep'> = {
   'Dossiers présentés aux différents comités de crédit': 'comite',
   'Note de circulation': 'note',
   'Dossiers en cours d\'analyse': 'analyse',
@@ -120,7 +120,19 @@ const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'r
   'Dossiers renvoyés': 'renvoye',
   'Dossiers en attente de l\'avis de la conformité': 'conformite',
   'Dossiers en attente du comité de crédit': 'attente_comite',
-  'Dossiers CONSEIL en attente avis du SCRG': 'scrg'
+  'Dossiers CONSEIL en attente avis du SCRG': 'scrg',
+  'Dossiers reçus des unités': 'recus',
+  'Dossiers de programme reçus des unités': 'recus',
+  'Dossiers de programme transmis à la DSE': 'transmission',
+  'Suivi de la régularisation CC4, CCCA': 'regularisation',
+  'Mise à jour des montants des engagements après versements': 'admin_engagement',
+  'Levée des réserves': 'admin_engagement',
+  'Avenant': 'admin_engagement',
+  'Mise en place partielle': 'admin_engagement',
+  'Caducité': 'admin_engagement',
+  'Mainlevée': 'admin_engagement',
+  'Dossiers de crédits classiques en cours de MEP': 'suivi_mep',
+  'Dossiers de crédit programme en cours de MEP': 'suivi_mep'
 };
 
 /**

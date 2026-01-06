@@ -6,7 +6,7 @@ import '../../styles/forms.css';
 
 interface DetailsActivityFormProps {
   activityName: string;
-  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg';
+  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep';
   icon?: string;
   subtitle?: string;
   hasTypeComite?: boolean;
