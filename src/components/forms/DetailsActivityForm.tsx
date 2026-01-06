@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersComitesService';
+import { SituationMEPService } from '../../services/SituationMEPService';
+import { AccordsService } from '../../services/AccordsService';
+import { ContratsService } from '../../services/ContratsService';
 import { DetailsDossiersService } from '../../services/DetailsDossiersService';
 import DossiersDetailsInput, { DossierDetail } from './DossiersDetailsInput';
 import '../../styles/forms.css';
@@ -65,27 +68,84 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
     }));
   };
 
+  const generateReference = (): string => {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0].replace(/-/g, '');
+    const time = now.toTimeString().split(' ')[0].replace(/:/g, '');
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${activityType.toUpperCase()}-${date}-${time}-${random}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     setSaving(true);
     try {
-      // 1. Sauvegarder dans analyse_dossiers_comites
-      const mainData: any = {
-        Title: activityName,
-        Nombre: formData.nombreDossiers,
-        Montant: formData.montantTotal,
-        DateReception: formData.dateReception
-      };
+      // Générer une référence unique pour lier les 2 tables
+      const reference = generateReference();
 
-      if (hasTypeComite && formData.typeComite) {
-        mainData.TypeComite = formData.typeComite;
+      // 1. Déterminer le service à utiliser selon le type d'activité
+      let mainResult: any;
+      
+      if (activityType === 'situation_mep_dse') {
+        // DSE - Situation MEP
+        const mainData = {
+          Title: activityName,
+          Nombre: formData.nombreDossiers,
+          Montant: formData.montantTotal,
+          DateMep: formData.dateReception,
+          Pourcentage: 0,
+          IdDetailClient: reference // Utiliser Reference comme lien
+        };
+        mainResult = await SituationMEPService.create(mainData);
+        
+      } else if (activityType === 'accords_dse') {
+        // DSE - Accords (a déjà Reference)
+        const mainData = {
+          Title: activityName,
+          Matricule: '', // Sera rempli par les détails individuels
+          Statut: { Value: 'En cours' },
+          MontanPret: formData.montantTotal,
+          MontantDemande: formData.montantTotal,
+          MontantAccorde: 0,
+          Reference: reference
+        };
+        mainResult = await AccordsService.create(mainData);
+        
+      } else if (activityType === 'contrats_dse') {
+        // DSE - Contrats
+        const mainData = {
+          Title: activityName,
+          MatriculeClient: reference, // Utiliser Reference comme lien
+          Montant: formData.montantTotal,
+          DateVersement: formData.dateReception,
+          Duree: 0,
+          Observation: `Référence: ${reference}`
+        };
+        mainResult = await ContratsService.create(mainData);
+        
+      } else {
+        // DA - Toutes les autres activités
+        const mainData: any = {
+          Title: activityName,
+          Nombre: formData.nombreDossiers,
+          Montant: formData.montantTotal,
+          DateReception: formData.dateReception,
+          Reference: reference
+        };
+
+        if (hasTypeComite && formData.typeComite) {
+          mainData.TypeComite = formData.typeComite;
+        }
+
+        mainResult = await AnalyseDossiersComitesService.create(mainData);
       }
-
-      const mainResult = await AnalyseDossiersComitesService.create(mainData);
 
       // Vérifier si la sauvegarde a réussi (gère différents formats de réponse)
       if (mainResult && typeof mainResult === 'object' && 'succeeded' in mainResult && !mainResult.succeeded) {
+        throw new Error('Échec de sauvegarde principale');
+      }
+      if (mainResult && typeof mainResult === 'object' && 'success' in mainResult && !mainResult.success) {
         throw new Error('Échec de sauvegarde principale');
       }
 
@@ -101,7 +161,9 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
             DetailDecision: detail.detailDecision || '',
             ObjetCommentaire: detail.objetCommentaire || '',
             Commentaire: detail.commentaire || '',
-            Comite: detail.comite || ''
+            Comite: detail.comite || '',
+            Reference: reference,
+            Date: formData.dateReception
           });
         }
       }
