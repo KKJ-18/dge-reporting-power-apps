@@ -15,7 +15,14 @@ export const DepartmentFormWrapper: React.FC<DepartmentFormWrapperProps> = ({
   departmentColor
 }) => {
   return (
-    <div style={{ '--dept-color': departmentColor } as React.CSSProperties}>
+    <div 
+      style={{ 
+        '--dept-color': departmentColor,
+        padding: '24px',
+        minHeight: '100vh',
+        background: '#F8FAFC'
+      } as React.CSSProperties}
+    >
       {children}
     </div>
   );
