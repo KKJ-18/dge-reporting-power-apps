@@ -1292,56 +1292,61 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           gap: '16px',
           padding: '20px'
         }}>
-          {/* Carte - Saisie d'Activités */}
-          <button
-            className="quick-access-card"
-            style={{
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-            }}
-            onClick={() => onModuleSelect?.('activities')}
-          >
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-              Nouvelle Saisie
-            </div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-              Enregistrer une activité
-            </div>
-          </button>
+          {/* Cartes communes - Uniquement pour Chef/Agent (pas pour Directeur) */}
+          {!userProfile?.isDirecteur && (
+            <>
+              {/* Carte - Saisie d'Activités */}
+              <button
+                className="quick-access-card"
+                style={{
+                  background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+                }}
+                onClick={() => onModuleSelect?.('activities')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Nouvelle Saisie
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Enregistrer une activité
+                </div>
+              </button>
 
-          {/* Carte - Synthèse */}
-          <button
-            className="quick-access-card"
-            style={{
-              background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
-            }}
-            onClick={() => onModuleSelect?.('synthesis')}
-          >
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-              Synthèse
-            </div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-              Vue d'ensemble des activités
-            </div>
-          </button>
+              {/* Carte - Synthèse */}
+              <button
+                className="quick-access-card"
+                style={{
+                  background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
+                }}
+                onClick={() => onModuleSelect?.('synthesis')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Synthèse
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Vue d'ensemble des activités
+                </div>
+              </button>
 
-          {/* Carte - Rapports */}
-          <button
-            className="quick-access-card"
-            style={{
-              background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
-            }}
-            onClick={() => onModuleSelect?.('reports')}
-          >
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📈</div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-              Rapports
-            </div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-              Analyses et statistiques
-            </div>
-          </button>
+              {/* Carte - Rapports */}
+              <button
+                className="quick-access-card"
+                style={{
+                  background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
+                }}
+                onClick={() => onModuleSelect?.('reports')}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📈</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
+                  Rapports
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
+                  Analyses et statistiques
+                </div>
+              </button>
+            </>
+          )}
 
           {/* Cartes Départements - Pour le Directeur uniquement */}
           {userProfile?.isDirecteur && (
