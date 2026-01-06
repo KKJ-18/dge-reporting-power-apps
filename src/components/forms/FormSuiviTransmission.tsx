@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnalyseSuiviTransmissionService } from '../../services/AnalyseSuiviTransmissionService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
 
 interface FormData {
   date: string;

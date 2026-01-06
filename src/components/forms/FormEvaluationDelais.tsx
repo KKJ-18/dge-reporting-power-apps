@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnalyseDelaisCreditService } from '../../services/AnalyseDelaisCreditService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
 
 interface FormData {
   date: string;

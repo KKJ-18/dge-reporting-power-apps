@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnalyseSuiviMEPService } from '../../services/AnalyseSuiviMEPService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
 
 interface FormData {
   date: string;

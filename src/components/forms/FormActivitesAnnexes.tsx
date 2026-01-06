@@ -5,6 +5,7 @@ import { ActivitesTransversalesService } from '../../services/ActivitesTransvers
 import { AgenceResauService } from '../../services/AgenceResauService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
 
 type ActivityType = 'visites' | 'formations' | 'procedures' | 'etudes';
 

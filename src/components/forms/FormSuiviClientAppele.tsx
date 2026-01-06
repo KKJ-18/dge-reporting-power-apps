@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { SuiviClientAppeleService } from '../../services/SuiviClientAppeleService';
 import { format } from 'date-fns';
+import '../../styles/forms.css';
 
 
 interface FormSuiviClientAppeleProps {

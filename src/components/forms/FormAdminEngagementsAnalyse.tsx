@@ -3,6 +3,7 @@ import { AnalyseEngagementsService } from '../../services/AnalyseEngagementsServ
 import { AgenceResauService } from '../../services/AgenceResauService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
 
 interface FormData {
   reseau: string;

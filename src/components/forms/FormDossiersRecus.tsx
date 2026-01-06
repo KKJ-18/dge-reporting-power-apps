@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersComitesService';
+import '../../styles/forms.css';
 
 interface FormDossiersRecusProps {
   activityName: string;

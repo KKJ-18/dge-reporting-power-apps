@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ContratsService } from '../../services/ContratsService';
 import { format } from 'date-fns';
+import '../../styles/forms.css';
 
 
 interface FormContratsDSEProps {

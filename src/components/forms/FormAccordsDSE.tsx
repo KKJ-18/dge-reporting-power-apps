@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AccordsService } from '../../services/AccordsService';
+import '../../styles/forms.css';
 
 
 interface FormAccordsDSEProps {

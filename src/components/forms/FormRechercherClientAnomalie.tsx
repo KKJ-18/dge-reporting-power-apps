@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RechercherClientAnomalieService } from '../../services/RechercherClientAnomalieService';
+import '../../styles/forms.css';
 
 
 interface Props { 
