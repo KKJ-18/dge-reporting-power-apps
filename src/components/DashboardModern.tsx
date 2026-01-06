@@ -917,15 +917,57 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         ];
         setPieData(newPieData);
 
-        // 11. Mettre à jour les stats
+        // 11. Calculer les variations par rapport à la période précédente
+        // Période précédente (même durée que la période actuelle)
+        const periodDuration = endDate.getTime() - startDate.getTime();
+        const prevStartDate = new Date(startDate.getTime() - periodDuration);
+        const prevEndDate = new Date(startDate.getTime() - 1); // Jour avant la période actuelle
+        
+        // Visites période précédente
+        const visitesPrev = visites.filter((v: any) => {
+          const dateVisite = v.DateVisite ? new Date(v.DateVisite) : null;
+          return dateVisite && dateVisite >= prevStartDate && dateVisite <= prevEndDate;
+        }).length;
+        const visitesChange = visitesPrev > 0 
+          ? Math.round(((visitesFiltered.length - visitesPrev) / visitesPrev) * 100)
+          : visitesFiltered.length > 0 ? 100 : 0;
+        
+        // Taux recouvrement période précédente
+        const recouvrementsPrev = recouvrements.filter((r: any) => {
+          const dateAction = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
+          return dateAction && dateAction >= prevStartDate && dateAction <= prevEndDate;
+        });
+        const recouvrementCompletePrev = recouvrementsPrev.filter((r: any) => 
+          r.Statut?.Value === 'Terminé' || r.Statut?.Value === 'Complété' || r.Statut?.Value === 'Exécuté'
+        ).length;
+        const tauxRecouvrementPrev = recouvrementsPrev.length > 0 
+          ? Math.round((recouvrementCompletePrev / recouvrementsPrev.length) * 100)
+          : 0;
+        const tauxChange = tauxRecouvrementPrev > 0
+          ? Math.round(tauxRecouvrement - tauxRecouvrementPrev)
+          : tauxRecouvrement;
+        
+        // Dossiers en cours - comparer avec période précédente
+        const accordsPrev = accords.filter((a: any) => {
+          const dateCreation = a.Created ? new Date(a.Created) : null;
+          return dateCreation && dateCreation <= prevEndDate;
+        });
+        const accordsEnCoursPrev = accordsPrev.filter((a: any) => 
+          a.Statut?.Value === 'En cours' || a.Statut?.Value === 'En attente' || !a.Statut
+        ).length;
+        const dossiersChange = accordsEnCoursPrev > 0
+          ? Math.round(((accordsEnCours - accordsEnCoursPrev) / accordsEnCoursPrev) * 100)
+          : accordsEnCours > 0 ? 100 : 0;
+
+        // 12. Mettre à jour les stats avec les vraies valeurs calculées
         setStats({
           visitesPlanned: visitesFiltered.length,
-          visitesChange: 12,
+          visitesChange,
           tauxRecouvrement,
-          tauxChange: 5,
+          tauxChange,
           dossiersEnCours: accordsEnCours,
-          dossiersChange: -3,
-          objectifMensuel: progressObjectif || 92,
+          dossiersChange,
+          objectifMensuel: progressObjectif || 0,
         });
 
       } catch (err) {
@@ -1186,23 +1228,6 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           <span>📥</span>
           <span>Exporter</span>
         </button>
-        
-        {/* Filtre département - Uniquement pour le Directeur */}
-        {userProfile?.isDirecteur && (
-          <select 
-            style={styles.select}
-            value={userProfile.departement || 'all'}
-            onChange={(e) => {
-              // Logique pour changer de vue département
-              console.log('Changement de département:', e.target.value);
-            }}
-          >
-            <option value="all">Tous les départements</option>
-            <option value="DA">DA - Département Analyse</option>
-            <option value="DSE">DSE - Surveillance des Engagements</option>
-            <option value="DPNP">DPNP - Prêts Non Performants</option>
-          </select>
-        )}
       </div>
 
       {/* Métriques - Adaptées selon le rôle */}
