@@ -57,17 +57,23 @@ type PeriodFilter = 'week' | 'month' | 'quarter';
 // Styles inline
 const styles = {
   container: {
-    padding: '24px',
-    background: '#F8FAFC',
+    padding: '32px',
+    background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
     minHeight: '100vh',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: '24px',
+    marginBottom: '32px',
+    background: 'white',
+    padding: '24px 28px',
+    borderRadius: '16px',
+    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
+    border: '1px solid #E5E7EB',
     flexWrap: 'wrap' as const,
-    gap: '16px',
+    gap: '20px',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   },
   headerLeft: {
     flex: 1,
@@ -82,31 +88,33 @@ const styles = {
     textDecoration: 'none',
   },
   title: {
-    fontSize: '28px',
+    fontSize: '32px',
     fontWeight: 700,
     color: '#1F2937',
     margin: 0,
+    letterSpacing: '-0.5px',
   },
   subtitle: {
     fontSize: '14px',
     color: '#6B7280',
-    margin: '4px 0 0 0',
+    margin: '8px 0 0 0',
   },
   headerRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '14px',
     flexWrap: 'wrap' as const,
   },
   searchBox: {
     display: 'flex',
     alignItems: 'center',
-    background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '8px 12px',
-    gap: '8px',
-    minWidth: '200px',
+    background: '#F9FAFB',
+    border: '1.5px solid #E5E7EB',
+    borderRadius: '10px',
+    padding: '10px 16px',
+    gap: '10px',
+    minWidth: '280px',
+    transition: 'all 0.2s ease',
   },
   searchInput: {
     border: 'none',
@@ -115,134 +123,139 @@ const styles = {
     color: '#374151',
     width: '100%',
     background: 'transparent',
+    fontWeight: 500,
   },
   searchIcon: {
     color: '#9CA3AF',
-    fontSize: '16px',
+    fontSize: '18px',
   },
   notificationBtn: {
     position: 'relative' as const,
-    background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '8px 12px',
+    background: '#F9FAFB',
+    border: '1.5px solid #E5E7EB',
+    borderRadius: '10px',
+    padding: '10px 12px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    transition: 'all 0.2s ease',
   },
   notificationBadge: {
     position: 'absolute' as const,
-    top: '-4px',
-    right: '-4px',
+    top: '-6px',
+    right: '-6px',
     background: '#DC2626',
     color: 'white',
     fontSize: '10px',
-    fontWeight: 600,
+    fontWeight: 700,
     borderRadius: '50%',
-    width: '18px',
-    height: '18px',
+    width: '20px',
+    height: '20px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  newButton: {
-    background: '#DC2626',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '10px 16px',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
+    border: '2px solid white',
   },
   filterBar: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    marginBottom: '24px',
+    gap: '14px',
+    marginBottom: '28px',
     flexWrap: 'wrap' as const,
+    background: 'white',
+    padding: '16px 20px',
+    borderRadius: '12px',
+    border: '1px solid #E5E7EB',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
   },
   select: {
-    background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '8px 12px',
+    background: '#F9FAFB',
+    border: '1.5px solid #E5E7EB',
+    borderRadius: '10px',
+    padding: '10px 14px',
     fontSize: '14px',
+    fontWeight: 500,
     color: '#374151',
     cursor: 'pointer',
-    minWidth: '150px',
+    minWidth: '180px',
+    transition: 'all 0.2s ease',
   },
   periodTabs: {
     display: 'flex',
-    background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
+    background: '#F9FAFB',
+    border: '1.5px solid #E5E7EB',
+    borderRadius: '10px',
     overflow: 'hidden',
   },
   periodTab: {
-    padding: '8px 16px',
-    fontSize: '13px',
-    fontWeight: 500,
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontWeight: 600,
     cursor: 'pointer',
     border: 'none',
     background: 'transparent',
     color: '#6B7280',
-    transition: 'all 0.15s ease',
+    transition: 'all 0.2s ease',
   },
   periodTabActive: {
     background: '#DC2626',
     color: 'white',
   },
   exportButton: {
-    background: '#10B981',
+    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
-    padding: '8px 16px',
+    borderRadius: '10px',
+    padding: '10px 20px',
     fontSize: '14px',
     fontWeight: 600,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '8px',
     marginLeft: 'auto',
+    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
+    transition: 'all 0.2s ease',
   },
   metricsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '16px',
-    marginBottom: '24px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '20px',
+    marginBottom: '28px',
   },
   metricCard: {
     background: 'white',
-    borderRadius: '12px',
-    padding: '20px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+    borderRadius: '14px',
+    padding: '24px',
+    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
+    border: '1px solid #E5E7EB',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   },
   metricLabel: {
     fontSize: '13px',
     color: '#6B7280',
-    marginBottom: '8px',
+    marginBottom: '10px',
+    fontWeight: 500,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
   },
   metricValue: {
-    fontSize: '32px',
+    fontSize: '36px',
     fontWeight: 700,
     color: '#1F2937',
     lineHeight: 1,
   },
   metricChange: {
-    fontSize: '12px',
-    marginTop: '8px',
+    fontSize: '13px',
+    marginTop: '10px',
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
+    fontWeight: 600,
   },
   metricChangePositive: {
     color: '#10B981',
@@ -251,25 +264,27 @@ const styles = {
     color: '#EF4444',
   },
   metricIcon: {
-    width: '48px',
-    height: '48px',
+    width: '52px',
+    height: '52px',
     borderRadius: '12px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
+    fontSize: '26px',
   },
   chartsRow: {
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
-    gap: '24px',
-    marginBottom: '24px',
+    gap: '20px',
+    marginBottom: '28px',
   },
   card: {
     background: 'white',
-    borderRadius: '12px',
-    padding: '20px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+    borderRadius: '14px',
+    padding: '24px',
+    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
+    border: '1px solid #E5E7EB',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   },
   cardHeader: {
     display: 'flex',
@@ -278,8 +293,8 @@ const styles = {
     marginBottom: '20px',
   },
   cardTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
+    fontSize: '18px',
+    fontWeight: 700,
     color: '#1F2937',
     margin: 0,
   },
@@ -288,14 +303,15 @@ const styles = {
     gap: '8px',
   },
   chartTab: {
-    padding: '6px 12px',
-    fontSize: '12px',
-    fontWeight: 500,
+    padding: '6px 14px',
+    fontSize: '13px',
+    fontWeight: 600,
     cursor: 'pointer',
-    border: '1px solid #E5E7EB',
-    borderRadius: '6px',
-    background: 'white',
+    border: '1.5px solid #E5E7EB',
+    borderRadius: '8px',
+    background: '#F9FAFB',
     color: '#6B7280',
+    transition: 'all 0.2s ease',
   },
   chartTabActive: {
     background: '#FEF2F2',
@@ -818,29 +834,36 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
 
         setAlerts(newAlerts);
 
-        // 9. Préparer les données du graphique en ligne - Activité hebdomadaire
-        // Calculer les activités par jour sur les 7 derniers jours
+        // 9. Préparer les données du graphique en ligne - Activité sur la période filtrée
+        // Utiliser les données FILTRÉES (visites, recouvrements, accords déjà filtrés ci-dessus)
         const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-        const today = new Date();
-        const last7Days: ChartDataPoint[] = [];
+        const today = endDate; // Utiliser la fin de période filtrée
+        const periodStart = startDate; // Utiliser le début de période filtrée
+        const chartDataPoints: ChartDataPoint[] = [];
         
-        for (let i = 6; i >= 0; i--) {
+        // Calculer le nombre de jours dans la période
+        const daysDiff = Math.ceil((today.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
+        const numPoints = Math.min(daysDiff, 30); // Max 30 points pour la lisibilité
+        
+        for (let i = numPoints - 1; i >= 0; i--) {
           const date = new Date(today);
           date.setDate(today.getDate() - i);
           const dayIndex = date.getDay();
-          const dayName = jours[dayIndex === 0 ? 6 : dayIndex - 1]; // Ajuster pour commencer par Lun
+          const dayName = jours[dayIndex === 0 ? 6 : dayIndex - 1];
           
-          // Compter les activités créées ce jour
-          const dayStart = new Date(date.setHours(0, 0, 0, 0));
-          const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+          // Compter les activités créées ce jour (utiliser les données FILTRÉES)
+          const dayStart = new Date(date);
+          dayStart.setHours(0, 0, 0, 0);
+          const dayEnd = new Date(date);
+          dayEnd.setHours(23, 59, 59, 999);
           
-          const visitesJour = visites.filter((v: any) => {
-            const d = v.Created ? new Date(v.Created) : null;
+          const visitesJour = visitesFiltered.filter((v: any) => {
+            const d = v.DateVisite ? new Date(v.DateVisite) : (v.Created ? new Date(v.Created) : null);
             return d && d >= dayStart && d <= dayEnd;
           }).length;
           
-          const recouvrementsJour = recouvrements.filter((r: any) => {
-            const d = r.Created ? new Date(r.Created) : null;
+          const recouvrementsJour = recouvrementsPeriode.filter((r: any) => {
+            const d = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
             return d && d >= dayStart && d <= dayEnd;
           }).length;
           
@@ -849,29 +872,35 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
             return d && d >= dayStart && d <= dayEnd;
           }).length;
           
-          last7Days.push({
+          chartDataPoints.push({
             label: dayName,
             value: visitesJour + recouvrementsJour + accordsJour,
             date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
           });
         }
-        setChartData(last7Days);
+        setChartData(chartDataPoints);
 
-        // 10. Préparer les données du donut - Statut des dossiers
-        // Compter les statuts des accords
-        const statutEnCours = accords.filter((a: any) => 
+        // 10. Préparer les données du donut - Statut des dossiers (FILTRÉS par période)
+        // Filtrer les accords dans la période actuelle
+        const accordsPeriode = accords.filter((a: any) => {
+          const d = a.Created ? new Date(a.Created) : null;
+          return d && d >= startDate && d <= endDate;
+        });
+        
+        // Compter les statuts des accords dans la période
+        const statutEnCours = accordsPeriode.filter((a: any) => 
           a.Statut?.Value === 'En cours' || !a.Statut
         ).length;
-        const statutValide = accords.filter((a: any) => 
+        const statutValide = accordsPeriode.filter((a: any) => 
           a.Statut?.Value === 'Validé' || a.Statut?.Value === 'Approuvé'
         ).length;
-        const statutEnAttente = accords.filter((a: any) => 
+        const statutEnAttente = accordsPeriode.filter((a: any) => 
           a.Statut?.Value === 'En attente' || a.Statut?.Value === 'Pending'
         ).length;
-        const statutTermine = accords.filter((a: any) => 
+        const statutTermine = accordsPeriode.filter((a: any) => 
           a.Statut?.Value === 'Terminé' || a.Statut?.Value === 'Clôturé'
         ).length;
-        const statutRejete = accords.filter((a: any) => 
+        const statutRejete = accordsPeriode.filter((a: any) => 
           a.Statut?.Value === 'Rejeté' || a.Statut?.Value === 'Refusé'
         ).length;
         
@@ -1009,44 +1038,87 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
     );
   }, [visitesRecentes, searchText]);
 
-  // Fonction d'export CSV
+  // Fonction d'export CSV améliorée
   const handleExport = () => {
-    if (allRawData.length === 0) {
+    if (allRawData.length === 0 && filteredVisites.length === 0) {
       alert('Aucune donnée à exporter');
       return;
     }
 
     try {
-      // Préparer les données pour l'export
-      const exportData = filteredVisites.map(v => ({
-        Client: v.client,
-        Date: v.date,
-        Statut: v.statut
-      }));
+      const dateStr = new Date().toISOString().split('T')[0];
+      const period = periodFilter === 'week' ? 'semaine' : periodFilter === 'month' ? 'mois' : 'trimestre';
+      
+      // Données des KPIs
+      const kpiData = [
+        ['INDICATEURS CLÉS', ''],
+        ['Total activités', stats.visitesPlanned.toString()],
+        ['Variation', `${stats.visitesChange > 0 ? '+' : ''}${stats.visitesChange}%`],
+        ['Taux de réalisation', `${stats.tauxRecouvrement}%`],
+        ['Variation taux', `${stats.tauxChange > 0 ? '+' : ''}${stats.tauxChange}%`],
+        ['Dossiers en cours', stats.dossiersEnCours.toString()],
+        ['Variation dossiers', `${stats.dossiersChange > 0 ? '+' : ''}${stats.dossiersChange}%`],
+        ['Objectif mensuel', `${stats.objectifMensuel}%`],
+        ['', ''],
+      ];
+
+      // Données du graphique d'activités
+      const chartDataExport = [
+        ['ACTIVITÉ HEBDOMADAIRE', ''],
+        ['Date', 'Nombre d\'activités'],
+        ...chartData.map(d => [d.date || d.label, d.value.toString()])
+      ];
+
+      // Données du donut (statuts)
+      const pieDataExport = [
+        ['', ''],
+        ['STATUT DES DOSSIERS', ''],
+        ['Statut', 'Nombre', 'Pourcentage'],
+        ...pieData.map(d => [d.label, (d.count || 0).toString(), `${d.value}%`])
+      ];
+
+      // Données des visites récentes
+      const visitesExport = [
+        ['', ''],
+        ['ACTIVITÉS RÉCENTES', ''],
+        ['Client', 'Date', 'Statut'],
+        ...filteredVisites.map(v => [v.client, v.date, v.statut])
+      ];
+
+      // Combiner toutes les données
+      const allData = [
+        ['TABLEAU DE BORD - EXPORT', ''],
+        ['Période', period],
+        ['Date export', new Date().toLocaleDateString('fr-FR')],
+        ['Utilisateur', userProfile?.email || ''],
+        ['Département', departementFilter === 'all' ? 'Tous' : departementFilter],
+        ['', ''],
+        ...kpiData,
+        ...chartDataExport,
+        ...pieDataExport,
+        ...visitesExport
+      ];
 
       // Générer le CSV
-      const headers = Object.keys(exportData[0] || {});
-      const csvContent = [
-        headers.join(';'),
-        ...exportData.map(row => 
-          headers.map(h => `"${String((row as any)[h] || '').replace(/"/g, '""')}"`).join(';')
-        )
-      ].join('\n');
+      const csvContent = allData.map(row => 
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';')
+      ).join('\n');
 
       // Télécharger le fichier
       const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      const dateStr = new Date().toISOString().split('T')[0];
-      link.download = `dashboard-export-${dateStr}.csv`;
+      link.download = `dashboard-export-${period}-${dateStr}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      
+      alert(`✅ Export réussi: dashboard-export-${period}-${dateStr}.csv`);
     } catch (error) {
       console.error('Erreur export:', error);
-      alert('Erreur lors de l\'export');
+      alert('❌ Erreur lors de l\'export');
     }
   };
 
@@ -1145,34 +1217,22 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
         
         <div style={styles.headerRight}>
-          <div style={styles.searchBox}>
+          <div style={styles.searchBox} className="dashboard-searchbox">
             <span style={styles.searchIcon}>🔍</span>
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder="Rechercher des activités..."
               style={styles.searchInput}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
           
-          <button style={styles.notificationBtn}>
+          <button style={styles.notificationBtn} className="dashboard-notification-btn">
             <span>🔔</span>
             {alerts.length > 0 && (
               <span style={styles.notificationBadge}>{alerts.length}</span>
             )}
-          </button>
-          
-          <button style={styles.newButton} onClick={() => {
-            // Rediriger vers le bon module selon le rôle
-            if (userProfile?.departement) {
-              onModuleSelect?.('activities');
-            } else {
-              onModuleSelect?.('activities');
-            }
-          }}>
-            <span>+</span>
-            <span>Nouvelle Saisie</span>
           </button>
         </div>
       </div>
@@ -1183,6 +1243,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         {userProfile?.isDirecteur && (
           <select 
             style={styles.select}
+            className="dashboard-select"
             value={departementFilter}
             onChange={(e) => setDepartementFilter(e.target.value as any)}
           >
@@ -1199,6 +1260,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               ...styles.periodTab,
               ...(periodFilter === 'week' ? styles.periodTabActive : {}),
             }}
+            className={`dashboard-period-tab ${periodFilter === 'week' ? 'active' : ''}`}
             onClick={() => setPeriodFilter('week')}
           >
             Cette semaine
@@ -1208,6 +1270,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               ...styles.periodTab,
               ...(periodFilter === 'month' ? styles.periodTabActive : {}),
             }}
+            className={`dashboard-period-tab ${periodFilter === 'month' ? 'active' : ''}`}
             onClick={() => setPeriodFilter('month')}
           >
             Ce mois
@@ -1217,6 +1280,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
               ...styles.periodTab,
               ...(periodFilter === 'quarter' ? styles.periodTabActive : {}),
             }}
+            className={`dashboard-period-tab ${periodFilter === 'quarter' ? 'active' : ''}`}
             onClick={() => setPeriodFilter('quarter')}
           >
             Trimestre
@@ -1224,7 +1288,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
 
         {/* Bouton Exporter - Visible pour tous */}
-        <button style={styles.exportButton} onClick={handleExport}>
+        <button style={styles.exportButton} className="dashboard-export-btn" onClick={handleExport}>
           <span>📥</span>
           <span>Exporter</span>
         </button>
@@ -1233,7 +1297,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
       {/* Métriques - Adaptées selon le rôle */}
       <div style={styles.metricsGrid}>
         {/* Métrique 1 - Adaptée selon département */}
-        <div style={styles.metricCard}>
+        <div style={styles.metricCard} className="dashboard-metric-card">
           <div>
             <p style={styles.metricLabel}>
               {userProfile?.departement === 'DA' ? 'Analyses réalisées' :
@@ -1255,7 +1319,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
 
         {/* Métrique 2 - Taux de réalisation */}
-        <div style={styles.metricCard}>
+        <div style={styles.metricCard} className="dashboard-metric-card">
           <div>
             <p style={styles.metricLabel}>
               {userProfile?.departement === 'DPNP' ? 'Taux de recouvrement' : 'Taux de réalisation'}
@@ -1271,7 +1335,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
 
         {/* Métrique 3 - Dossiers */}
-        <div style={styles.metricCard}>
+        <div style={styles.metricCard} className="dashboard-metric-card">
           <div>
             <p style={styles.metricLabel}>
               {userProfile?.departement === 'DA' ? 'Dossiers en analyse' :
@@ -1290,7 +1354,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
 
         {/* Métrique 4 - Objectif */}
-        <div style={styles.metricCard}>
+        <div style={styles.metricCard} className="dashboard-metric-card">
           <div>
             <p style={styles.metricLabel}>
               {userProfile?.isDirecteur ? 'Performance globale' : 'Objectif mensuel'}
@@ -1306,14 +1370,13 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         </div>
       </div>
 
-      {/* Accès Rapides aux Activités */}
-      <div style={styles.card}>
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>🚀 Accès Rapides</h3>
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+      {/* Graphiques - Activité et Statuts */}
+      <div style={styles.chartsRow}>
+        {/* Graphique d'activité hebdomadaire */}
+        <div style={styles.card} className="dashboard-chart-card">
+          <div style={styles.cardHeader}>
+            <h3 style={styles.cardTitle}>📈 Activité hebdomadaire</h3>
+          </div>
           gap: '16px',
           padding: '20px'
         }}>
