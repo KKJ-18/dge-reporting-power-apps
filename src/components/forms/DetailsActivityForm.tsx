@@ -88,14 +88,14 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
       let mainResult: any;
       
       if (activityType === 'situation_mep_dse') {
-        // DSE - Situation MEP
+        // DSE - Situation MEP (a maintenant Reference)
         const mainData = {
           Title: activityName,
           Nombre: formData.nombreDossiers,
           Montant: formData.montantTotal,
           DateMep: formData.dateReception,
           Pourcentage: 0,
-          IdDetailClient: reference // Utiliser Reference comme lien
+          Reference: reference
         };
         mainResult = await SituationMEPService.create(mainData);
         
@@ -113,14 +113,13 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
         mainResult = await AccordsService.create(mainData);
         
       } else if (activityType === 'contrats_dse') {
-        // DSE - Contrats
+        // DSE - Contrats (a maintenant Reference)
         const mainData = {
           Title: activityName,
-          MatriculeClient: reference, // Utiliser Reference comme lien
           Montant: formData.montantTotal,
           DateVersement: formData.dateReception,
           Duree: 0,
-          Observation: `Référence: ${reference}`
+          Reference: reference
         };
         mainResult = await ContratsService.create(mainData);
         

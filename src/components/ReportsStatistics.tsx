@@ -128,15 +128,18 @@ const ReportsStatistics: React.FC = () => {
       
       // Filtrage par rôle
       if (userProfile.isDirecteur) {
-        // Directeur : tous les utilisateurs SAUF lui-même
-        users = users.filter(u => u.email.toLowerCase() !== userProfile.email.toLowerCase());
+        // Directeur : TOUS les utilisateurs (peut voir tous les départements)
+        // Si un département est sélectionné, les utilisateurs sont déjà filtrés par le service
+        // Pas de filtre supplémentaire nécessaire
       } else if (userProfile.fonction?.toLowerCase().includes('chef')) {
-        // Chef de département : uniquement son département
+        // Chef de département : TOUS les utilisateurs de son département
+        // Vérifier que le département sélectionné est le sien
         if (selectedDepartment !== userProfile.departement) {
           users = []; // Ne peut pas voir d'autres départements
         }
+        // Sinon, garder tous les utilisateurs du département (pas de filtre)
       } else {
-        // Utilisateur normal : uniquement ses propres données
+        // Agent : uniquement ses propres données
         users = users.filter(u => u.email.toLowerCase() === userProfile.email.toLowerCase());
       }
       
