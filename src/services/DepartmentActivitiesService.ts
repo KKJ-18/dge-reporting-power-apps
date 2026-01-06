@@ -9,7 +9,7 @@ export interface ActivityItem {
   requiresCount?: boolean;
   requiresComment?: boolean;
   requiresDetails?: boolean; // Nouveau: indique si l'activité nécessite des détails de dossiers
-  detailsType?: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep';
+  detailsType?: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep' | 'situation_mep_dse' | 'accords_dse' | 'contrats_dse';
 }
 
 export interface CategoryItem {
@@ -112,7 +112,8 @@ const CATEGORY_ICONS: Record<string, string> = {
  * Mapping des activités qui nécessitent des détails de dossiers
  * Format: { "Nom de l'activité": "type de détails" }
  */
-const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep'> = {
+const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep' | 'situation_mep_dse' | 'accords_dse' | 'contrats_dse'> = {
+  // ========== DA ==========
   'Dossiers présentés aux différents comités de crédit': 'comite',
   'Note de circulation': 'note',
   'Dossiers en cours d\'analyse': 'analyse',
@@ -132,7 +133,19 @@ const ACTIVITIES_WITH_DETAILS: Record<string, 'comite' | 'note' | 'analyse' | 'r
   'Caducité': 'admin_engagement',
   'Mainlevée': 'admin_engagement',
   'Dossiers de crédits classiques en cours de MEP': 'suivi_mep',
-  'Dossiers de crédit programme en cours de MEP': 'suivi_mep'
+  'Dossiers de crédit programme en cours de MEP': 'suivi_mep',
+  
+  // ========== DSE ==========
+  'Crédits amortissables': 'situation_mep_dse',
+  'Découvert': 'situation_mep_dse',
+  'Acceptations': 'situation_mep_dse',
+  'Cautions': 'situation_mep_dse',
+  'Affacturage': 'situation_mep_dse',
+  'Restructuration': 'situation_mep_dse',
+  'Autorisation de mobilisation de créances commerciales': 'accords_dse',
+  'Accord de classement': 'accords_dse',
+  'Avance sur facture': 'contrats_dse',
+  'Préfinancement': 'contrats_dse'
 };
 
 /**
