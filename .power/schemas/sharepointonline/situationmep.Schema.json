@@ -184,6 +184,37 @@
           },
           "maxLength": 255
         },
+        "Created": {
+          "title": "Created",
+          "description": "When this item was created.",
+          "type": "string",
+          "format": "date-time",
+          "x-ms-permission": "read-only",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "ne"
+            ]
+          }
+        },
+        "Reference": {
+          "title": "Reference",
+          "type": "string",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "startswith"
+            ]
+          },
+          "maxLength": 255
+        },
         "OData__ColorTag": {
           "title": "Color Tag",
           "type": "string",
@@ -213,24 +244,6 @@
         "Modified": {
           "title": "Modified",
           "description": "When this item was last changed.",
-          "type": "string",
-          "format": "date-time",
-          "x-ms-permission": "read-only",
-          "x-ms-sort": "asc,desc",
-          "x-ms-capabilities": {
-            "filterFunctions": [
-              "eq",
-              "gt",
-              "ge",
-              "lt",
-              "le",
-              "ne"
-            ]
-          }
-        },
-        "Created": {
-          "title": "Created",
-          "description": "When this item was created.",
           "type": "string",
           "format": "date-time",
           "x-ms-permission": "read-only",
@@ -712,6 +725,7 @@
           "DateMep",
           "Pourcentage",
           "IdDetailClient",
+          "Reference",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
@@ -720,7 +734,9 @@
           "Montant",
           "DateMep",
           "Pourcentage",
-          "IdDetailClient"
+          "IdDetailClient",
+          "Created",
+          "Reference"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
@@ -728,7 +744,9 @@
           "Montant",
           "DateMep",
           "Pourcentage",
-          "IdDetailClient"
+          "IdDetailClient",
+          "Created",
+          "Reference"
         ]
       }
     }

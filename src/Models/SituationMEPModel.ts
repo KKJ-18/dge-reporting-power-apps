@@ -11,10 +11,11 @@ export interface SituationMEP {
   DateMep?: string;
   Pourcentage?: number;
   IdDetailClient?: string;
+  Created?: string;
+  Reference?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;
-  Created?: string;
   "Author#Claims"?: string;
   Author?: Record<string, unknown>;
   "Editor#Claims"?: string;
