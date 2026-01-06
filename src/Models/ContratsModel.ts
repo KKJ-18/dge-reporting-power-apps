@@ -11,10 +11,12 @@ export interface Contrats {
   DateVersement?: string;
   Duree?: number;
   Observation?: string;
+  Created?: string;
+  Date?: string;
+  Reference?: string;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;
-  Created?: string;
   "Author#Claims"?: string;
   Author?: Record<string, unknown>;
   "Editor#Claims"?: string;
