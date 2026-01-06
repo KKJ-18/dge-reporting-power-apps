@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../../styles/forms.css';
 
 export interface DossierDetail {
   nomClient: string;

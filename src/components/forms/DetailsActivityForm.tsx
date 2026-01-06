@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { AnalyseDossiersComitesService } from '../../services/AnalyseDossiersComitesService';
 import { DetailsDossiersService } from '../../services/DetailsDossiersService';
 import DossiersDetailsInput, { DossierDetail } from './DossiersDetailsInput';
+import '../../styles/forms.css';
 
 interface DetailsActivityFormProps {
   activityName: string;
-  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite';
+  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg';
   icon?: string;
   subtitle?: string;
   hasTypeComite?: boolean;
