@@ -117,18 +117,63 @@ export class ActivitySynthesisService {
     }
 
     try {
-      const result = await UtilisateursService.getAll({
-        filter: `Departement/Value eq '${departmentId}'`
-      });
+      // Si pas de département ou "all", récupérer tous les utilisateurs
+      const options: any = {};
+      
+      if (departmentId && departmentId !== '' && departmentId !== 'all') {
+        // Les départements sont DA, DSE, DPNP (valeurs simples)
+        // Essayer d'abord sans lookup (champ direct)
+        options.filter = `Departement eq '${departmentId}'`;
+      }
 
-      const users = (result?.data || result?.value || []).map((u: any) => ({
-        email: u.Email?.toLowerCase() || '',
+      let result = await UtilisateursService.getAll(options);
+      let allUsers = result?.data || result?.value || [];
+
+      // Si aucun résultat avec le filtre direct, essayer avec lookup
+      if (departmentId && departmentId !== '' && departmentId !== 'all' && allUsers.length === 0) {
+        console.log(`⚠️ Aucun résultat avec filtre direct, essai avec lookup Departement/Value...`);
+        options.filter = `Departement/Value eq '${departmentId}'`;
+        result = await UtilisateursService.getAll(options);
+        allUsers = result?.data || result?.value || [];
+      }
+
+      // Si toujours aucun résultat, récupérer tous et filtrer côté client
+      let users = allUsers;
+      if (departmentId && departmentId !== '' && departmentId !== 'all' && allUsers.length === 0) {
+        console.log(`⚠️ Aucun utilisateur trouvé avec les filtres, récupération de tous les utilisateurs...`);
+        const allResult = await UtilisateursService.getAll();
+        const allData = allResult?.data || allResult?.value || [];
+        console.log(`📋 ${allData.length} utilisateurs totaux récupérés`);
+        
+        // Afficher les départements disponibles pour debug
+        const deptSample = allData.slice(0, 5).map((u: any) => ({
+          email: u.Email,
+          title: u.Title,
+          dept: u.Departement?.Value || u.Departement || u['Departement#Id'] || 'N/A'
+        }));
+        console.log('🔍 Exemple d\'utilisateurs:', deptSample);
+        
+        users = allData.filter((u: any) => {
+          // Essayer plusieurs propriétés pour le département
+          const userDept = u.Departement?.Value || u.Departement || u['Departement#Id'] || '';
+          const match = userDept === departmentId || String(userDept).toLowerCase() === departmentId.toLowerCase();
+          return match;
+        });
+        console.log(`✅ ${users.length} utilisateurs trouvés après filtrage côté client pour ${departmentId}`);
+      }
+
+      const mappedUsers = users.map((u: any) => ({
+        email: (u.Email || '').toLowerCase(),
         name: u.Title || u.Nom || u.Email || 'Inconnu'
-      }));
+      })).filter((u: { email: string; name: string }) => u.email); // Filtrer les utilisateurs sans email
 
       // Mettre en cache
-      this.departmentUsersCache.set(departmentId, users);
-      return users;
+      this.departmentUsersCache.set(departmentId, mappedUsers);
+      console.log(`✅ ${mappedUsers.length} utilisateurs chargés pour département: ${departmentId || 'tous'}`);
+      if (mappedUsers.length > 0) {
+        console.log('📧 Emails:', mappedUsers.slice(0, 3).map((u: { email: string; name: string }) => u.email));
+      }
+      return mappedUsers;
     } catch (error) {
       console.error(`Erreur récupération utilisateurs département ${departmentId}:`, error);
       return [];
@@ -147,7 +192,7 @@ export class ActivitySynthesisService {
    */
   private static extractAuthorInfo(record: any): { email: string; name: string } {
     // Essayer différentes propriétés pour l'auteur
-    const authorEmail = 
+    let authorEmail = 
       record['Author#Claims'] ||
       record.Author?.Email ||
       record.Author?.EMail ||
@@ -155,6 +200,20 @@ export class ActivitySynthesisService {
       record.CreatedBy?.EMail ||
       record.Author ||
       '';
+
+    // Nettoyer les préfixes SharePoint d'authentification
+    // Formats possibles: 
+    // - i:0#.f|membership|email@domain.com
+    // - i:0#.w|domain\username
+    const emailStr = String(authorEmail).toLowerCase();
+    
+    // Extraire l'email si préfixe SharePoint détecté
+    if (emailStr.includes('|')) {
+      const parts = emailStr.split('|');
+      authorEmail = parts[parts.length - 1]; // Prendre la dernière partie
+    } else {
+      authorEmail = emailStr;
+    }
 
     const authorName = 
       record.Author?.Title ||
@@ -165,7 +224,7 @@ export class ActivitySynthesisService {
       'Inconnu';
 
     return {
-      email: String(authorEmail).toLowerCase(),
+      email: authorEmail,
       name: String(authorName)
     };
   }
@@ -194,6 +253,13 @@ export class ActivitySynthesisService {
           const deptUsers = await this.getDepartmentUsers(filters.departmentId);
           authorizedUserEmails = new Set(deptUsers.map(u => u.email));
           console.log(`👔 Directeur - ${authorizedUserEmails.size} utilisateurs du département ${filters.departmentId}`);
+          console.log('📧 Emails autorisés:', Array.from(authorizedUserEmails).slice(0, 5));
+          
+          // Si aucun utilisateur trouvé, ne pas bloquer - utiliser un Set vide (tous autorisés)
+          if (authorizedUserEmails.size === 0) {
+            console.warn(`⚠️ Aucun utilisateur trouvé pour ${filters.departmentId}, autorisation de tous les utilisateurs`);
+            authorizedUserEmails = new Set(); // Vide = tous autorisés
+          }
         } else {
           // Sinon, pas de filtre (tous les utilisateurs)
           authorizedUserEmails = new Set(); // Vide = tous autorisés
@@ -246,7 +312,7 @@ export class ActivitySynthesisService {
           console.log(`✅ ${name}: ${data.length} records`);
 
           // Filtrer côté client
-          return data
+          const processed = data
             .map((record: any) => {
               const author = this.extractAuthorInfo(record);
               const createdDate = record.Created ? new Date(record.Created) : new Date();
@@ -289,6 +355,23 @@ export class ActivitySynthesisService {
 
               return true;
             });
+          
+          // Log pour debug
+          if (data.length > 0) {
+            console.log(`   → ${name}: ${data.length} records bruts → ${processed.length} après filtrage`);
+            if (processed.length === 0 && data.length > 0) {
+              const sampleAuthor = this.extractAuthorInfo(data[0]);
+              console.warn(`   ⚠️ Aucun record retenu pour ${name}. Exemple auteur: "${sampleAuthor.email}"`);
+              if (authorizedUserEmails.size > 0) {
+                console.warn(`   ⚠️ Emails autorisés (${authorizedUserEmails.size}): ${Array.from(authorizedUserEmails).slice(0, 3).join(', ')}`);
+              }
+            } else if (processed.length > 0) {
+              const sampleAuthors = processed.slice(0, 2).map((p: any) => p.author.email);
+              console.log(`   ✅ Emails retenus: ${sampleAuthors.join(', ')}`);
+            }
+          }
+          
+          return processed;
         } catch (error) {
           console.error(`❌ Erreur sur ${name}:`, error);
           return [];
@@ -313,10 +396,9 @@ export class ActivitySynthesisService {
         const activityConfig = activityConfigMap.get(activityName);
 
         // Appliquer les filtres supplémentaires
-        if (filters.departmentId && activityConfig?.departmentId !== filters.departmentId) {
-          return;
-        }
-
+        // Note: Le filtre département est déjà appliqué via authorizedUserEmails
+        // Pas besoin de filtrer à nouveau par activityConfig.departmentId
+        
         if (filters.categoryId && activityConfig?.categoryName !== filters.categoryId) {
           return;
         }

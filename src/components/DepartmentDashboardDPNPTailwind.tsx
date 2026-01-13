@@ -24,7 +24,6 @@ interface DepartmentDashboardDPNPProps {
   onNavigateToObjectifs?: () => void;
 }
 
-type DossiersRestructurationType = 'dossiers-recus' | 'dossiers-complements' | 'dossier-analyse' | 'dossier-attente-comite' | 'dossier-attente-decision' | 'dossier-accord' | 'dossier-renvoye' | 'dossier-avis-conformite' | 'attente-comite-credit' | 'remboursement-echeance';
 type AnomaliesType = 'anomalies-tresorerie' | 'anomalies-leasing';
 type DepassementType = 'nombre-depassement' | 'depassement-regularise-72h' | 'depassement-attente-regularisation';
 
@@ -172,7 +171,7 @@ const DepartmentDashboardDPNPTailwind: React.FC<DepartmentDashboardDPNPProps> = 
 
     switch (config.formType) {
       case 'dossiers-restructuration':
-        return <FormDossiersRestructurationV2 {...commonProps} specificType={config.specificType as DossiersRestructurationType} />;
+        return <FormDossiersRestructurationV2 {...commonProps} />;
       case 'suivi-anomalies':
         return <FormSuiviAnomalies {...commonProps} specificType={config.specificType as AnomaliesType} />;
       case 'formation-unites':

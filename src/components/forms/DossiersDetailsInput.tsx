@@ -15,7 +15,7 @@ export interface DossierDetail {
 interface DossiersDetailsInputProps {
   nombreDossiers: number;
   onDetailsChange: (details: DossierDetail[], montantTotal: number) => void;
-  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg';
+  activityType: 'comite' | 'note' | 'analyse' | 'risque' | 'renvoye' | 'conformite' | 'attente_comite' | 'scrg' | 'recus' | 'transmission' | 'regularisation' | 'admin_engagement' | 'suivi_mep' | 'situation_mep_dse' | 'accords_dse' | 'contrats_dse';
   initialDetails?: DossierDetail[];
 }
 
@@ -146,7 +146,7 @@ const DossiersDetailsInput: React.FC<DossiersDetailsInputProps> = ({
                     type="text"
                     value={dossier.nomClient}
                     onChange={(e) => updateDossier(index, 'nomClient', e.target.value)}
-                    placeholder="Ex: SARL EXAMPLE"
+                    placeholder="Nom de l'entreprise"
                     required
                   />
                 </div>
@@ -162,7 +162,7 @@ const DossiersDetailsInput: React.FC<DossiersDetailsInputProps> = ({
                       const value = e.target.value.replace(/\D/g, '').slice(0, 7);
                       updateDossier(index, 'matricule', value);
                     }}
-                    placeholder="Ex: 0123456"
+                    placeholder="7 chiffres"
                     maxLength={7}
                     pattern="[0-9]{7}"
                     required
@@ -180,7 +180,7 @@ const DossiersDetailsInput: React.FC<DossiersDetailsInputProps> = ({
                     type="number"
                     value={dossier.montantSollicite || ''}
                     onChange={(e) => updateDossier(index, 'montantSollicite', parseFloat(e.target.value) || 0)}
-                    placeholder="Ex: 50000000"
+                    placeholder="Montant en FCFA"
                     min="0"
                     required
                   />

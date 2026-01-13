@@ -184,28 +184,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">📋 Dossiers présentés aux différents comités de crédit</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.comitesNombre || ''}
-                onChange={(e) => handleChange('comitesNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 5"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.comitesNombre || ''}
+                  onChange={(e) => handleChange('comitesNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.comitesDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.comitesMontant || ''}
+                  onChange={(e) => handleChange('comitesMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.comitesDetails?.length > 0)}
+                  style={formData.comitesDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.comitesNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.comitesNombre}
-                activityType="comite"
-                initialDetails={formData.comitesDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('comitesDetails', details);
-                  handleChange('comitesMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.comitesNombre}
+                    activityType="comite"
+                    initialDetails={formData.comitesDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('comitesDetails', details);
+                      handleChange('comitesMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
             {errors.comitesDetails && <span className="error">{errors.comitesDetails}</span>}
           </div>
@@ -217,28 +239,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">📝 Notes de circulation</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de notes</label>
-              <input
-                type="number"
-                value={formData.notesNombre || ''}
-                onChange={(e) => handleChange('notesNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 3"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de notes</label>
+                <input
+                  type="number"
+                  value={formData.notesNombre || ''}
+                  onChange={(e) => handleChange('notesNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.notesDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.notesMontant || ''}
+                  onChange={(e) => handleChange('notesMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.notesDetails?.length > 0)}
+                  style={formData.notesDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.notesNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.notesNombre}
-                activityType="note"
-                initialDetails={formData.notesDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('notesDetails', details);
-                  handleChange('notesMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque note (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.notesNombre}
+                    activityType="note"
+                    initialDetails={formData.notesDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('notesDetails', details);
+                      handleChange('notesMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
             {errors.notesDetails && <span className="error">{errors.notesDetails}</span>}
           </div>
@@ -250,28 +294,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">🔍 Dossiers en cours d'analyse</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.analyseNombre || ''}
-                onChange={(e) => handleChange('analyseNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 2"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.analyseNombre || ''}
+                  onChange={(e) => handleChange('analyseNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.analyseDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.analyseMontant || ''}
+                  onChange={(e) => handleChange('analyseMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.analyseDetails?.length > 0)}
+                  style={formData.analyseDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.analyseNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.analyseNombre}
-                activityType="analyse"
-                initialDetails={formData.analyseDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('analyseDetails', details);
-                  handleChange('analyseMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.analyseNombre}
+                    activityType="analyse"
+                    initialDetails={formData.analyseDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('analyseDetails', details);
+                      handleChange('analyseMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>
@@ -282,28 +348,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">⚠️ Dossiers en attente de l'avis de risque</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.risqueNombre || ''}
-                onChange={(e) => handleChange('risqueNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 1"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.risqueNombre || ''}
+                  onChange={(e) => handleChange('risqueNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.risqueDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.risqueMontant || ''}
+                  onChange={(e) => handleChange('risqueMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.risqueDetails?.length > 0)}
+                  style={formData.risqueDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.risqueNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.risqueNombre}
-                activityType="risque"
-                initialDetails={formData.risqueDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('risqueDetails', details);
-                  handleChange('risqueMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.risqueNombre}
+                    activityType="risque"
+                    initialDetails={formData.risqueDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('risqueDetails', details);
+                      handleChange('risqueMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>
@@ -314,28 +402,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">↩️ Dossiers renvoyés</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.renvoyesNombre || ''}
-                onChange={(e) => handleChange('renvoyesNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 2"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.renvoyesNombre || ''}
+                  onChange={(e) => handleChange('renvoyesNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.renvoyesDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.renvoyesMontant || ''}
+                  onChange={(e) => handleChange('renvoyesMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.renvoyesDetails?.length > 0)}
+                  style={formData.renvoyesDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.renvoyesNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.renvoyesNombre}
-                activityType="renvoye"
-                initialDetails={formData.renvoyesDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('renvoyesDetails', details);
-                  handleChange('renvoyesMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.renvoyesNombre}
+                    activityType="renvoye"
+                    initialDetails={formData.renvoyesDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('renvoyesDetails', details);
+                      handleChange('renvoyesMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>
@@ -346,28 +456,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">📋 Dossiers en attente de l'avis de la conformité</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.conformiteNombre || ''}
-                onChange={(e) => handleChange('conformiteNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 1"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.conformiteNombre || ''}
+                  onChange={(e) => handleChange('conformiteNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.conformiteDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.conformiteMontant || ''}
+                  onChange={(e) => handleChange('conformiteMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.conformiteDetails?.length > 0)}
+                  style={formData.conformiteDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.conformiteNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.conformiteNombre}
-                activityType="conformite"
-                initialDetails={formData.conformiteDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('conformiteDetails', details);
-                  handleChange('conformiteMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.conformiteNombre}
+                    activityType="conformite"
+                    initialDetails={formData.conformiteDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('conformiteDetails', details);
+                      handleChange('conformiteMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>
@@ -378,28 +510,50 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             <h3 className="card-title">⏳ Dossiers en attente du comité de crédit</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Nombre de dossiers</label>
-              <input
-                type="number"
-                value={formData.attenteComiteNombre || ''}
-                onChange={(e) => handleChange('attenteComiteNombre', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 3"
-                min="0"
-                disabled={readOnly}
-              />
+            <div className="field-row">
+              <div className="field-group">
+                <label>Nombre de dossiers</label>
+                <input
+                  type="number"
+                  value={formData.attenteComiteNombre || ''}
+                  onChange={(e) => handleChange('attenteComiteNombre', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.attenteComiteDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.attenteComiteMontant || ''}
+                  onChange={(e) => handleChange('attenteComiteMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.attenteComiteDetails?.length > 0)}
+                  style={formData.attenteComiteDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
             </div>
 
             {formData.attenteComiteNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.attenteComiteNombre}
-                activityType="attente_comite"
-                initialDetails={formData.attenteComiteDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('attenteComiteDetails', details);
-                  handleChange('attenteComiteMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.attenteComiteNombre}
+                    activityType="attente_comite"
+                    initialDetails={formData.attenteComiteDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('attenteComiteDetails', details);
+                      handleChange('attenteComiteMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>
@@ -417,9 +571,22 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
                   type="number"
                   value={formData.scrgNombre || ''}
                   onChange={(e) => handleChange('scrgNombre', parseInt(e.target.value) || 0)}
-                  placeholder="Ex: 1"
+                  placeholder="Nombre"
                   min="0"
                   disabled={readOnly}
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.scrgDetails?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.scrgMontant || ''}
+                  onChange={(e) => handleChange('scrgMontant', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={readOnly || (formData.scrgDetails?.length > 0)}
+                  style={formData.scrgDetails?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
                 />
               </div>
 
@@ -445,15 +612,22 @@ const CreditClassiqueForm: React.FC<CreditClassiqueFormProps> = ({
             </div>
 
             {formData.scrgNombre > 0 && (
-              <DossiersDetailsInput
-                nombreDossiers={formData.scrgNombre}
-                activityType="scrg"
-                initialDetails={formData.scrgDetails}
-                onDetailsChange={(details, montantTotal) => {
-                  handleChange('scrgDetails', details);
-                  handleChange('scrgMontant', montantTotal);
-                }}
-              />
+              <details style={{ marginTop: '16px' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2563eb' }}>
+                  📝 Saisir les détails de chaque dossier (optionnel)
+                </summary>
+                <div style={{ marginTop: '12px' }}>
+                  <DossiersDetailsInput
+                    nombreDossiers={formData.scrgNombre}
+                    activityType="scrg"
+                    initialDetails={formData.scrgDetails}
+                    onDetailsChange={(details, montantTotal) => {
+                      handleChange('scrgDetails', details);
+                      handleChange('scrgMontant', montantTotal);
+                    }}
+                  />
+                </div>
+              </details>
             )}
           </div>
         </div>

@@ -1024,20 +1024,21 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: var(--neutral-800, #424242);
+  background: #FFFFFF;
   padding: 0.625rem 1.25rem;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .montant-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: #616161;
   font-weight: 500;
   font-size: 0.8125rem;
 }
 
 .montant-value-header {
-  color: #FFFFFF;
+  color: #212121;
   font-size: 1.125rem;
   font-weight: 700;
 }
@@ -1236,7 +1237,13 @@
 }
 
 .dept-da .montant-total-header {
-  background: linear-gradient(135deg, var(--dept-da-primary, #1565C0) 0%, var(--dept-da-primary-dark, #0D47A1) 100%);
+  background: #FFFFFF;
+  border-color: var(--dept-da-primary, #1565C0);
+  border-width: 2px;
+}
+
+.dept-da .montant-value-header {
+  color: var(--dept-da-primary, #1565C0);
 }
 
 .dept-da .dossier-card:hover {
@@ -1264,7 +1271,13 @@
 }
 
 .dept-dse .montant-total-header {
-  background: linear-gradient(135deg, var(--dept-dse-primary, #2E7D32) 0%, var(--dept-dse-primary-dark, #1B5E20) 100%);
+  background: #FFFFFF;
+  border-color: var(--dept-dse-primary, #2E7D32);
+  border-width: 2px;
+}
+
+.dept-dse .montant-value-header {
+  color: var(--dept-dse-primary, #2E7D32);
 }
 
 .dept-dse .dossier-card:hover {
@@ -1292,7 +1305,13 @@
 }
 
 .dept-dpnp .montant-total-header {
-  background: linear-gradient(135deg, var(--dept-dpnp-primary, #E65100) 0%, var(--dept-dpnp-primary-dark, #BF360C) 100%);
+  background: #FFFFFF;
+  border-color: var(--dept-dpnp-primary, #E65100);
+  border-width: 2px;
+}
+
+.dept-dpnp .montant-value-header {
+  color: var(--dept-dpnp-primary, #E65100);
 }
 
 .dept-dpnp .dossier-card:hover {
@@ -1320,7 +1339,13 @@
 }
 
 .dept-direction .montant-total-header {
-  background: linear-gradient(135deg, var(--dept-direction-primary, #B71C1C) 0%, var(--dept-direction-primary-dark, #7F0000) 100%);
+  background: #FFFFFF;
+  border-color: var(--dept-direction-primary, #B71C1C);
+  border-width: 2px;
+}
+
+.dept-direction .montant-value-header {
+  color: var(--dept-direction-primary, #B71C1C);
 }
 
 .dept-direction .dossier-card:hover {

@@ -45,7 +45,6 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
   
   // État pour l'upload de fichier
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedFileUrl, setUploadedFileUrl] = useState('');
   
   // État pour les actions précédentes du client
   const [previousActions, setPreviousActions] = useState<ActionRecouvrement[]>([]);
@@ -92,7 +91,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       const result = await ClientsenAnomalieService.getAll({
         filter: searchFilter,
         top: 1000, // Limiter à 1000 résultats max
-        orderby: 'Created desc'
+        orderBy: ['Created desc']
       });
 
       if (result.success && result.data) {
@@ -176,7 +175,6 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       
       setError(null); // Clear any previous errors
       setUploadedFile(file);
-      setUploadedFileUrl(file.name);
       setFormData(prev => ({ ...prev, Lienpi_x00e8_cejointe: file.name }));
       console.log(`📎 Fichier sélectionné: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
     }
@@ -210,12 +208,14 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
 
       // Mettre à jour l'enregistrement avec le base64
       console.log(`📤 Envoi vers SharePoint (Action ID: ${itemId})...`);
+      // Note: PieceJointeBase64, NomFichier, TypeFichier, TailleFichier ne sont pas dans le modèle généré
+      // Ces champs doivent être ajoutés manuellement au modèle ActionRecouvrementModel.ts
       const updateResult = await ActionRecouvrementService.update(itemId, {
-        PieceJointeBase64: base64,
-        NomFichier: file.name,
-        TypeFichier: file.type,
-        TailleFichier: file.size
-      });
+        // PieceJointeBase64: base64,
+        // NomFichier: file.name,
+        // TypeFichier: file.type,
+        // TailleFichier: file.size
+      } as any);
 
       if (updateResult.success) {
         console.log('✅ Fichier uploadé avec succès vers SharePoint');
@@ -253,7 +253,6 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       DateprochaineAction: ''
     });
     setUploadedFile(null);
-    setUploadedFileUrl('');
   };
   
   // Charger les actions précédentes du client
@@ -262,7 +261,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
     try {
       const result = await ActionRecouvrementService.getAll({
         filter: `Matricule eq '${matricule}'`,
-        orderby: 'Created desc',
+        orderBy: ['Created desc'],
         top: 5 // Afficher les 5 dernières actions
       });
       
@@ -330,7 +329,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       try {
         const previousActionsResult = await ActionRecouvrementService.getAll({
           filter: `Matricule eq '${selectedClient.Matricule}'`,
-          orderby: 'Created desc',
+          orderBy: ['Created desc'],
           top: 1
         });
         
@@ -422,7 +421,6 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
         setSelectedClient(null);
         setShowClientSearch(true);
         setUploadedFile(null);
-        setUploadedFileUrl('');
         setFormData({
           DatePlanification: '',
           DateExc_x00e9_cution: '',
@@ -765,12 +763,12 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
                             <p className="action-origin"><strong>Origine:</strong> {action.Origineimpay_x00e9_}</p>
                           )}
                         </div>
-                        {action.PieceJointeBase64 && (
+                        {(action as any).PieceJointeBase64 && (
                           <FileDownloader 
                             actionId={action.ID!.toString()}
-                            fileName={action.NomFichier}
-                            fileType={action.TypeFichier}
-                            fileSize={action.TailleFichier}
+                            fileName={(action as any).NomFichier}
+                            fileType={(action as any).TypeFichier}
+                            fileSize={(action as any).TailleFichier}
                             showDetails={true}
                           />
                         )}

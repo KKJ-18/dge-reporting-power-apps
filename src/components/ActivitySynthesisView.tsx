@@ -167,13 +167,22 @@ const ActivitySynthesisView: React.FC = () => {
   };
 
   const loadTeamMembers = async () => {
-    if (!selectedDepartment) return;
-
     try {
-      const users = await ActivitySynthesisService.getDepartmentUsers(selectedDepartment);
+      // Si pas de département sélectionné et que c'est un directeur, charger tous les utilisateurs
+      const deptId = selectedDepartment || (userProfile?.isDirecteur ? 'all' : '');
+      
+      if (!deptId) {
+        console.log('⚠️ Aucun département sélectionné et non directeur');
+        setTeamMembers([]);
+        return;
+      }
+
+      const users = await ActivitySynthesisService.getDepartmentUsers(deptId);
       setTeamMembers(users);
+      console.log(`✅ ${users.length} membres d'équipe chargés`);
     } catch (error) {
       console.error('Erreur chargement membres:', error);
+      setTeamMembers([]);
     }
   };
 

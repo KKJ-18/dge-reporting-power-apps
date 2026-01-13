@@ -199,54 +199,86 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
             <h3 className="card-title">ℹ️ Informations générales</h3>
           </div>
           <div className="card-content">
-            <div className="field-group">
-              <label>Date de réception *</label>
-              <input
-                type="date"
-                value={formData.dateReception}
-                onChange={(e) => handleChange('dateReception', e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="field-group">
-              <label>Nombre de dossiers *</label>
-              <input
-                type="number"
-                value={formData.nombreDossiers || ''}
-                onChange={(e) => handleChange('nombreDossiers', parseInt(e.target.value) || 0)}
-                placeholder="Ex: 5"
-                min="0"
-                required
-              />
-            </div>
-
-            {hasTypeComite && (
+            <div className="field-row">
               <div className="field-group">
-                <label>Type de comité *</label>
-                <select
-                  value={formData.typeComite}
-                  onChange={(e) => handleChange('typeComite', e.target.value)}
+                <label>Date de réception *</label>
+                <input
+                  type="date"
+                  value={formData.dateReception}
+                  onChange={(e) => handleChange('dateReception', e.target.value)}
                   required
-                >
-                  <option value="CC1">CC1</option>
-                  <option value="CC2">CC2</option>
-                  <option value="CC3">CC3</option>
-                  <option value="CC4">CC4</option>
-                  <option value="CCCA">CCCA</option>
-                </select>
+                />
               </div>
-            )}
+
+              <div className="field-group">
+                <label>Nombre de dossiers *</label>
+                <input
+                  type="number"
+                  value={formData.nombreDossiers || ''}
+                  onChange={(e) => handleChange('nombreDossiers', parseInt(e.target.value) || 0)}
+                  placeholder="Nombre"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div className="field-group">
+                <label>Montant total (CFA) {formData.details?.length > 0 && '(calculé auto)'}</label>
+                <input
+                  type="number"
+                  value={formData.montantTotal || ''}
+                  onChange={(e) => handleChange('montantTotal', parseFloat(e.target.value) || 0)}
+                  placeholder="Entrez le montant"
+                  min="0"
+                  disabled={formData.details?.length > 0}
+                  style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+                />
+              </div>
+
+              {hasTypeComite && (
+                <div className="field-group">
+                  <label>Type de comité *</label>
+                  <select
+                    value={formData.typeComite}
+                    onChange={(e) => handleChange('typeComite', e.target.value)}
+                    required
+                  >
+                    <option value="CC1">CC1</option>
+                    <option value="CC2">CC2</option>
+                    <option value="CC3">CC3</option>
+                    <option value="CC4">CC4</option>
+                    <option value="CCCA">CCCA</option>
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Section 2: Détails des dossiers */}
-        <DossiersDetailsInput
-          nombreDossiers={formData.nombreDossiers}
-          activityType={activityType}
-          initialDetails={formData.details}
-          onDetailsChange={handleDetailsChange}
-        />
+        {/* Section 2: Détails des dossiers (optionnel) */}
+        {formData.nombreDossiers > 0 && (
+          <details style={{ marginBottom: '20px' }}>
+            <summary style={{ 
+              cursor: 'pointer', 
+              fontWeight: 600, 
+              color: '#2563eb',
+              padding: '12px 16px',
+              background: '#f8f9fa',
+              borderRadius: '8px',
+              border: '1px solid #e9ecef'
+            }}>
+              📝 Saisir les détails de chaque dossier (optionnel)
+            </summary>
+            <div style={{ marginTop: '12px' }}>
+              <DossiersDetailsInput
+                nombreDossiers={formData.nombreDossiers}
+                activityType={activityType}
+                initialDetails={formData.details}
+                onDetailsChange={handleDetailsChange}
+              />
+            </div>
+          </details>
+        )}
 
         <div className="form-actions">
           <button type="button" className="btn btn-secondary" onClick={onCancel}>

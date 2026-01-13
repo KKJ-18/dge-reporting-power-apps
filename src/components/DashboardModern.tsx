@@ -888,21 +888,33 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         });
         
         // Compter les statuts des accords dans la période
-        const statutEnCours = accordsPeriode.filter((a: any) => 
-          a.Statut?.Value === 'En cours' || !a.Statut
-        ).length;
-        const statutValide = accordsPeriode.filter((a: any) => 
-          a.Statut?.Value === 'Validé' || a.Statut?.Value === 'Approuvé'
-        ).length;
-        const statutEnAttente = accordsPeriode.filter((a: any) => 
-          a.Statut?.Value === 'En attente' || a.Statut?.Value === 'Pending'
-        ).length;
-        const statutTermine = accordsPeriode.filter((a: any) => 
-          a.Statut?.Value === 'Terminé' || a.Statut?.Value === 'Clôturé'
-        ).length;
-        const statutRejete = accordsPeriode.filter((a: any) => 
-          a.Statut?.Value === 'Rejeté' || a.Statut?.Value === 'Refusé'
-        ).length;
+        // Support des deux formats: Statut.Value et Statut direct
+        const getStatut = (a: any) => a.Statut?.Value || a.Statut || '';
+        
+        const statutEnCours = accordsPeriode.filter((a: any) => {
+          const statut = getStatut(a).toLowerCase();
+          return statut === 'en cours' || statut === '' || !statut;
+        }).length;
+        
+        const statutValide = accordsPeriode.filter((a: any) => {
+          const statut = getStatut(a).toLowerCase();
+          return statut === 'validé' || statut === 'approuvé' || statut === 'validé' || statut === 'approuve';
+        }).length;
+        
+        const statutEnAttente = accordsPeriode.filter((a: any) => {
+          const statut = getStatut(a).toLowerCase();
+          return statut === 'en attente' || statut === 'pending' || statut === 'attente';
+        }).length;
+        
+        const statutTermine = accordsPeriode.filter((a: any) => {
+          const statut = getStatut(a).toLowerCase();
+          return statut === 'terminé' || statut === 'clôturé' || statut === 'termine' || statut === 'cloture';
+        }).length;
+        
+        const statutRejete = accordsPeriode.filter((a: any) => {
+          const statut = getStatut(a).toLowerCase();
+          return statut === 'rejeté' || statut === 'refusé' || statut === 'rejete' || statut === 'refuse';
+        }).length;
         
         const totalStatuts = statutEnCours + statutValide + statutEnAttente + statutTermine + statutRejete;
         
@@ -1172,7 +1184,7 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           <p>❌ {error}</p>
           <button 
             onClick={() => window.location.reload()}
-            style={{ ...styles.newButton, margin: '16px auto' }}
+            style={{ ...styles.exportButton, margin: '16px auto' }}
           >
             Réessayer
           </button>
@@ -1377,6 +1389,26 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
           <div style={styles.cardHeader}>
             <h3 style={styles.cardTitle}>📈 Activité hebdomadaire</h3>
           </div>
+          {/* Contenu du graphique sera ici */}
+        </div>
+
+        {/* Graphique statuts */}
+        <div style={styles.card} className="dashboard-chart-card">
+          <div style={styles.cardHeader}>
+            <h3 style={styles.cardTitle}>📊 Statut des dossiers</h3>
+          </div>
+          {/* Contenu du pie chart sera ici */}
+        </div>
+      </div>
+
+      {/* Accès Rapides aux Activités */}
+      <div style={styles.card} className="dashboard-chart-card">
+        <div style={styles.cardHeader}>
+          <h3 style={styles.cardTitle}>🚀 Accès Rapides</h3>
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
           gap: '16px',
           padding: '20px'
         }}>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SuiviAnomaliesService } from '../../services/SuiviAnomaliesService';
 import { AgenceResauService } from '../../services/AgenceResauService';
+import { DetailsDossiersService } from '../../services/DetailsDossiersService';
+import DossiersDetailsInput, { DossierDetail } from './DossiersDetailsInput';
 import '../../styles/forms.css';
 
 
@@ -25,6 +27,7 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
     NombreCompte: 0,
     MontantGlobal: 0,
     Agence: '',
+    details: [] as DossierDetail[]
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -49,21 +52,58 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
     }
   };
 
+  const handleDetailsChange = (details: DossierDetail[], montantTotal: number) => {
+    setFormData(prev => ({
+      ...prev,
+      details,
+      MontantGlobal: montantTotal
+    }));
+  };
+
+  const generateReference = (): string => {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0].replace(/-/g, '');
+    const time = now.toTimeString().split(' ')[0].replace(/:/g, '');
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `ANOM-${date}-${time}-${random}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      const reference = generateReference();
+
       const record = {
         Title: activityName,
         NombreCompte: formData.NombreCompte,
         MontantGlobal: formData.MontantGlobal,
         Agence: formData.Agence,
+        Reference: reference
       };
 
       console.log('📤 Envoi FormSuiviAnomalies:', record);
 
       await SuiviAnomaliesService.create(record);
+
+      // Si des détails sont saisis, les sauvegarder
+      if (formData.details && formData.details.length > 0) {
+        for (const detail of formData.details) {
+          await DetailsDossiersService.create({
+            Title: activityName,
+            NomClient: detail.nomClient,
+            Matricule: detail.matricule,
+            MontantSollicite: detail.montantSollicite,
+            Decision: detail.Decision || '',
+            Commentaire: detail.commentaire || '',
+            Comite: formData.Agence, // Utiliser l'agence comme référence
+            Reference: reference,
+            Date: new Date().toISOString().split('T')[0]
+          });
+        }
+      }
+
       setShowSuccess(true);
       
       setTimeout(() => {
@@ -134,13 +174,15 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
           </div>
 
           <div className="form-group">
-            <label>Montant global (FCFA) *</label>
+            <label>Montant global (FCFA) {formData.details?.length > 0 && '(calculé auto)'} *</label>
             <input
               type="number"
               value={formData.MontantGlobal === 0 ? '' : formData.MontantGlobal}
               onChange={(e) => setFormData({ ...formData, MontantGlobal: parseFloat(e.target.value) || 0 })}
               placeholder="0"
               required
+              disabled={formData.details?.length > 0}
+              style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
             />
           </div>
 
@@ -173,6 +215,31 @@ const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({
           </div>
 
         </div>
+
+        {/* Détails des comptes (optionnel) */}
+        {formData.NombreCompte > 0 && (
+          <details style={{ marginBottom: '20px' }}>
+            <summary style={{ 
+              cursor: 'pointer', 
+              fontWeight: 600, 
+              color: '#2563eb',
+              padding: '12px 16px',
+              background: '#f8f9fa',
+              borderRadius: '8px',
+              border: '1px solid #e9ecef'
+            }}>
+              📝 Saisir les détails de chaque compte (optionnel)
+            </summary>
+            <div style={{ marginTop: '12px' }}>
+              <DossiersDetailsInput
+                nombreDossiers={formData.NombreCompte}
+                activityType="analyse"
+                initialDetails={formData.details}
+                onDetailsChange={handleDetailsChange}
+              />
+            </div>
+          </details>
+        )}
 
         <div className="card">
           <div className="card-header">
