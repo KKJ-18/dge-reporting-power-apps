@@ -1,6 +1,7 @@
 .category-activities-page {
   padding: 1.5rem;
   width: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* Navigation header */
@@ -16,19 +17,22 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
+  background: #fff;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .btn-back:hover {
-  background: #e5e7eb;
+  background: #f9fafb;
+  border-color: #d1d5db;
   transform: translateX(-2px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .breadcrumb {
@@ -55,11 +59,17 @@
 /* Category header banner */
 .category-header-banner {
   background: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  border: 1px solid var(--neutral-200, #EEEEEE);
-  border-left: 3px solid var(--neutral-800, #424242);
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #424242;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+}
+
+.category-header-banner:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .category-header-content {
@@ -71,12 +81,12 @@
 .category-icon-large {
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  background: var(--neutral-100, #F5F5F5);
+  background: #f3f4f6;
 }
 
 .category-info {
@@ -84,10 +94,11 @@
 }
 
 .category-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.375rem 0;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .category-description {
@@ -102,10 +113,11 @@
 }
 
 .section-title {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .activities-grid {
@@ -121,29 +133,33 @@
   gap: 1rem;
   padding: 1rem;
   background: #FFFFFF;
-  border-radius: 6px;
-  border: 1px solid var(--neutral-200, #EEEEEE);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-left: 3px solid transparent;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .activity-card:hover {
-  border-color: var(--neutral-400, #BDBDBD);
-  background: var(--neutral-50, #FAFAFA);
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .activity-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #FFFFFF;
   flex-shrink: 0;
-  background: var(--neutral-600, #757575);
+  background: #757575;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .activity-content {
@@ -178,16 +194,17 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #f3f4f6;
   color: #6b7280;
   font-size: 1.25rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .activity-card:hover .action-arrow {
   background: #e5e7eb;
-  transform: translateX(2px);
+  color: #374151;
+  transform: translateX(3px);
 }
 
 /* User info banner */
@@ -243,13 +260,13 @@
 
 .objectif-alert-modal {
   background: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 2rem;
   max-width: 480px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid var(--neutral-200, #EEEEEE);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
 }
 
 .alert-icon {
@@ -302,17 +319,20 @@
 .btn-objectifs {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   background: var(--color-warning, #E65100);
   color: #FFFFFF;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .btn-objectifs:hover {
   background: #BF360C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230, 81, 0, 0.3);
 }
 
 /* Loading modal */
@@ -383,56 +403,21 @@
 }
 
 /* ========================================
-   THÈMES PAR DÉPARTEMENT
+   COULEUR UNIFIÉE DGE
    ======================================== */
 
-/* DA - Bleu */
-.category-activities-page.dept-da .category-header-banner {
-  border-left-color: var(--dept-da-primary, #1565C0);
+.category-activities-page .category-header-banner {
+  border-left-color: #CC0000;
 }
 
-.category-activities-page.dept-da .activity-number {
-  background: var(--dept-da-primary, #1565C0);
+.category-activities-page .activity-number {
+  background: #CC0000;
 }
 
-.category-activities-page.dept-da .activity-card:hover {
-  border-color: var(--dept-da-primary, #1565C0);
+.category-activities-page .activity-card:hover {
+  border-color: #CC0000;
 }
 
-.category-activities-page.dept-da .btn-primary {
-  background: var(--dept-da-primary, #1565C0);
-}
-
-/* DSE - Vert */
-.category-activities-page.dept-dse .category-header-banner {
-  border-left-color: var(--dept-dse-primary, #2E7D32);
-}
-
-.category-activities-page.dept-dse .activity-number {
-  background: var(--dept-dse-primary, #2E7D32);
-}
-
-.category-activities-page.dept-dse .activity-card:hover {
-  border-color: var(--dept-dse-primary, #2E7D32);
-}
-
-.category-activities-page.dept-dse .btn-primary {
-  background: var(--dept-dse-primary, #2E7D32);
-}
-
-/* DPNP - Orange Corporate */
-.category-activities-page.dept-dpnp .category-header-banner {
-  border-left-color: var(--dept-dpnp-primary, #E65100);
-}
-
-.category-activities-page.dept-dpnp .activity-number {
-  background: var(--dept-dpnp-primary, #E65100);
-}
-
-.category-activities-page.dept-dpnp .activity-card:hover {
-  border-color: var(--dept-dpnp-primary, #E65100);
-}
-
-.category-activities-page.dept-dpnp .btn-primary {
-  background: var(--dept-dpnp-primary, #E65100);
+.category-activities-page .btn-primary {
+  background: #CC0000;
 }

@@ -183,8 +183,10 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
   return (
     <div className="form-container">
       <div className="form-header">
-        <h2 className="form-title">{icon} {activityName}</h2>
-        <p className="form-subtitle">{subtitle}</p>
+        <div className="form-title-group">
+          <h2 className="form-title">{icon} {activityName}</h2>
+          {subtitle && <span className="form-badge">{subtitle}</span>}
+        </div>
         {formData.montantTotal > 0 && (
           <div className="montant-total-badge">
             Montant Total: {formData.montantTotal.toLocaleString('fr-FR')} FCFA
@@ -192,66 +194,61 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
         )}
       </div>
 
-      <form onSubmit={handleSubmit}>
-        {/* Section 1: Informations générales */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">ℹ️ Informations générales</h3>
-          </div>
-          <div className="card-content">
-            <div className="field-row">
-              <div className="field-group">
-                <label>Date de réception *</label>
-                <input
-                  type="date"
-                  value={formData.dateReception}
-                  onChange={(e) => handleChange('dateReception', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="field-group">
-                <label>Nombre de dossiers *</label>
-                <input
-                  type="number"
-                  value={formData.nombreDossiers || ''}
-                  onChange={(e) => handleChange('nombreDossiers', parseInt(e.target.value) || 0)}
-                  placeholder="Nombre"
-                  min="0"
-                  required
-                />
-              </div>
-
-              <div className="field-group">
-                <label>Montant total (CFA) {formData.details?.length > 0 && '(calculé auto)'}</label>
-                <input
-                  type="number"
-                  value={formData.montantTotal || ''}
-                  onChange={(e) => handleChange('montantTotal', parseFloat(e.target.value) || 0)}
-                  placeholder="Entrez le montant"
-                  min="0"
-                  disabled={formData.details?.length > 0}
-                  style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
-                />
-              </div>
-
-              {hasTypeComite && (
-                <div className="field-group">
-                  <label>Type de comité *</label>
-                  <select
-                    value={formData.typeComite}
-                    onChange={(e) => handleChange('typeComite', e.target.value)}
-                    required
-                  >
-                    <option value="CC1">CC1</option>
-                    <option value="CC2">CC2</option>
-                    <option value="CC3">CC3</option>
-                    <option value="CC4">CC4</option>
-                    <option value="CCCA">CCCA</option>
-                  </select>
-                </div>
-              )}
+      <form onSubmit={handleSubmit} className="form-body">
+        <div className="form-section">
+          <h3 className="section-title">ℹ️ Informations générales</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label>Date de réception <span className="required">*</span></label>
+              <input
+                type="date"
+                value={formData.dateReception}
+                onChange={(e) => handleChange('dateReception', e.target.value)}
+                required
+              />
             </div>
+
+            <div className="form-group">
+              <label>Nombre de dossiers <span className="required">*</span></label>
+              <input
+                type="number"
+                value={formData.nombreDossiers || ''}
+                onChange={(e) => handleChange('nombreDossiers', parseInt(e.target.value) || 0)}
+                placeholder="Nombre"
+                min="0"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Montant total (FCFA) {formData.details?.length > 0 && '(calculé auto)'}</label>
+              <input
+                type="number"
+                value={formData.montantTotal || ''}
+                onChange={(e) => handleChange('montantTotal', parseFloat(e.target.value) || 0)}
+                placeholder="Entrez le montant"
+                min="0"
+                disabled={formData.details?.length > 0}
+                style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
+              />
+            </div>
+
+            {hasTypeComite && (
+              <div className="form-group">
+                <label>Type de comité <span className="required">*</span></label>
+                <select
+                  value={formData.typeComite}
+                  onChange={(e) => handleChange('typeComite', e.target.value)}
+                  required
+                >
+                  <option value="CC1">CC1</option>
+                  <option value="CC2">CC2</option>
+                  <option value="CC3">CC3</option>
+                  <option value="CC4">CC4</option>
+                  <option value="CCCA">CCCA</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
@@ -281,11 +278,11 @@ const DetailsActivityForm: React.FC<DetailsActivityFormProps> = ({
         )}
 
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+          <button type="button" className="btn-secondary" onClick={onCancel} disabled={saving}>
             Annuler
           </button>
-          <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'Envoi...' : '✓ Soumettre'}
+          <button type="submit" className="btn-primary" disabled={saving}>
+            {saving ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </form>

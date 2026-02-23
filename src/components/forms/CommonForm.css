@@ -2,8 +2,8 @@
 .common-form-container {
   padding: 1.5rem;
   background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .common-form-header {
@@ -40,11 +40,13 @@
 .common-form-field input,
 .common-form-field select,
 .common-form-field textarea {
-  padding: 0.5rem 0.75rem;
+  padding: 0.625rem 0.875rem;
   border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border-radius: 10px;
   font-size: 0.875rem;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-family: 'Inter', system-ui, sans-serif;
+  accent-color: #991b1b;
 }
 
 .common-form-field textarea {
@@ -56,8 +58,8 @@
 .common-form-field select:focus,
 .common-form-field textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #CC0000;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.12);
 }
 
 .common-form-field input:disabled,
@@ -77,32 +79,39 @@
 }
 
 .common-form-button {
-  padding: 0.625rem 1.5rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   border: none;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .common-form-button-primary {
-  background-color: #3b82f6;
+  background-color: #CC0000;
   color: white;
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.25);
 }
 
 .common-form-button-primary:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: #990000;
+  box-shadow: 0 6px 16px rgba(153, 0, 0, 0.3);
+  transform: translateY(-2px);
 }
 
 .common-form-button-secondary {
-  background-color: #f3f4f6;
+  background-color: #fff;
   color: #374151;
   border: 1px solid #d1d5db;
 }
 
 .common-form-button-secondary:hover {
-  background-color: #e5e7eb;
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .common-form-button:disabled {

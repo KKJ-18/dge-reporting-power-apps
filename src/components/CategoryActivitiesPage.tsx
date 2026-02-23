@@ -24,6 +24,7 @@ import SimpleActivityForm from './forms/SimpleActivityForm';
 import './CategoryActivitiesPage.css';
 
 import { DepartmentFormWrapper } from './forms/DepartmentFormWrapper';
+import { resolveAnalyseFormType, resolveDSEFormType, resolveDPNPFormType } from '../config/formResolver';
 
 
 interface CategoryActivitiesPageProps {
@@ -130,7 +131,7 @@ const ACTIVITY_TO_FORM_MAP: Record<string, {
 /**
  * Détecte automatiquement le type de formulaire basé sur la catégorie et le nom de l'activité
  */
-function detectFormType(categoryName: string, activityLabel: string): {
+function detectFormType(departmentId: string, categoryName: string, activityLabel: string): {
   formType: FormType;
   creditClassiqueType?: CreditClassiqueFormType;
   props?: {
@@ -150,74 +151,68 @@ function detectFormType(categoryName: string, activityLabel: string): {
     return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus', props: { requiresDetails: true } };
   }
   
-  // 3. Fallback sur l'ancien système de pattern matching
-  const categoryLower = categoryName.toLowerCase();
-
-  // Crédit Classique - Mapping individuel pour chaque activité
-  if (categoryLower.includes('crédit classique') || categoryLower.includes('credit classique')) {
-    if (activityLower.includes('reçu') || activityLower.includes('recu')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' };
+  // 3. Fallback via registre central par département
+  if (departmentId === 'DA') {
+    const config = resolveAnalyseFormType(categoryName, activityLabel);
+    switch (config.formType) {
+      case 'credit-classique':
+        return {
+          formType: 'credit-classique',
+          creditClassiqueType: config.creditClassiqueType,
+          props: config.props
+        };
+      case 'suivi-transmission':
+      case 'evaluation-delais':
+        return { formType: 'credit-programme' };
+      case 'admin-engagements':
+        return { formType: 'admin-engagements' };
+      case 'suivi-mep':
+        return { formType: 'suivi-mep' };
+      case 'activites-annexes':
+        return { formType: 'activites-annexes', props: config.props };
+      default:
+        return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' };
     }
-    if (activityLower.includes('comité') || activityLower.includes('comite') || activityLower.includes('présenté')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-comites' };
-    }
-    if (activityLower.includes('far')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'far' };
-    }
-    if (activityLower.includes('note')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'notes-circulation' };
-    }
-    if (activityLower.includes('analyse') || activityLower.includes('cours')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-analyse' };
-    }
-    if (activityLower.includes('risque')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-risque' };
-    }
-    if (activityLower.includes('renvoy')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-renvoyes' };
-    }
-    if (activityLower.includes('conformit')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-conformite' };
-    }
-    if (activityLower.includes('attente') && (activityLower.includes('comité') || activityLower.includes('comite'))) {
-      return { formType: 'credit-classique', creditClassiqueType: 'dossiers-attente-comite' };
-    }
-    if (activityLower.includes('scrg') || activityLower.includes('conseil')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'scrg' };
-    }
-    if (activityLower.includes('régularis') || activityLower.includes('regularis') || activityLower.includes('cc4') || activityLower.includes('ccca')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'suivi-regularisation' };
-    }
-    if (activityLower.includes('délai') || activityLower.includes('delai') || activityLower.includes('evaluation')) {
-      return { formType: 'credit-classique', creditClassiqueType: 'delais-credit' };
-    }
-    return { formType: 'credit-classique', creditClassiqueType: 'dossiers-recus' };
   }
 
-  // Crédit Programme
-  if (categoryLower.includes('crédit programme') || categoryLower.includes('credit programme')) {
-    return { formType: 'credit-programme' };
+  if (departmentId === 'DSE') {
+    const config = resolveDSEFormType(categoryName, activityLabel);
+    switch (config.formType) {
+      case 'suivi-mises-en-place':
+        return { formType: 'situation-mep-dse' };
+      case 'aim':
+        return { formType: 'accords-dse' };
+      case 'contrats':
+        return { formType: 'contrats-dse' };
+      case 'projets':
+        return { formType: 'situation-mep-dse' };
+      case 'declaration-reglementaire':
+        return { formType: 'contrats-dse' };
+      case 'autres-activites':
+        return { formType: 'situation-mep-dse' };
+      default:
+        return { formType: 'situation-mep-dse' };
+    }
   }
 
-  // Administration des Engagements
-  if (categoryLower.includes('administration') || categoryLower.includes('engagement')) {
-    return { formType: 'admin-engagements' };
-  }
-
-  // Suivi MEP
-  if (categoryLower.includes('suivi') && (activityLower.includes('mep') || activityLower.includes('mis en place'))) {
-    return { formType: 'suivi-mep' };
-  }
-
-  // Activités Annexes
-  if (categoryLower.includes('annexe') || categoryLower.includes('transversal')) {
-    let activityType: ActivityType = 'visites';
-    if (activityLower.includes('formation')) activityType = 'formations';
-    else if (activityLower.includes('procédure') || activityLower.includes('procedure')) activityType = 'procedures';
-    else if (activityLower.includes('étude') || activityLower.includes('etude')) activityType = 'etudes';
-    else if (activityLower.includes('visite')) activityType = 'visites';
-    
-    return { formType: 'activites-annexes', props: { activityType } };
+  if (departmentId === 'DPNP') {
+    const config = resolveDPNPFormType(categoryName, activityLabel);
+    switch (config.formType) {
+      case 'dossiers-restructuration':
+        return { formType: 'restructuration-dpnp' };
+      case 'formation-unites':
+        return { formType: 'formation-unites' };
+      case 'rechercher-client-anomalie':
+        return { formType: 'recherche-anomalie' };
+      case 'visite-clientele':
+        return { formType: 'visite-clientele' };
+      case 'activites-annexes': {
+        const activityType = config.specificType as ActivityType | undefined;
+        return { formType: 'activites-annexes', props: { activityType: activityType || 'visites' } };
+      }
+      default:
+        return { formType: 'anomalies-dpnp' };
+    }
   }
 
   return { formType: 'credit-classique', props: { requiresComite: false, requiresDetails: false } };
@@ -259,7 +254,7 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
   const renderActivityForm = () => {
     if (!selectedActivity) return null;
 
-    const config = detectFormType(category.name, selectedActivity.label);
+    const config = detectFormType(department.id, category.name, selectedActivity.label);
 
     const commonProps = {
       activityName: selectedActivity.label,
@@ -438,7 +433,7 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
   };
 
   return (
-    <DepartmentFormWrapper departmentColor={department.color}>
+    <DepartmentFormWrapper>
       <div className={`category-activities-page ${getDeptClass()}`}>
         {/* Header avec navigation */}
         <div className="page-header-nav">
@@ -455,9 +450,9 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
         </div>
 
         {/* Header de la catégorie */}
-        <div className="category-header-banner" style={{ borderLeftColor: department.color }}>
+        <div className="category-header-banner" style={{ borderLeftColor: '#CC0000' }}>
           <div className="category-header-content">
-            <div className="category-icon-large" style={{ backgroundColor: `${department.color}15` }}>
+            <div className="category-icon-large" style={{ backgroundColor: 'rgba(204, 0, 0, 0.06)' }}>
               <span>{category.icon}</span>
             </div>
             <div className="category-info">
@@ -481,10 +476,10 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
                 onClick={() => handleActivityClick(activity)}
                 style={{
                   cursor: 'pointer',
-                  borderLeftColor: department.color,
+                  borderLeftColor: '#CC0000',
                 }}
               >
-                <div className="activity-number" style={{ backgroundColor: department.color }}>
+                <div className="activity-number" style={{ backgroundColor: '#CC0000' }}>
                   {index + 1}
                 </div>
                 <div className="activity-content">
@@ -518,9 +513,9 @@ const CategoryActivitiesPage: React.FC<CategoryActivitiesPageProps> = ({
         <ModalTailwind
           isOpen={isActivityModalOpen}
           onClose={handleCloseActivityModal}
-          title=""
+          title={selectedActivity?.label || category.name}
           size="xl"
-          hideHeader
+          departmentColor="primary"
         >
           {renderActivityForm()}
         </ModalTailwind>

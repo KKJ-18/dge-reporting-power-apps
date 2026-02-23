@@ -295,21 +295,12 @@
 }
 
 .custom-dropdown-options::-webkit-scrollbar {
-  width: 6px;
+  display: none;
 }
 
-.custom-dropdown-options::-webkit-scrollbar-track {
-  background: #F3F4F6;
-  border-radius: 3px;
-}
-
-.custom-dropdown-options::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
-  border-radius: 3px;
-}
-
-.custom-dropdown-options::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+.custom-dropdown-options {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Option Item */

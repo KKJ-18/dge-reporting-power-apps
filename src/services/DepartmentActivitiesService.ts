@@ -43,28 +43,41 @@ const CATEGORY_TO_DEPARTMENT: Record<string, 'DA' | 'DSE' | 'DPNP'> = {
   
   // ========================================
   // Département DSE (Direction Surveillance des Engagements)
+  // Réforme DSE: 6 catégories
   // ========================================
-  'Situation Mise en Place': 'DSE',
-  'Accords de Classement': 'DSE',
+  'Suivi des mises en place': 'DSE',
+  'AIM': 'DSE',
+  'AIM — Autorisation Individuelle de Mobilisation': 'DSE',
+  'Autorisation Individuelle de Mobilisation': 'DSE',
   'Contrats': 'DSE',
   'Projets': 'DSE',
-  'Déclaration Règlementaire': 'DSE',
+  'Déclaration Réglementaire': 'DSE',
+  'Déclaration Règlementaire': 'DSE',  // Variante orthographique
+  'Autres Activités': 'DSE',
+  // Anciennes catégories DSE supprimées:
+  // 'Situation Mise en Place' → remplacée par 'Suivi des mises en place'
+  // 'Accords de Classement' → remplacée par 'AIM'
   
   // ========================================
   // Département DPNP (Direction Portefeuille Non Performant)
+  // Réforme DPNP: 8 catégories + 1 GFC
   // ========================================
   'Analyse des dossiers de restructuration': 'DPNP',
-  'Suivi des anomalies engagements par trésorerie': 'DPNP',
+  'Suivi des créances restructurées': 'DPNP',
   'Suivi des anomalies leasing': 'DPNP',
   'Travail de proximité avec les unités': 'DPNP',
-  'Suivi des débits non autorisés': 'DPNP',
   'Recouvrement par versement': 'DPNP',
+  'Recouvrement par versement (après actions de la DCE, pas de porte)': 'DPNP',
   'Suivi de la contagion des comptes': 'DPNP',
-  'Suivi des provisions': 'DPNP',
+  'Recherche des clients particuliers en anomalie à l\'étranger (risque canada)': 'DPNP',
   'Recherche clients en anomalie à l\'étranger': 'DPNP',
   'Recherche clients en anomalie à l\u2019étranger': 'DPNP',  // Apostrophe typographique (U+2019)
   'Suivi des actions de recouvrement pour les GFC': 'DPNP',
   'Suivi des actions de recouvrements pour les GFC': 'DPNP',  // Variante avec 's' au pluriel
+  // Catégories supprimées (réforme DPNP):
+  // 'Suivi des anomalies engagements par trésorerie' → supprimée
+  // 'Suivi des débits non autorisés' → supprimée
+  // 'Suivi des provisions' → supprimée
   
   // ========================================
   // "Activités annexes" est commune à TOUS les départements
@@ -82,22 +95,26 @@ const CATEGORY_ICONS: Record<string, string> = {
   'Administration des engagements': '📊',
   'Suivi des dossiers en cours de MEP': '📈',
   
-  // DSE
-  'Situation Mise en Place': '✅',
-  'Accords de Classement': '📋',
+  // DSE (réforme: 6 catégories)
+  'Suivi des mises en place': '✅',
+  'AIM': '📝',
+  'AIM — Autorisation Individuelle de Mobilisation': '📝',
+  'Autorisation Individuelle de Mobilisation': '📝',
   'Contrats': '📄',
   'Projets': '🚀',
+  'Déclaration Réglementaire': '📑',
   'Déclaration Règlementaire': '📑',
+  'Autres Activités': '📌',
   
-  // DPNP
+  // DPNP (réforme: 8 catégories + 1 GFC)
   'Analyse des dossiers de restructuration': '🔄',
-  'Suivi des anomalies engagements par trésorerie': '⚠️',
+  'Suivi des créances restructurées': '📊',
   'Suivi des anomalies leasing': '🚗',
   'Travail de proximité avec les unités': '🤝',
-  'Suivi des débits non autorisés': '🔴',
   'Recouvrement par versement': '💸',
+  'Recouvrement par versement (après actions de la DCE, pas de porte)': '💸',
   'Suivi de la contagion des comptes': '🔍',
-  'Suivi des provisions': '💼',
+  'Recherche des clients particuliers en anomalie à l\'étranger (risque canada)': '🌍',
   'Recherche clients en anomalie à l\'étranger': '🌍',
   'Recherche clients en anomalie à l\u2019étranger': '🌍',  // Apostrophe typographique (U+2019)
   'Suivi des actions de recouvrement pour les GFC': '📋',
@@ -105,7 +122,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   
   // Commun à tous les départements
   'Activités annexes': '📎',
-  'Autres Activités': '📌'
 };
 
 /**

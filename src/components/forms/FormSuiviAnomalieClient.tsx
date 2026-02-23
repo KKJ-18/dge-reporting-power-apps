@@ -199,8 +199,11 @@ const FormSuiviAnomalieClient: React.FC<FormSuiviAnomalieClientProps> = ({
                 name="matricule"
                 value={formData.matricule}
                 onChange={handleInputChange}
-                placeholder="Ex: CLT123456"
+                placeholder="7 chiffres"
                 required
+                pattern="[0-9]{7}"
+                maxLength={7}
+                title="Le matricule doit contenir exactement 7 chiffres"
               />
             </div>
           </div>

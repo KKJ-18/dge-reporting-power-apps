@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormationUnitesService } from '../../services/FormationUnitesService';
+import { AgenceResauService } from '../../services/AgenceResauService';
 
 
 interface FormFormationUnitesProps {
@@ -14,13 +15,25 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
   onSave
 }) => {
   const [loading, setLoading] = useState(false);
+  const [reseaux, setReseaux] = useState<string[]>([]);
+  const [loadingReseaux, setLoadingReseaux] = useState(false);
   const [formData, setFormData] = useState({
-    NombreAgence: 0,
+    Reseau: '',
     SujetFormation: '',
     NombrePersonnesFormees: 0,
-    Date: new Date().toISOString().split('T')[0],
   });
   const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoadingReseaux(true);
+      try {
+        const result = await AgenceResauService.getAll();
+        const data: any[] = result?.data || result?.value || [];
+        setReseaux(Array.from(new Set(data.map((d: any) => d.NomResau).filter(Boolean))).sort() as string[]);
+      } catch { /* silent */ } finally { setLoadingReseaux(false); }
+    })();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +42,8 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
     try {
       const record = {
         Title: activityName,
-        NombreAgence: formData.NombreAgence,
-        SujetFormation: formData.SujetFormation,
+        SujetFormation: `[${formData.Reseau}] ${formData.SujetFormation}`,
         NombrePersonnesFormees: formData.NombrePersonnesFormees,
-        Date: formData.Date,
       };
 
       console.log('📤 Envoi FormationUnites vers SharePoint:', record);
@@ -86,7 +97,7 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
         </div>
         <div className="form-title-group">
           <h2 className="form-title">{activityName}</h2>
-          <div className="form-badge">Formation des unités</div>
+          <div className="form-badge">Formation sur des thèmes précis</div>
         </div>
       </div>
 
@@ -94,27 +105,29 @@ const FormFormationUnites: React.FC<FormFormationUnitesProps> = ({
         <div className="form-section">
           
           <div className="form-group">
-            <label className="form-label">Date *</label>
-            <input 
-              type="date" 
-              className="form-input"
-              value={formData.Date}
-              onChange={(e) => setFormData({ ...formData, Date: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Nombre d'agences *</label>
-            <input 
-              type="number" 
-              className="form-input"
-              value={formData.NombreAgence === 0 ? '' : formData.NombreAgence}
-              onChange={(e) => setFormData({ ...formData, NombreAgence: parseInt(e.target.value) || 0 })}
-              placeholder="0"
-              required
-              onFocus={(e) => e.currentTarget.select()}
-            />
+            <label className="form-label">Réseau *</label>
+            {loadingReseaux ? (
+              <div className="loading">Chargement...</div>
+            ) : reseaux.length > 0 ? (
+              <select
+                className="form-select"
+                value={formData.Reseau}
+                onChange={(e) => setFormData({ ...formData, Reseau: e.target.value })}
+                required
+              >
+                <option value="">-- Sélectionner un réseau --</option>
+                {reseaux.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            ) : (
+              <input
+                type="text"
+                className="form-input"
+                value={formData.Reseau}
+                onChange={(e) => setFormData({ ...formData, Reseau: e.target.value })}
+                placeholder="Nom du réseau"
+                required
+              />
+            )}
           </div>
 
           <div className="form-group">

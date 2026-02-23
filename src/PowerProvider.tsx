@@ -1,5 +1,6 @@
 import { initialize } from "@pa-client/power-code-sdk/lib/Lifecycle";
 import { useEffect, useState, type ReactNode } from "react";
+import { debugLog } from './utils/logger';
 
 interface PowerProviderProps {
     children: ReactNode;
@@ -12,9 +13,9 @@ export default function PowerProvider({ children }: PowerProviderProps) {
     useEffect(() => {
         const initApp = async () => {
             try {
-                console.log('Initializing Power Platform SDK...');
+                debugLog('Initializing Power Platform SDK...');
                 await initialize();
-                console.log('Power Platform SDK initialized successfully');
+                debugLog('Power Platform SDK initialized successfully');
                 setIsInitialized(true);
             } catch (error) {
                 console.error('Failed to initialize Power Platform SDK:', error);
@@ -30,16 +31,9 @@ export default function PowerProvider({ children }: PowerProviderProps) {
 
     if (!isInitialized) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100vh',
-                flexDirection: 'column',
-                gap: '1rem'
-            }}>
+            <div className="flex justify-center items-center min-h-screen flex-col gap-4">
                 <div>Initialisation de l'application...</div>
-                {error && <div style={{ color: 'orange', fontSize: '0.9rem' }}>Mode développement</div>}
+                {error && <div className="text-orange-500 text-sm">Mode développement</div>}
             </div>
         );
     }

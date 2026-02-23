@@ -7,7 +7,7 @@ import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
 import '../../styles/forms.css';
 
-type ActivityType = 'visites' | 'formations' | 'procedures' | 'etudes';
+type ActivityType = 'visites' | 'formations' | 'procedures' | 'etudes' | 'autres-activites';
 
 interface VisiteFormData {
   agence: string;
@@ -15,20 +15,21 @@ interface VisiteFormData {
   dateVisite: string;
   objetVisite: string;
   compteRendu: string;
+  montantEngagements: number;
+  volumeAnomalies: number;
 }
 
-interface FormationFormData {
-  libelle: string;
-  duree: number;
-  dateValidation: string;
-  date: string;
+interface AutresActiviteFormData {
+  ObjetActivite: string;
+  ResultatObtenu: string;
 }
 
 interface ActiviteTransversaleFormData {
   titreOuTheme: string;
-  dateValidation: string;
+  dateTransmissionValidation: string;
   dateTransmissionQualite: string;
-  resultat: string;
+  datePublication: string;
+  dateValidation: string;
 }
 
 interface FormActivitesAnnexesProps {
@@ -56,9 +57,16 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
     dateVisite: '',
     objetVisite: '',
     compteRendu: '',
+    montantEngagements: 0,
+    volumeAnomalies: 0,
   });
 
-  const [formationData, setFormationData] = useState<FormationFormData>({
+  const [autresData, setAutresData] = useState<AutresActiviteFormData>({
+    ObjetActivite: '',
+    ResultatObtenu: '',
+  });
+
+  const [formationData, setFormationData] = useState({
     libelle: '',
     duree: 0,
     dateValidation: '',
@@ -67,9 +75,10 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
 
   const [activiteData, setActiviteData] = useState<ActiviteTransversaleFormData>({
     titreOuTheme: '',
-    dateValidation: '',
+    dateTransmissionValidation: '',
     dateTransmissionQualite: '',
-    resultat: '',
+    datePublication: '',
+    dateValidation: '',
   });
 
   useEffect(() => {
@@ -116,17 +125,22 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setVisiteData((prev) => ({ ...prev, [name]: value }));
+    setVisiteData((prev) => ({
+      ...prev,
+      [name]: e.target.type === 'number' ? parseFloat(value) || 0 : value,
+    }));
   };
 
-  const handleFormationChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+  const handleAutresChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormationData((prev) => ({
-      ...prev,
-      [name]: name === 'duree' ? Number(value) : value,
-    }));
+    setAutresData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormationData((prev) => ({ ...prev, [name]: name === 'duree' ? Number(value) : value }));
   };
 
   const handleActiviteChange = (
@@ -147,8 +161,13 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
         setError('Veuillez remplir tous les champs obligatoires');
         return false;
       }
+    } else if (activityType === 'autres-activites') {
+      if (!autresData.ObjetActivite) {
+        setError('Veuillez indiquer l\'objet de l\'activité');
+        return false;
+      }
     } else {
-      if (!activiteData.titreOuTheme || !activiteData.dateValidation) {
+      if (!activiteData.titreOuTheme || !activiteData.dateTransmissionValidation) {
         setError('Veuillez remplir tous les champs obligatoires');
         return false;
       }
@@ -178,11 +197,11 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
           DateVisite: visiteData.dateVisite,
           ObjetVisite: visiteData.objetVisite,
           CompteRendu: visiteData.compteRendu,
+          MontantEngagements: visiteData.montantEngagements,
+          VolumeAnomalies: visiteData.volumeAnomalies,
         };
-        console.log('💾 Sauvegarde visite:', dataToSave);
         result = await VisiteClienteleService.create(dataToSave);
-        console.log('✅ Résultat:', result);
-        activityDescription = `Visite clientèle chez ${visiteData.client} (${visiteData.agence})`;
+        activityDescription = `${visiteData.client} (${visiteData.agence})`;
       } else if (activityType === 'formations') {
         const dataToSave = {
           Title: activityName,
@@ -191,21 +210,27 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
           DateValidation: formationData.dateValidation,
           Date: formationData.date,
         };
-        console.log('💾 Sauvegarde formation:', dataToSave);
         result = await FormationsService.create(dataToSave);
-        console.log('✅ Résultat:', result);
         activityDescription = `Formation: ${formationData.libelle} (${formationData.duree}h)`;
+      } else if (activityType === 'autres-activites') {
+        const dataToSave = {
+          Title: activityName,
+          TitreOuTheme: autresData.ObjetActivite,
+          DateValidation: new Date().toISOString().split('T')[0],
+          DateTransmissionQualite: '',
+          Resultat: autresData.ResultatObtenu,
+        };
+        result = await ActivitesTransversalesService.create(dataToSave);
+        activityDescription = autresData.ObjetActivite;
       } else {
         const dataToSave = {
           Title: activityName,
           TitreOuTheme: activiteData.titreOuTheme,
-          DateValidation: activiteData.dateValidation,
-          DateTransmissionQualite: activiteData.dateTransmissionQualite,
-          Resultat: activiteData.resultat,
+          DateValidation: activiteData.dateTransmissionValidation,
+          DateTransmissionQualite: activityType === 'procedures' ? activiteData.dateTransmissionQualite : activiteData.dateValidation,
+          Resultat: activityType === 'procedures' ? (activiteData.datePublication ? `Publication:${activiteData.datePublication}` : '') : '',
         };
-        console.log('💾 Sauvegarde activité transversale:', dataToSave);
         result = await ActivitesTransversalesService.create(dataToSave);
-        console.log('✅ Résultat:', result);
         activityDescription = `${activiteData.titreOuTheme}`;
       }
 
@@ -231,17 +256,24 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
   };
 
   return (
-    <div className="activites-annexes-form-container">
+    <div className="form-container">
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={closeNotification}
+      />
       <div className="form-header">
-        <h2>{activityName}</h2>
-        <button className="close-btn" onClick={onCancel} type="button">
-          ✕
-        </button>
+        <div className="form-title-group">
+          <h2 className="form-title">{activityName}</h2>
+          <span className="form-badge">Activités annexes</span>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="activites-annexes-form">
+      <form onSubmit={handleSubmit} className="form-body">
         {error && (
-          <div className="error-message">
+          <div style={{ padding: '12px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', marginBottom: '1rem', color: '#c00' }}>
             <span>⚠️ {error}</span>
           </div>
         )}
@@ -249,9 +281,8 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
         {/* Formulaire pour Visites Clientèle */}
         {activityType === 'visites' && (
           <div className="form-section">
-            <h3>🤝 Visite Clientèle</h3>
-
-            <div className="form-row">
+            <h3 className="section-title">🤝 Visite Clientèle</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label htmlFor="agence">
                   Agence <span className="required">*</span>
@@ -302,10 +333,18 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
                   required
                 />
               </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group full-width">
+              <div className="form-group">
+                <label htmlFor="montantEngagements">Montant global des engagements (FCFA) <span className="required">*</span></label>
+                <input type="number" id="montantEngagements" name="montantEngagements" value={visiteData.montantEngagements || ''} onChange={handleVisiteChange} required placeholder="0" />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="volumeAnomalies">Volume anomalies — impayé + agios (FCFA) <span className="required">*</span></label>
+                <input type="number" id="volumeAnomalies" name="volumeAnomalies" value={visiteData.volumeAnomalies || ''} onChange={handleVisiteChange} required placeholder="0" />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label htmlFor="objetVisite">Objet de la visite</label>
                 <input
                   type="text"
@@ -316,18 +355,30 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
                 />
               </div>
             </div>
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label htmlFor="compteRendu">Compte rendu</label>
+              <textarea
+                id="compteRendu"
+                name="compteRendu"
+                value={visiteData.compteRendu}
+                onChange={handleVisiteChange}
+                rows={4}
+              />
+            </div>
+          </div>
+        )}
 
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="compteRendu">Compte rendu</label>
-                <textarea
-                  id="compteRendu"
-                  name="compteRendu"
-                  value={visiteData.compteRendu}
-                  onChange={handleVisiteChange}
-                  rows={4}
-                />
-              </div>
+        {/* Formulaire pour Autres Activités */}
+        {activityType === 'autres-activites' && (
+          <div className="form-section">
+            <h3 className="section-title">📌 Autre activité</h3>
+            <div className="form-group">
+              <label htmlFor="ObjetActivite">Objet de l'activité <span className="required">*</span></label>
+              <input type="text" id="ObjetActivite" name="ObjetActivite" value={autresData.ObjetActivite} onChange={handleAutresChange} required placeholder="Décrivez l'activité..." />
+            </div>
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label htmlFor="ResultatObtenu">Résultat obtenu</label>
+              <textarea id="ResultatObtenu" name="ResultatObtenu" value={autresData.ResultatObtenu} onChange={handleAutresChange} rows={4} placeholder="Résultat ou remarques..." />
             </div>
           </div>
         )}
@@ -335,106 +386,43 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
         {/* Formulaire pour Formations */}
         {activityType === 'formations' && (
           <div className="form-section">
-            <h3>🎓 Formation</h3>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="date">
-                  Date <span className="required">*</span>
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formationData.date}
-                  onChange={handleFormationChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group full-width">
-                <label htmlFor="libelle">
-                  Libellé de la formation <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="libelle"
-                  name="libelle"
-                  value={formationData.libelle}
-                  onChange={handleFormationChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="duree">
-                  Durée (en heures) <span className="required">*</span>
-                </label>
-                <input
-                  type="number"
-                  id="duree"
-                  name="duree"
-                  value={formationData.duree}
-                  onChange={handleFormationChange}
-                  min="0"
-                  step="0.5"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="dateValidation">
-                  Date de validation <span className="required">*</span>
-                </label>
-                <input
-                  type="date"
-                  id="dateValidation"
-                  name="dateValidation"
-                  value={formationData.dateValidation}
-                  onChange={handleFormationChange}
-                  required
-                />
-              </div>
+            <h3 className="section-title">🎓 Formation</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group"><label htmlFor="date">Date <span className="required">*</span></label><input type="date" id="date" name="date" value={formationData.date} onChange={handleFormationChange} required /></div>
+              <div className="form-group"><label htmlFor="duree">Durée (heures) <span className="required">*</span></label><input type="number" id="duree" name="duree" value={formationData.duree} onChange={handleFormationChange} min="0" step="0.5" placeholder="0" required /></div>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}><label htmlFor="libelle">Libellé de la formation <span className="required">*</span></label><input type="text" id="libelle" name="libelle" value={formationData.libelle} onChange={handleFormationChange} required /></div>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}><label htmlFor="dateValidation">Date de validation <span className="required">*</span></label><input type="date" id="dateValidation" name="dateValidation" value={formationData.dateValidation} onChange={handleFormationChange} required /></div>
             </div>
           </div>
         )}
 
-        {/* Formulaire pour Activités Transversales (Procédures/Études) */}
-        {(activityType === 'procedures' || activityType === 'etudes') && (
+        {/* Formulaire pour Procédures */}
+        {activityType === 'procedures' && (
           <div className="form-section">
-            <h3>
-              {activityType === 'procedures' ? '📋 Actualisation de Procédure' : '📊 Étude'}
-            </h3>
-
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="titreOuTheme">
-                  {activityType === 'procedures' ? 'Titre de la procédure' : 'Thème de l\'étude'}{' '}
-                  <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="titreOuTheme"
-                  name="titreOuTheme"
-                  value={activiteData.titreOuTheme}
-                  onChange={handleActiviteChange}
-                  required
-                />
-              </div>
+            <h3 className="section-title">📋 Rédaction / Mise à jour de procédure</h3>
+            <div className="form-group">
+              <label htmlFor="titreOuTheme">
+                Titre de la procédure <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="titreOuTheme"
+                name="titreOuTheme"
+                value={activiteData.titreOuTheme}
+                onChange={handleActiviteChange}
+                required
+              />
             </div>
-
-            <div className="form-row">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
               <div className="form-group">
-                <label htmlFor="dateValidation">
-                  Date de validation <span className="required">*</span>
+                <label htmlFor="dateTransmissionValidation">
+                  Date de transmission pour validation <span className="required">*</span>
                 </label>
                 <input
                   type="date"
-                  id="dateValidation"
-                  name="dateValidation"
-                  value={activiteData.dateValidation}
+                  id="dateTransmissionValidation"
+                  name="dateTransmissionValidation"
+                  value={activiteData.dateTransmissionValidation}
                   onChange={handleActiviteChange}
                   required
                 />
@@ -442,7 +430,7 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
 
               <div className="form-group">
                 <label htmlFor="dateTransmissionQualite">
-                  Date de transmission qualité
+                  Date de transmission au Dpt QUALITÉ
                 </label>
                 <input
                   type="date"
@@ -452,17 +440,65 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
                   onChange={handleActiviteChange}
                 />
               </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="resultat">Résultat / Commentaire</label>
-                <textarea
-                  id="resultat"
-                  name="resultat"
-                  value={activiteData.resultat}
+              <div className="form-group">
+                <label htmlFor="datePublication">
+                  Date de publication
+                </label>
+                <input
+                  type="date"
+                  id="datePublication"
+                  name="datePublication"
+                  value={activiteData.datePublication}
                   onChange={handleActiviteChange}
-                  rows={4}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formulaire pour Études */}
+        {activityType === 'etudes' && (
+          <div className="form-section">
+            <h3 className="section-title">📊 Étude réalisée</h3>
+            <div className="form-group">
+              <label htmlFor="titreOuTheme">
+                Thème de l'étude <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="titreOuTheme"
+                name="titreOuTheme"
+                value={activiteData.titreOuTheme}
+                onChange={handleActiviteChange}
+                required
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+              <div className="form-group">
+                <label htmlFor="dateTransmissionValidation">
+                  Date de transmission pour validation <span className="required">*</span>
+                </label>
+                <input
+                  type="date"
+                  id="dateTransmissionValidation"
+                  name="dateTransmissionValidation"
+                  value={activiteData.dateTransmissionValidation}
+                  onChange={handleActiviteChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="dateValidation">
+                  Date de validation
+                </label>
+                <input
+                  type="date"
+                  id="dateValidation"
+                  name="dateValidation"
+                  value={activiteData.dateValidation}
+                  onChange={handleActiviteChange}
                 />
               </div>
             </div>
@@ -472,25 +508,17 @@ const FormActivitesAnnexes: React.FC<FormActivitesAnnexesProps> = ({
         <div className="form-actions">
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn-secondary"
             onClick={onCancel}
             disabled={loading}
           >
             Annuler
           </button>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? '⏳ Enregistrement...' : '💾 Enregistrer'}
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </form>
-
-      <NotificationModal
-        isOpen={notification.isOpen}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-        onClose={closeNotification}
-      />
     </div>
   );
 };

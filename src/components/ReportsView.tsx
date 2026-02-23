@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { debugLog } from '../utils/logger';
 
 interface ReportsViewProps {
   // Props pour les données futures depuis SharePoint
@@ -45,13 +46,13 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
 
   const handleExportReport = (reportId: string, format: 'pdf' | 'csv') => {
     // Logique d'export qui sera connectée à Power Automate
-    console.log(`Exporting report ${reportId} as ${format}`);
+    debugLog(`Exporting report ${reportId} as ${format}`);
     alert(`Export du rapport ${reportId} en ${format.toUpperCase()} lancé !`);
   };
 
   const handleConsolidatedExport = (format: 'pdf' | 'csv') => {
     // Logique d'export consolidé
-    console.log(`Exporting consolidated report as ${format}`);
+    debugLog(`Exporting consolidated report as ${format}`);
     alert(`Export consolidé en ${format.toUpperCase()} lancé !`);
   };
 
@@ -59,13 +60,13 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
     <div className="content-section">
       <div className="card-header">
         <h2 className="card-title">📊 Rapports & Visualisation</h2>
-        <p style={{ color: 'var(--dge-dark-gray)', marginTop: '0.5rem' }}>
+        <p className="text-(--dge-dark-gray) mt-2">
           Consultez et exportez les rapports d'activité
         </p>
       </div>
 
       {/* Filtres */}
-      <div className="card" style={{ marginBottom: '2rem' }}>
+      <div className="card mb-8">
         <div className="card-header">
           <h3 className="card-title">🔍 Filtres de Recherche</h3>
         </div>
@@ -118,7 +119,7 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <div className="flex gap-4 mt-4">
           <button className="btn btn-primary">🔍 Appliquer les Filtres</button>
           <button className="btn btn-outline">🔄 Réinitialiser</button>
         </div>
@@ -126,9 +127,9 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
 
       {/* Tableau des rapports */}
       <div className="card">
-        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="card-header flex justify-between items-center">
           <h3 className="card-title">📋 Liste des Rapports</h3>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="flex gap-2">
             <button 
               className="btn btn-outline"
               onClick={() => handleConsolidatedExport('csv')}
@@ -166,19 +167,17 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
                   </span>
                 </td>
                 <td>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div className="flex gap-2">
                     {report.status === 'submitted' && (
                       <>
                         <button 
-                          className="btn btn-outline"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          className="btn btn-outline px-2 py-1 text-xs"
                           onClick={() => handleExportReport(report.id, 'pdf')}
                         >
                           📑 PDF
                         </button>
                         <button 
-                          className="btn btn-outline"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                          className="btn btn-outline px-2 py-1 text-xs"
                           onClick={() => handleExportReport(report.id, 'csv')}
                         >
                           📄 CSV
@@ -186,8 +185,7 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
                       </>
                     )}
                     <button 
-                      className="btn btn-primary"
-                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                      className="btn btn-primary px-2 py-1 text-xs"
                     >
                       👁️ Voir
                     </button>
@@ -200,42 +198,42 @@ const ReportsView: React.FC<ReportsViewProps> = () => {
       </div>
 
       {/* Statistiques rapides */}
-      <div className="grid grid-4" style={{ marginTop: '2rem' }}>
+      <div className="grid grid-4 mt-8">
         <div className="card">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: 'var(--dge-red)' }}>📊</div>
+          <div className="text-center">
+            <div className="text-3xl text-(--dge-red)">📊</div>
             <h4>Total Rapports</h4>
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--dge-red)' }}>
+            <p className="text-2xl font-bold text-(--dge-red)">
               {mockReports.length}
             </p>
           </div>
         </div>
 
         <div className="card">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#006400' }}>✅</div>
+          <div className="text-center">
+            <div className="text-3xl text-green-800">✅</div>
             <h4>Soumis</h4>
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#006400' }}>
+            <p className="text-2xl font-bold text-green-800">
               {mockReports.filter(r => r.status === 'submitted').length}
             </p>
           </div>
         </div>
 
         <div className="card">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#FF8C00' }}>⏳</div>
+          <div className="text-center">
+            <div className="text-3xl text-orange-500">⏳</div>
             <h4>En Attente</h4>
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#FF8C00' }}>
+            <p className="text-2xl font-bold text-orange-500">
               {mockReports.filter(r => r.status === 'pending').length}
             </p>
           </div>
         </div>
 
         <div className="card">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: 'var(--dge-red)' }}>📈</div>
+          <div className="text-center">
+            <div className="text-3xl text-(--dge-red)">📈</div>
             <h4>Taux de Complétude</h4>
-            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--dge-red)' }}>
+            <p className="text-2xl font-bold text-(--dge-red)">
               {Math.round((mockReports.filter(r => r.status === 'submitted').length / mockReports.length) * 100)}%
             </p>
           </div>

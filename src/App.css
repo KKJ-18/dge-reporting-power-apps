@@ -5,10 +5,10 @@
   --dge-light-red: #FF3333;
   --dge-black: #1A1A1A;
   --dge-dark-gray: #333333;
-  --dge-light-gray: #F5F5F5;
+  --dge-light-gray: #F8FAFC;
   --dge-white: #FFFFFF;
-  --dge-border: #E0E0E0;
-  --dge-shadow: rgba(0, 0, 0, 0.1);
+  --dge-border: #E5E7EB;
+  --dge-shadow: rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -18,7 +18,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--dge-light-gray);
   color: var(--dge-black);
   line-height: 1.6;

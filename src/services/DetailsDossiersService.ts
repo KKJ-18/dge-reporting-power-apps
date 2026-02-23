@@ -11,6 +11,10 @@ import { DetailsDossiers } from '../Models/DetailsDossiersModel';
 export class DetailsDossiersService {
   private static readonly dataSourceName = 'detailsdossiers';
 
+  private static escapeODataValue(value: string): string {
+    return value.replace(/'/g, "''");
+  }
+
   public static async create(record: Omit<DetailsDossiers, 'ID'>): Promise<IOperationResult<DetailsDossiers>> {
     const result = await getPowerSdkInstance(dataSourcesInfo).Data.createRecordAsync<Omit<DetailsDossiers, 'ID'>, DetailsDossiers>(
       DetailsDossiersService.dataSourceName,
@@ -47,5 +51,40 @@ export class DetailsDossiersService {
       options
     );
     return result;
+  }
+
+  public static async getByMatricule(matricule: string, top: number = 50): Promise<IOperationResult<DetailsDossiers[]>> {
+    const safeMatricule = this.escapeODataValue(matricule.trim());
+    return this.getAll({
+      filter: `Matricule eq '${safeMatricule}'`,
+      orderBy: ['Date desc', 'Created desc'],
+      top
+    });
+  }
+
+  public static async getTrackingByMatricule(
+    matricule: string,
+    etape?: string,
+    actionKeyword?: string,
+    top: number = 50
+  ): Promise<IOperationResult<DetailsDossiers[]>> {
+    const safeMatricule = this.escapeODataValue(matricule.trim());
+    const filters: string[] = [`Matricule eq '${safeMatricule}'`];
+
+    if (etape && etape.trim()) {
+      const safeEtape = this.escapeODataValue(etape.trim());
+      filters.push(`Decision eq '${safeEtape}'`);
+    }
+
+    if (actionKeyword && actionKeyword.trim()) {
+      const safeAction = this.escapeODataValue(actionKeyword.trim());
+      filters.push(`(substringof('${safeAction}', ObjetCommentaire) or substringof('${safeAction}', Commentaire))`);
+    }
+
+    return this.getAll({
+      filter: filters.join(' and '),
+      orderBy: ['Date desc', 'Created desc'],
+      top
+    });
   }
 }

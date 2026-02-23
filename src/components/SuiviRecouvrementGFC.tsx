@@ -4,6 +4,7 @@ import { ActionRecouvrementService } from '../services/ActionRecouvrementService
 import { ClientsenAnomalie } from '../Models/ClientsenAnomalieModel';
 import { ActionRecouvrement } from '../Models/ActionRecouvrementModel';
 import FileDownloader from './FileDownloader';
+import { debugLog, debugWarn } from '../utils/logger';
 import './SuiviRecouvrementGFC.css';
 
 /**
@@ -176,14 +177,14 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       setError(null); // Clear any previous errors
       setUploadedFile(file);
       setFormData(prev => ({ ...prev, Lienpi_x00e8_cejointe: file.name }));
-      console.log(`📎 Fichier sélectionné: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+      debugLog(`📎 Fichier sélectionné: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
     }
   };
 
   // Fonction pour convertir et uploader le fichier en base64
   const uploadFileAsBase64 = async (itemId: string, file: File): Promise<boolean> => {
     try {
-      console.log(`📎 Conversion fichier en base64: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+      debugLog(`📎 Conversion fichier en base64: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
       
       // Convertir le fichier en base64
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -198,7 +199,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       });
 
       const base64SizeKB = (base64.length / 1024).toFixed(2);
-      console.log(`✅ Fichier converti en base64 (taille encodée: ${base64SizeKB} KB)`);
+      debugLog(`✅ Fichier converti en base64 (taille encodée: ${base64SizeKB} KB)`);
       
       // Vérification supplémentaire de la taille encodée
       if (base64.length > 700 * 1024) { // 700 KB encodé max
@@ -207,7 +208,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       }
 
       // Mettre à jour l'enregistrement avec le base64
-      console.log(`📤 Envoi vers SharePoint (Action ID: ${itemId})...`);
+      debugLog(`📤 Envoi vers SharePoint (Action ID: ${itemId})...`);
       // Note: PieceJointeBase64, NomFichier, TypeFichier, TailleFichier ne sont pas dans le modèle généré
       // Ces champs doivent être ajoutés manuellement au modèle ActionRecouvrementModel.ts
       const updateResult = await ActionRecouvrementService.update(itemId, {
@@ -218,7 +219,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       } as any);
 
       if (updateResult.success) {
-        console.log('✅ Fichier uploadé avec succès vers SharePoint');
+        debugLog('✅ Fichier uploadé avec succès vers SharePoint');
       } else {
         console.error('❌ Échec mise à jour SharePoint:', updateResult);
       }
@@ -267,7 +268,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       
       if (result.success && result.data) {
         setPreviousActions(result.data);
-        console.log('✅ Actions précédentes chargées:', result.data.length);
+        debugLog('✅ Actions précédentes chargées:', result.data.length);
       }
     } catch (error) {
       console.error('❌ Erreur chargement actions précédentes:', error);
@@ -323,7 +324,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
 
     try {
       // 1. Récupérer le nombre d'actions planifiées précédentes pour ce matricule
-      console.log('🔍 Recherche actions précédentes pour matricule:', selectedClient.Matricule);
+      debugLog('🔍 Recherche actions précédentes pour matricule:', selectedClient.Matricule);
       let nombreActionsPlanifiees = 1; // Par défaut 1 si aucune action précédente
       
       try {
@@ -337,12 +338,12 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
           const lastAction = previousActionsResult.data[0];
           const lastNumber = lastAction.NombreActionPlaniif_x00e9_ || 0;
           nombreActionsPlanifiees = lastNumber + 1;
-          console.log(`✅ Dernière action trouvée: ${lastNumber}, nouvelle valeur: ${nombreActionsPlanifiees}`);
+          debugLog(`✅ Dernière action trouvée: ${lastNumber}, nouvelle valeur: ${nombreActionsPlanifiees}`);
         } else {
-          console.log('ℹ️ Aucune action précédente trouvée, initialisation à 1');
+          debugLog('ℹ️ Aucune action précédente trouvée, initialisation à 1');
         }
       } catch (err) {
-        console.warn('⚠️ Erreur récupération actions précédentes, utilisation valeur par défaut:', err);
+        debugWarn('⚠️ Erreur récupération actions précédentes, utilisation valeur par défaut:', err);
       }
 
       // 2. Créer l'action de recouvrement avec le nombre incrémenté
@@ -369,10 +370,10 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
         actionData.Typedaction = { Value: formData.Typedaction };
       }
 
-      console.log('📤 Envoi action recouvrement:', JSON.stringify(actionData, null, 2));
+      debugLog('📤 Envoi action recouvrement:', JSON.stringify(actionData, null, 2));
 
       const createResult = await ActionRecouvrementService.create(actionData);
-      console.log('📥 Résultat création (raw):', createResult);
+      debugLog('📥 Résultat création (raw):', createResult);
 
       if (!createResult || !createResult.success) {
         // Log détaillé pour debugging
@@ -387,17 +388,17 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       }
 
       const newActionId = (createResult.data as any)?.ID;
-      console.log('✅ Action créée avec ID:', newActionId);
+      debugLog('✅ Action créée avec ID:', newActionId);
 
       // 3. Upload du fichier en base64 si présent
       if (uploadedFile && newActionId) {
-        console.log(`📎 Tentative upload fichier: ${uploadedFile.name}`);
+        debugLog(`📎 Tentative upload fichier: ${uploadedFile.name}`);
         const uploadSuccess = await uploadFileAsBase64(newActionId.toString(), uploadedFile);
         
         if (uploadSuccess) {
-          console.log('✅ Fichier uploadé avec succès en base64');
+          debugLog('✅ Fichier uploadé avec succès en base64');
         } else {
-          console.warn('⚠️ Échec upload fichier, mais l\'action est créée');
+          debugWarn('⚠️ Échec upload fichier, mais l\'action est créée');
         }
       }
 
@@ -410,7 +411,7 @@ const SuiviRecouvrementGFC: React.FC<SuiviRecouvrementGFCProps> = ({ onClose }) 
       );
 
       if (!updateResult.success) {
-        console.warn('⚠️ Action créée mais mise à jour du statut client échouée');
+        debugWarn('⚠️ Action créée mais mise à jour du statut client échouée');
       }
 
       // 4. Afficher le succès et réinitialiser

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UtilisateursService } from '../services/UtilisateursService';
+import { debugLog } from '../utils/logger';
 import './UserManagement.css';
 
 interface User {
@@ -44,10 +45,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log('👥 Chargement des utilisateurs...');
+      debugLog('👥 Chargement des utilisateurs...');
       const result = await UtilisateursService.getAll();
       const allUsers = result?.data || result?.value || [];
-      console.log(`✅ ${allUsers.length} utilisateurs chargés`);
+      debugLog(`✅ ${allUsers.length} utilisateurs chargés`);
       setUsers(allUsers);
     } catch (err) {
       console.error('❌ Erreur chargement utilisateurs:', err);
@@ -121,7 +122,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
       
       if (isAdding) {
         // Créer un nouvel utilisateur
-        console.log('➕ Création utilisateur:', formData);
+        debugLog('➕ Création utilisateur:', formData);
         await UtilisateursService.create({
           Email: formData.Email!,
           Nom: formData.Nom!,
@@ -138,7 +139,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
           throw new Error('ID utilisateur manquant');
         }
         
-        console.log('✏️ Modification utilisateur:', userId, formData);
+        debugLog('✏️ Modification utilisateur:', userId, formData);
         await UtilisateursService.update(userId.toString(), {
           Fonction: formData.Fonction!,
           Departement: formData.Departement!,
@@ -171,7 +172,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
 
     try {
       setLoading(true);
-      console.log('🗑️ Suppression utilisateur:', userId);
+      debugLog('🗑️ Suppression utilisateur:', userId);
       await UtilisateursService.delete(userId.toString());
       alert('✅ Utilisateur supprimé avec succès');
       await loadUsers();
@@ -193,7 +194,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
     try {
       setLoading(true);
       const newActif = !user.Actif;
-      console.log('🔄 Changement statut:', userId, newActif);
+      debugLog('🔄 Changement statut:', userId, newActif);
       await UtilisateursService.update(userId.toString(), {
         Actif: newActif
       } as any);
@@ -207,13 +208,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
     }
   };
 
-  const getDepartmentColor = (dept: string) => {
-    switch (dept) {
-      case 'DA': return '#0078d4';
-      case 'DSE': return '#107c10';
-      case 'DPNP': return '#d83b01';
-      default: return '#666';
-    }
+  const getDepartmentColor = (_dept: string) => {
+    return '#CC0000';
   };
 
   return (
@@ -309,6 +305,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
                 >
                   <option value="Collaborateur">Collaborateur</option>
                   <option value="Chef de Service">Chef de Service</option>
+                  <option value="Assistant DCE">Assistant DCE</option>
                   <option value="Directeur">Directeur</option>
                   <option value="Directeur Général">Directeur Général</option>
                 </select>

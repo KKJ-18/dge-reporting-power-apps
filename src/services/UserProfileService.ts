@@ -13,6 +13,7 @@ export interface UserProfile {
   fonction: string | null
   departement: Departement
   isDirecteur: boolean
+  isAssistantDCE: boolean
   hasGlobalView: boolean
 }
 
@@ -109,6 +110,7 @@ export class UserProfileService {
           fonction: null,
           departement: null,
           isDirecteur: false,
+          isAssistantDCE: false,
           hasGlobalView: false
         }
         console.log('📝 Profil par défaut créé:', this.cachedProfile);
@@ -121,9 +123,11 @@ export class UserProfileService {
       // 3. Déterminer le rôle et les permissions
       const fonction = utilisateur.Fonction?.trim() || null
       const isDirecteur = fonction?.toLowerCase() === 'directeur'
+      const isAssistantDCE = this.isAssistantDCERole(fonction)
       
       console.log('💼 Fonction:', fonction);
       console.log('👔 Est Directeur?', isDirecteur);
+      console.log('🗂️ Est Assistant DCE?', isAssistantDCE);
 
       // 4. Récupérer le département (si pas directeur)
       let departement: Departement = null
@@ -164,6 +168,7 @@ export class UserProfileService {
         fonction,
         departement,
         isDirecteur,
+        isAssistantDCE,
         hasGlobalView: isDirecteur // Directeur a la vue globale
       }
 
@@ -172,6 +177,7 @@ export class UserProfileService {
       console.log('   - Fonction:', this.cachedProfile.fonction);
       console.log('   - Département:', this.cachedProfile.departement);
       console.log('   - Est Directeur:', this.cachedProfile.isDirecteur);
+      console.log('   - Est Assistant DCE:', this.cachedProfile.isAssistantDCE);
       console.log('   - Vue globale:', this.cachedProfile.hasGlobalView);
       console.log('🔍 Profil complet:', JSON.stringify(this.cachedProfile, null, 2));
       
@@ -181,6 +187,15 @@ export class UserProfileService {
       console.error('❌ Erreur lors du chargement du profil utilisateur:', error)
       throw new Error('Impossible de charger le profil utilisateur')
     }
+  }
+
+  private static isAssistantDCERole(fonction: string | null): boolean {
+    if (!fonction) return false
+    const value = fonction
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+    return value.includes('assistant') && value.includes('dce')
   }
 
   /**
@@ -235,7 +250,7 @@ export class UserProfileService {
    * Vérifie si l'utilisateur peut créer une activité
    */
   public static canCreateActivity(profile: UserProfile): boolean {
-    return profile.isDirecteur || profile.departement !== null
+    return profile.isDirecteur || profile.isAssistantDCE || profile.departement !== null
   }
 
   /**

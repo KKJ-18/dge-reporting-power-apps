@@ -6,6 +6,7 @@ import { useNotification } from '../hooks/useNotification';
 import NotificationModal from './NotificationModal';
 import type { Objectif } from '../Models/ObjectifModel';
 import { extractCleanEmail, extractAuthorEmail } from '../utils/emailUtils';
+import { debugLog, debugWarn } from '../utils/logger';
 import './ObjectifsManagement.css';
 
 interface ObjectifForm {
@@ -87,7 +88,7 @@ const ObjectifsManagement: React.FC = () => {
     try {
       const profile = await UserProfileService.getCurrentUserProfile();
       setUserProfile(profile);
-      console.log('👤 Profil chargé dans ObjectifsManagement:', profile.email);
+      debugLog('👤 Profil chargé dans ObjectifsManagement:', profile.email);
     } catch (error) {
       console.error('Erreur chargement profil:', error);
       showError('Erreur', 'Impossible de charger votre profil utilisateur');
@@ -127,30 +128,30 @@ const ObjectifsManagement: React.FC = () => {
 
   const loadObjectifsForDate = async (date: string) => {
     if (!userProfile) {
-      console.warn('⚠️ Profil utilisateur non chargé');
+      debugWarn('⚠️ Profil utilisateur non chargé');
       return;
     }
 
     setLoading(true);
     try {
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📡 REQUÊTE SHAREPOINT (SANS FILTRE)');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📧 Email:', userProfile.email);
-      console.log('� Date:', date);
-      console.log('⚠️  Pas de filtre Author/Email (évite 400)');
-      console.log('� Filtrage côté client');
+      debugLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugLog('📡 REQUÊTE SHAREPOINT (SANS FILTRE)');
+      debugLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugLog('📧 Email:', userProfile.email);
+      debugLog('📅 Date:', date);
+      debugLog('⚠️  Pas de filtre Author/Email (évite 400)');
+      debugLog('🔎 Filtrage côté client');
       
       // Récupérer TOUS les objectifs SANS FILTRE (évite erreur 400)
       const result = await ObjectifService.getAll();
       
-      console.log('📥 Réponse brute:', result);
+      debugLog('📥 Réponse brute:', result);
       
       const data: Objectif[] = result?.data || result?.value || [];
       
-      console.log('📊 Total récupéré:', data.length);
+      debugLog('📊 Total récupéré:', data.length);
       if (data.length > 0) {
-        console.log('📋 Premier:', JSON.stringify(data[0], null, 2));
+        debugLog('📋 Premier:', JSON.stringify(data[0], null, 2));
       }
 
       // Filtrer par UTILISATEUR (Author/Email) ET DATE côté client
@@ -165,13 +166,13 @@ const ObjectifsManagement: React.FC = () => {
         
         const objDate = new Date(obj.Date).toISOString().split('T')[0];
         const match = objDate === date;
-        if (match) console.log(`✅ Match: ${obj.Title} (${authorEmail})`);
+        if (match) debugLog(`✅ Match: ${obj.Title} (${authorEmail})`);
         return match;
       });
       
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('✅ RÉSULTAT:', filtered.length, 'objectif(s)');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugLog('✅ RÉSULTAT:', filtered.length, 'objectif(s)');
+      debugLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
       setObjectifs(filtered);
     } catch (error: any) {

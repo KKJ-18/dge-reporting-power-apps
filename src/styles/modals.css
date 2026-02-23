@@ -42,8 +42,8 @@
   max-width: 560px;
   max-height: 90vh;
   background: #FFFFFF;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   animation: modalSlideIn 0.3s ease-out;
 }
@@ -93,8 +93,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  background: var(--neutral-50, #FAFAFA);
-  border-bottom: 1px solid var(--neutral-200, #EEEEEE);
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-header-content {
@@ -108,8 +108,8 @@
 .modal-header-icon {
   width: 40px;
   height: 40px;
-  background: var(--neutral-200, #EEEEEE);
-  border-radius: 8px;
+  background: #f3f4f6;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,8 +121,9 @@
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--neutral-900, #212121);
+  color: #111827;
   line-height: 1.3;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .modal-subtitle {
@@ -133,7 +134,7 @@
 
 /* Header coloré */
 .modal-header.colored {
-  background: linear-gradient(135deg, var(--neutral-800, #424242) 0%, var(--neutral-900, #212121) 100%);
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
   border-bottom: none;
 }
 
@@ -199,18 +200,13 @@
 
 .modal-body::-webkit-scrollbar,
 .modal-content::-webkit-scrollbar {
-  width: 6px;
+  display: none;
 }
 
-.modal-body::-webkit-scrollbar-track,
-.modal-content::-webkit-scrollbar-track {
-  background: var(--neutral-100, #F5F5F5);
-}
-
-.modal-body::-webkit-scrollbar-thumb,
-.modal-content::-webkit-scrollbar-thumb {
-  background: var(--neutral-400, #BDBDBD);
-  border-radius: 3px;
+.modal-body,
+.modal-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Texte du modal */
@@ -234,8 +230,8 @@
   gap: 0.75rem;
   justify-content: flex-end;
   padding: 1.25rem 1.5rem;
-  background: var(--neutral-50, #FAFAFA);
-  border-top: 1px solid var(--neutral-200, #EEEEEE);
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
 }
 
 .modal-footer.center,

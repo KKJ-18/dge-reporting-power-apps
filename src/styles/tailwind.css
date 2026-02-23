@@ -111,6 +111,9 @@
   --animate-slide-up: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --animate-slide-down: slideDown 0.2s ease-out;
   --animate-scale-in: scaleIn 0.2s ease-out;
+  --animate-bounce-in: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animate-shake: shake 0.5s ease;
+  --animate-spin-slow: spin 3s linear infinite;
 
   @keyframes fadeIn {
     from { opacity: 0; }
@@ -130,6 +133,19 @@
   @keyframes scaleIn {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
   }
 }
 
@@ -163,23 +179,9 @@ body {
   box-shadow: 0 0 0 2px var(--color-primary-500), 0 0 0 4px white;
 }
 
-/* Scrollbar personnalisée */
+/* Scrollbar cachée */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-neutral-100);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-300);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400);
+  display: none;
 }
 
 /* ============================================
@@ -235,6 +237,33 @@ body {
 
 @utility animate-scaleIn {
   animation: var(--animate-scale-in);
+}
+
+@utility animate-bounce-in {
+  animation: var(--animate-bounce-in);
+}
+
+@utility animate-shake {
+  animation: var(--animate-shake);
+}
+
+@utility animate-spin-slow {
+  animation: var(--animate-spin-slow);
+}
+
+@utility hover-lift {
+  transition: all 0.3s;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  }
+}
+
+@utility hover-glow {
+  transition: all 0.3s;
+  &:hover {
+    box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+  }
 }
 
 /* ============================================

@@ -4,43 +4,49 @@
    ============================================ */
 
 :root {
-  /* ========== COULEURS DÉPARTEMENTALES ========== */
+  /* ========== COULEUR UNIFORME DGE ========== */
   
-  /* Direction des Affaires (DA) - Bleu Corporate */
-  --dept-da-primary: #1565C0;
-  --dept-da-primary-light: #42A5F5;
-  --dept-da-primary-dark: #0D47A1;
-  --dept-da-bg: #F5F9FC;
-  --dept-da-bg-subtle: rgba(21, 101, 192, 0.04);
-  --dept-da-border: rgba(21, 101, 192, 0.15);
-  --dept-da-shadow: rgba(21, 101, 192, 0.12);
+  /* Couleur primaire unifiée — Rouge DGE Corporate */
+  --dept-primary: #CC0000;
+  --dept-primary-light: #E53935;
+  --dept-primary-dark: #990000;
+  --dept-bg: #FDF5F5;
+  --dept-bg-subtle: rgba(204, 0, 0, 0.04);
+  --dept-border: rgba(204, 0, 0, 0.15);
+  --dept-shadow: rgba(204, 0, 0, 0.12);
+
+  /* Aliases pour compatibilité (tous pointent vers la couleur unifiée) */
+  --dept-da-primary: var(--dept-primary);
+  --dept-da-primary-light: var(--dept-primary-light);
+  --dept-da-primary-dark: var(--dept-primary-dark);
+  --dept-da-bg: var(--dept-bg);
+  --dept-da-bg-subtle: var(--dept-bg-subtle);
+  --dept-da-border: var(--dept-border);
+  --dept-da-shadow: var(--dept-shadow);
   
-  /* Direction Stratégie Économique (DSE) - Vert Corporate */
-  --dept-dse-primary: #2E7D32;
-  --dept-dse-primary-light: #4CAF50;
-  --dept-dse-primary-dark: #1B5E20;
-  --dept-dse-bg: #F5FAF5;
-  --dept-dse-bg-subtle: rgba(46, 125, 50, 0.04);
-  --dept-dse-border: rgba(46, 125, 50, 0.15);
-  --dept-dse-shadow: rgba(46, 125, 50, 0.12);
+  --dept-dse-primary: var(--dept-primary);
+  --dept-dse-primary-light: var(--dept-primary-light);
+  --dept-dse-primary-dark: var(--dept-primary-dark);
+  --dept-dse-bg: var(--dept-bg);
+  --dept-dse-bg-subtle: var(--dept-bg-subtle);
+  --dept-dse-border: var(--dept-border);
+  --dept-dse-shadow: var(--dept-shadow);
   
-  /* Direction Politique Numérique et Prospective (DPNP) - Orange Corporate */
-  --dept-dpnp-primary: #E65100;
-  --dept-dpnp-primary-light: #FF9800;
-  --dept-dpnp-primary-dark: #BF360C;
-  --dept-dpnp-bg: #FFF8F3;
-  --dept-dpnp-bg-subtle: rgba(230, 81, 0, 0.04);
-  --dept-dpnp-border: rgba(230, 81, 0, 0.15);
-  --dept-dpnp-shadow: rgba(230, 81, 0, 0.12);
+  --dept-dpnp-primary: var(--dept-primary);
+  --dept-dpnp-primary-light: var(--dept-primary-light);
+  --dept-dpnp-primary-dark: var(--dept-primary-dark);
+  --dept-dpnp-bg: var(--dept-bg);
+  --dept-dpnp-bg-subtle: var(--dept-bg-subtle);
+  --dept-dpnp-border: var(--dept-border);
+  --dept-dpnp-shadow: var(--dept-shadow);
   
-  /* Direction Générale - Rouge DGE */
-  --dept-direction-primary: #B71C1C;
-  --dept-direction-primary-light: #E53935;
-  --dept-direction-primary-dark: #7F0000;
-  --dept-direction-bg: #FDF5F5;
-  --dept-direction-bg-subtle: rgba(183, 28, 28, 0.04);
-  --dept-direction-border: rgba(183, 28, 28, 0.15);
-  --dept-direction-shadow: rgba(183, 28, 28, 0.12);
+  --dept-direction-primary: var(--dept-primary);
+  --dept-direction-primary-light: var(--dept-primary-light);
+  --dept-direction-primary-dark: var(--dept-primary-dark);
+  --dept-direction-bg: var(--dept-bg);
+  --dept-direction-bg-subtle: var(--dept-bg-subtle);
+  --dept-direction-border: var(--dept-border);
+  --dept-direction-shadow: var(--dept-shadow);
   
   /* ========== COULEURS NEUTRES ========== */
   --neutral-50: #FAFAFA;

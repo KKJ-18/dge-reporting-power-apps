@@ -11,13 +11,20 @@ import './styles/modals.css'
 import './styles/components.css'
 // Nouveau design moderne épuré (CommercePilot style)
 import './styles/modern-design.css'
+import './components/ui/foundation.css'
 import AppModern from './AppModern.tsx'
 import PowerProvider from './PowerProvider.tsx'
-createRoot(document.getElementById('root')!).render(
+import { DataProvider } from './contexts/DataContext'
+import { ToastProvider } from './components/ui/Toast'
 
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PowerProvider>
-      <AppModern />
+      <DataProvider>
+        <ToastProvider>
+          <AppModern />
+        </ToastProvider>
+      </DataProvider>
     </PowerProvider>
   </StrictMode>,
 )

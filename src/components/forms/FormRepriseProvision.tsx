@@ -18,11 +18,14 @@ const FormRepriseProvision: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [loadingAgences, setLoadingAgences] = useState(false);
   const [agences, setAgences] = useState<string[]>([]);
+  const [reseaux, setReseaux] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     NombreCompte: 0,
+    AgenceDebit: '',
+    ReseauDebit: '',
     AgenceCompteReclasser: '',
+    ReseauCompteReclasser: '',
     MontantGlobalReclasser: 0,
-    VolumeProvisionReprendre: 0,
     Date: new Date().toISOString().split('T')[0],
     Reference: '',
   });
@@ -41,6 +44,10 @@ const FormRepriseProvision: React.FC<Props> = ({
         new Set(data.map((item: any) => item.Title).filter(Boolean))
       ).sort() as string[];
       setAgences(uniqueAgences);
+      const uniqueReseaux = Array.from(
+        new Set(data.map((item: any) => item.NomResau).filter(Boolean))
+      ).sort() as string[];
+      setReseaux(uniqueReseaux);
     } catch (err) {
       console.error('Erreur chargement agences:', err);
       setAgences([]);
@@ -59,7 +66,9 @@ const FormRepriseProvision: React.FC<Props> = ({
         NombreCompte: formData.NombreCompte,
         AgenceCompteReclasser: formData.AgenceCompteReclasser,
         MontantGlobalReclasser: formData.MontantGlobalReclasser,
-        VolumeProvisionReprendre: formData.VolumeProvisionReprendre,
+        AgenceDebit: formData.AgenceDebit,
+        ReseauDebit: formData.ReseauDebit,
+        ReseauCompteReclasser: formData.ReseauCompteReclasser,
         Date: formData.Date,
         Reference: formData.Reference,
       };
@@ -123,6 +132,32 @@ const FormRepriseProvision: React.FC<Props> = ({
         <div className="form-section">
           
           <div className="form-group">
+            <label className="form-label">Agence débit *</label>
+            {loadingAgences ? (
+              <div className="loading">Chargement des agences...</div>
+            ) : agences.length > 0 ? (
+              <select className="form-select" value={formData.AgenceDebit} onChange={(e) => setFormData({ ...formData, AgenceDebit: e.target.value })} required>
+                <option value="">-- Sélectionner une agence --</option>
+                {agences.map((agence, index) => (<option key={index} value={agence}>{agence}</option>))}
+              </select>
+            ) : (
+              <input type="text" className="form-input" value={formData.AgenceDebit} onChange={(e) => setFormData({ ...formData, AgenceDebit: e.target.value })} placeholder="Agence débit" required />
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Réseau débit *</label>
+            {reseaux.length > 0 ? (
+              <select className="form-select" value={formData.ReseauDebit} onChange={(e) => setFormData({ ...formData, ReseauDebit: e.target.value })} required>
+                <option value="">-- Sélectionner un réseau --</option>
+                {reseaux.map((r) => (<option key={r} value={r}>{r}</option>))}
+              </select>
+            ) : (
+              <input type="text" className="form-input" value={formData.ReseauDebit} onChange={(e) => setFormData({ ...formData, ReseauDebit: e.target.value })} placeholder="Réseau débit" required />
+            )}
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Nombre de comptes *</label>
             <input
               type="number"
@@ -164,6 +199,18 @@ const FormRepriseProvision: React.FC<Props> = ({
           </div>
 
           <div className="form-group">
+            <label className="form-label">Réseau compte à reclasser *</label>
+            {reseaux.length > 0 ? (
+              <select className="form-select" value={formData.ReseauCompteReclasser} onChange={(e) => setFormData({ ...formData, ReseauCompteReclasser: e.target.value })} required>
+                <option value="">-- Sélectionner un réseau --</option>
+                {reseaux.map((r) => (<option key={r} value={r}>{r}</option>))}
+              </select>
+            ) : (
+              <input type="text" className="form-input" value={formData.ReseauCompteReclasser} onChange={(e) => setFormData({ ...formData, ReseauCompteReclasser: e.target.value })} placeholder="Réseau compte à reclasser" required />
+            )}
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Montant global à reclasser (FCFA) *</label>
             <input
               type="number"
@@ -176,18 +223,6 @@ const FormRepriseProvision: React.FC<Props> = ({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Volume de provision à reprendre (FCFA) *</label>
-            <input
-              type="number"
-              className="form-input"
-              value={formData.VolumeProvisionReprendre === 0 ? '' : formData.VolumeProvisionReprendre}
-              onChange={(e) => setFormData({ ...formData, VolumeProvisionReprendre: parseFloat(e.target.value) || 0 })}
-              placeholder="0"
-              required
-              onFocus={(e) => e.currentTarget.select()}
-            />
-          </div>
 
           <div className="form-group">
             <label className="form-label">Date *</label>
@@ -218,22 +253,32 @@ const FormRepriseProvision: React.FC<Props> = ({
           <div className="card-content">
             <div className="form-row">
               <div>
-                <span>Nombre de comptes:</span>
-                <strong>{formData.NombreCompte}</strong>
+                <span>Agence débit:</span>
+                <strong>{formData.AgenceDebit || '-'}</strong>
               </div>
               <div>
-                <span>Agence:</span>
-                <strong>{formData.AgenceCompteReclasser || '-'}</strong>
+                <span>Réseau débit:</span>
+                <strong>{formData.ReseauDebit || '-'}</strong>
               </div>
             </div>
             <div className="form-row">
               <div>
-                <span>Montant à reclasser:</span>
-                <strong>{formData.MontantGlobalReclasser.toLocaleString()} FCFA</strong>
+                <span>Agence compte à reclasser:</span>
+                <strong>{formData.AgenceCompteReclasser || '-'}</strong>
               </div>
               <div>
-                <span>Provision à reprendre:</span>
-                <strong>{formData.VolumeProvisionReprendre.toLocaleString()} FCFA</strong>
+                <span>Réseau compte à reclasser:</span>
+                <strong>{formData.ReseauCompteReclasser || '-'}</strong>
+              </div>
+            </div>
+            <div className="form-row">
+              <div>
+                <span>Nombre de comptes:</span>
+                <strong>{formData.NombreCompte}</strong>
+              </div>
+              <div>
+                <span>Montant à reclasser:</span>
+                <strong>{formData.MontantGlobalReclasser.toLocaleString()} FCFA</strong>
               </div>
             </div>
           </div>

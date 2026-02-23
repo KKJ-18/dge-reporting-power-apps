@@ -8,7 +8,7 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   showCloseButton?: boolean;
   hideHeader?: boolean;
-  departmentColor?: 'da' | 'dse' | 'dpnp' | 'direction' | 'primary';
+  departmentColor?: string;
 }
 
 const sizeClasses = {
@@ -19,13 +19,8 @@ const sizeClasses = {
   full: 'max-w-6xl'
 };
 
-const headerColorClasses = {
-  primary: 'from-primary-600 to-primary-700',
-  da: 'from-da-600 to-da-700',
-  dse: 'from-dse-600 to-dse-700',
-  dpnp: 'from-dpnp-600 to-dpnp-700',
-  direction: 'from-direction-600 to-direction-700'
-};
+// Couleur unifiée DGE — Rouge Corporate
+const UNIFIED_HEADER = 'linear-gradient(135deg, #CC0000 0%, #990000 100%)';
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -35,7 +30,6 @@ const Modal: React.FC<ModalProps> = ({
   size = 'md',
   showCloseButton = true,
   hideHeader = false,
-  departmentColor = 'primary'
 }) => {
   // Fermer avec la touche Escape
   useEffect(() => {
@@ -84,13 +78,11 @@ const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {!hideHeader && (
-          <div className={`
-            relative 
-            px-6 py-5 
-            bg-gradient-to-r ${headerColorClasses[departmentColor]}
-            text-white
-          `}>
-            <h2 className="text-xl font-bold pr-10">{title}</h2>
+          <div 
+            className="relative px-6 py-5 text-white"
+            style={{ background: UNIFIED_HEADER }}
+          >
+            <h2 className="text-xl font-bold pr-10" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{title}</h2>
             {showCloseButton && (
               <button
                 type="button"
@@ -100,13 +92,17 @@ const Modal: React.FC<ModalProps> = ({
                   w-9 h-9 
                   flex items-center justify-center
                   rounded-full
-                  bg-neutral-800 text-white
                   shadow-lg
-                  hover:bg-neutral-900 hover:text-white
                   hover:scale-110 hover:rotate-90
                   transition-all duration-300 ease-out
                   z-10
                 "
+                style={{ 
+                  background: 'rgba(255,255,255,0.2)', 
+                  backdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  color: 'white'
+                }}
                 onClick={onClose}
                 aria-label="Fermer"
               >
@@ -126,6 +122,7 @@ const Modal: React.FC<ModalProps> = ({
 
         {/* Body */}
         <div className={`
+          modal-tailwind-body
           ${hideHeader ? 'p-0' : 'p-6'} 
           max-h-[75vh] 
           overflow-y-auto

@@ -21,10 +21,10 @@ interface Props {
 const FormRechercherClientAnomalieModern: React.FC<Props> = ({ 
   activityName, 
   specificType,
-  departmentColor = '#990000', 
   onClose,
   onSave 
 }) => {
+  const deptColor = '#CC0000';
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     NbreClientAnomalie: 0,
@@ -82,7 +82,7 @@ const FormRechercherClientAnomalieModern: React.FC<Props> = ({
       <SuccessModal
         title="Enregistrement réussi"
         message="Recherche client anomalie enregistrée"
-        departmentColor={departmentColor}
+        departmentColor={deptColor}
       />
     );
   }
@@ -92,7 +92,7 @@ const FormRechercherClientAnomalieModern: React.FC<Props> = ({
       icon={ActivityIcons.recherche}
       title={activityName}
       badge={specificType}
-      departmentColor={departmentColor}
+      departmentColor={deptColor}
       onCancel={onClose}
       onSubmit={handleSubmit}
       isLoading={loading}

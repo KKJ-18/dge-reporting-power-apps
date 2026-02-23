@@ -27,7 +27,7 @@ export const CommonFormLayout: React.FC<CommonFormLayoutProps> = ({
   icon,
   title,
   badge,
-  departmentColor,
+  departmentColor = '#CC0000',
   children,
   onCancel,
   onSubmit,
@@ -172,7 +172,7 @@ export const FormSummary: React.FC<FormSummaryProps> = ({
 interface SuccessModalProps {
   title: string;
   message: string;
-  departmentColor: string;
+  departmentColor?: string;
 }
 
 /**
@@ -181,7 +181,7 @@ interface SuccessModalProps {
 export const SuccessModal: React.FC<SuccessModalProps> = ({ 
   title, 
   message, 
-  departmentColor 
+  departmentColor = '#CC0000'
 }) => {
   return (
     <div 

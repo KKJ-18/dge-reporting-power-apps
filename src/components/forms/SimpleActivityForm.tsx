@@ -28,8 +28,6 @@ interface FormData {
  */
 const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
   activityName,
-  icon = '📋',
-  subtitle = 'Saisie des informations',
   nombreLabel = 'Nombre de dossiers',
   onSave,
   onCancel,
@@ -119,19 +117,12 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
 
   return (
     <div className="form-container">
-      <div className="form-header">
-        <h2 className="form-title">{icon} {activityName}</h2>
-        <p className="form-subtitle">{subtitle}</p>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">ℹ️ Informations générales</h3>
-          </div>
-          <div className="card-content">
-            <div className="field-group">
-              <label>Date *</label>
+      <form onSubmit={handleSubmit} className="form-body">
+        <div className="form-section">
+          <h3 className="section-title">ℹ️ Informations générales</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label>Date <span className="required">*</span></label>
               <input
                 type="date"
                 value={formData.date}
@@ -140,8 +131,8 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
               />
             </div>
 
-            <div className="field-group">
-              <label>Date de réception *</label>
+            <div className="form-group">
+              <label>Date de réception <span className="required">*</span></label>
               <input
                 type="date"
                 value={formData.dateReception}
@@ -150,33 +141,29 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
               />
             </div>
 
-            <div className="field-group">
-              <label>{nombreLabel}</label>
+            <div className="form-group">
+              <label>{nombreLabel} <span className="required">*</span></label>
               <input
                 type="number"
                 value={formData.nombreDossiers || ''}
                 onChange={(e) => handleChange('nombreDossiers', parseInt(e.target.value) || 0)}
                 placeholder="Nombre"
                 min="0"
+                required
               />
             </div>
 
-            <div className="field-group">
+            <div className="form-group">
               <label>Montant total (FCFA) {formData.details?.length > 0 && '(calculé auto)'}</label>
               <input
                 type="number"
                 value={formData.montantTotal || ''}
-                onChange={(e) => handleChange('montantTotal', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleChange('montantTotal', parseFloat(e.target.value) || 0)}
                 placeholder="Entrez le montant"
                 min="0"
                 disabled={formData.details?.length > 0}
                 style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
               />
-              <small className="field-hint">
-                {formData.montantTotal > 0 && 
-                  `Montant: ${formData.montantTotal.toLocaleString('fr-FR')} FCFA`
-                }
-              </small>
             </div>
           </div>
         </div>
@@ -207,11 +194,11 @@ const SimpleActivityForm: React.FC<SimpleActivityFormProps> = ({
         )}
 
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+          <button type="button" className="btn-secondary" onClick={onCancel} disabled={saving}>
             Annuler
           </button>
-          <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'Envoi...' : '✓ Soumettre'}
+          <button type="submit" className="btn-primary" disabled={saving}>
+            {saving ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </form>

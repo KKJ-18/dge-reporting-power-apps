@@ -956,41 +956,19 @@ body {
   color: var(--modern-text-secondary);
 }
 
-/* ========== SCROLLBAR MODERNE ========== */
+/* ========== SCROLLBAR CACHÉE ========== */
 .sidebar-modern nav::-webkit-scrollbar {
-  width: 4px;
+  display: none;
 }
 
-.sidebar-modern nav::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+.sidebar-modern nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.sidebar-modern nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-}
-
-.sidebar-modern nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Main content scrollbar */
+/* Main content scrollbar hidden */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--modern-bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--modern-border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--modern-text-muted);
+  display: none;
 }
 
 /* ========== LOADER MODERNE ========== */

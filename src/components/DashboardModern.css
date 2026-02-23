@@ -104,8 +104,7 @@
   justify-content: center;
   padding: 24px 16px;
   border-radius: 14px;
-  border: 1.5px solid #E5E7EB;
-  background: white;
+  border: 1.5px solid transparent;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;

@@ -72,22 +72,25 @@ const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
   ],
   DSE: [
     {
-      id: 'situation-mep',
-      name: 'Situation Mise en Place',
+      id: 'suivi-mises-en-place',
+      name: 'Suivi des mises en place',
       icon: '✅',
       activities: [
-        { id: 'mep-amortissables', label: 'Crédits amortissables', frequency: 'Journalière' },
-        { id: 'mep-restructuration', label: 'Restructuration', frequency: 'Journalière' },
-        { id: 'mep-caution', label: 'Cautions', frequency: 'Journalière' },
+        { id: 'particulier-identifier', label: 'Particulier — Identifier les non-conformités sur les MEP', frequency: 'Journalière' },
+        { id: 'particulier-regulariser', label: 'Particulier — Régulariser les anomalies détectées', frequency: 'Journalière' },
+        { id: 'entreprise-identifier', label: 'Entreprise — Identifier les non-conformités sur les MEP', frequency: 'Journalière' },
+        { id: 'entreprise-regulariser', label: 'Entreprise — Régulariser les anomalies détectées', frequency: 'Journalière' },
       ]
     },
     {
-      id: 'accords-classement',
-      name: 'Accords de Classement',
-      icon: '📋',
+      id: 'aim',
+      name: 'AIM — Autorisation Individuelle de Mobilisation',
+      icon: '📝',
       activities: [
-        { id: 'autorisation-mobilisation', label: 'Autorisations de mobilisation', frequency: 'Journalière' },
-        { id: 'accords-classement', label: 'Accords de classement', frequency: 'Journalière' },
+        { id: 'aim-analyse', label: 'Analyse', frequency: 'Journalière' },
+        { id: 'aim-depot-beac', label: 'Dépôt des dossiers auprès de la BEAC', frequency: 'Journalière' },
+        { id: 'aim-reponses-beac', label: 'Réponses courrier de la BEAC', frequency: 'Journalière' },
+        { id: 'aim-maj-beac', label: 'Mise à jour des dossiers déposés à la BEAC', frequency: 'Hebdomadaire' },
       ]
     },
     {
@@ -95,19 +98,46 @@ const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
       name: 'Contrats',
       icon: '📄',
       activities: [
-        { id: 'avance-facture', label: 'Avance sur facture', frequency: 'Journalière' },
-        { id: 'prefinancement', label: 'Préfinancement', frequency: 'Journalière' },
+        { id: 'avance-facture', label: 'Avance sur facture — Surveillance', frequency: 'Journalière' },
+        { id: 'prefinancement', label: 'Préfinancement — Surveillance', frequency: 'Journalière' },
+        { id: 'cautions', label: 'Cautions — Surveillance', frequency: 'Journalière' },
       ]
     },
     {
-      id: 'activites-annexes',
-      name: 'Activités annexes',
-      icon: '📎',
+      id: 'projets',
+      name: 'Projets',
+      icon: '🚀',
       activities: [
-        { id: 'visites', label: 'Visites terrain', frequency: 'Hebdomadaire' },
-        { id: 'formations', label: 'Formations', frequency: 'Mensuelle' },
+        { id: 'recensement-projets', label: 'Recensement des projets (PV comité)', frequency: 'Hebdomadaire' },
+        { id: 'suivi-decaissements', label: 'Suivi des décaissements (PV comité)', frequency: 'Hebdomadaire' },
+        { id: 'suivi-taux-avancement', label: 'Suivi du taux d\'avancement (PV comité)', frequency: 'Hebdomadaire' },
       ]
-    }
+    },
+    {
+      id: 'declaration-reglementaire',
+      name: 'Déclaration Réglementaire',
+      icon: '📑',
+      activities: [
+        { id: 'teg', label: 'TEG', frequency: 'Mensuelle' },
+        { id: 'fibane', label: 'FIBANE 1/2/3', frequency: 'Mensuelle' },
+        { id: 'douane', label: 'Douane', frequency: 'Mensuelle' },
+        { id: 'cre', label: 'CRE', frequency: 'Mensuelle' },
+      ]
+    },
+    {
+      id: 'autres-activites',
+      name: 'Autres Activités',
+      icon: '📌',
+      activities: [
+        { id: 'visite-unite', label: 'Visite unité pour la collecte documentaire', frequency: 'Hebdomadaire' },
+        { id: 'etudes-dse', label: 'Études', frequency: 'Semestrielle' },
+        { id: 'validation-dossiers', label: 'Autres — Validation des dossiers de crédit', frequency: 'Journalière' },
+        { id: 'formation-dse', label: 'Formation', frequency: 'Hebdomadaire' },
+        { id: 'gestion-relations', label: 'Gestion des relations avec des entités ext./int.', frequency: 'Hebdomadaire' },
+        { id: 'projets-dri-dsi', label: 'Projets avec la DRI et DSI', frequency: 'Hebdomadaire' },
+        { id: 'redaction-procedures', label: 'Rédaction des procédures', frequency: 'Semestrielle' },
+      ]
+    },
   ],
   DPNP: [
     {
@@ -115,23 +145,78 @@ const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
       name: 'Analyse des dossiers de restructuration',
       icon: '🔄',
       activities: [
-        { id: 'restructuration', label: 'Analyse restructuration', frequency: 'Journalière' },
+        { id: 'reception-dossiers', label: 'Réception des dossiers', frequency: 'Journalière' },
+        { id: 'dossiers-complements', label: 'Dossiers dont les observations ont été envoyées pour compléments d\'informations', frequency: 'Journalière' },
+        { id: 'dossiers-elements-recus', label: 'Dossiers dont on nous a reçus les éléments de l\'unité', frequency: 'Journalière' },
+        { id: 'dossier-analyse', label: 'Dossier en cours d\'analyse', frequency: 'Journalière' },
+        { id: 'dossier-attente-comite', label: 'Dossier en attente de comité', frequency: 'Journalière' },
+        { id: 'dossier-attente-decision', label: 'Dossiers en attente de décision', frequency: 'Journalière' },
+        { id: 'dossier-accord', label: 'Dossier dont on a eu l\'accord (comité + PV)', frequency: 'Journalière' },
+        { id: 'dossier-rejete', label: 'Dossier rejeté', frequency: 'Journalière' },
       ]
     },
     {
-      id: 'suivi-anomalies',
-      name: 'Suivi des anomalies engagements',
-      icon: '⚠️',
+      id: 'suivi-creances-restructurees',
+      name: 'Suivi des créances restructurées',
+      icon: '📊',
       activities: [
-        { id: 'anomalies-tresorerie', label: 'Anomalies trésorerie', frequency: 'Journalière' },
+        { id: 'remboursement-echeance', label: 'Remboursement d\'échéance (échéances remboursées sur les dossiers restructurés)', frequency: 'Mensuelle' },
       ]
     },
     {
-      id: 'recouvrement',
-      name: 'Recouvrement par versement',
-      icon: '💸',
+      id: 'suivi-anomalies-leasing',
+      name: 'Suivi des anomalies leasing',
+      icon: '🚗',
       activities: [
-        { id: 'versements', label: 'Suivi versements', frequency: 'Journalière' },
+        { id: 'origine-anomalies-leasing', label: 'Renseigner l\'origine des anomalies de chaque client en anomalie', frequency: 'Hebdomadaire' },
+        { id: 'suivi-parc-auto', label: 'Suivi du parc automobile', frequency: 'Hebdomadaire' },
+        { id: 'tracking', label: 'Tracking', frequency: 'Hebdomadaire' },
+      ]
+    },
+    {
+      id: 'travail-proximite',
+      name: 'Travail de proximité avec les unités',
+      icon: '👥',
+      activities: [
+        { id: 'origine-anomalies-proximite', label: 'Renseigner l\'origine des anomalies de chaque client en anomalie', frequency: 'Hebdomadaire' },
+        { id: 'formation-themes', label: 'Formation sur des thèmes précis', frequency: 'Semestrielle' },
+      ]
+    },
+    {
+      id: 'recouvrement-versement',
+      name: 'Recouvrement par versement (après actions de la DCE, pas de porte)',
+      icon: '📞',
+      activities: [
+        { id: 'clients-appeles', label: 'Nombre de clients appelés', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'suivi-contagion',
+      name: 'Suivi de la contagion des comptes',
+      icon: '🔗',
+      activities: [
+        { id: 'comptes-nettoyer', label: 'Nombre de comptes à nettoyer', frequency: 'Journalière' },
+        { id: 'montant-regulariser', label: 'Montant global à verser pour régulariser', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'recherche-clients-etranger',
+      name: 'Recherche des clients particuliers en anomalie à l\'étranger (risque canada)',
+      icon: '🌍',
+      activities: [
+        { id: 'clients-contacts', label: 'Clients contactés', frequency: 'Journalière' },
+        { id: 'clients-ayant-repondu', label: 'Client ayant répondu', frequency: 'Journalière' },
+      ]
+    },
+    {
+      id: 'activites-annexes',
+      name: 'Activités annexes',
+      icon: '📎',
+      activities: [
+        { id: 'visites-clientele', label: 'Visites clientèles effectuées', frequency: 'Hebdomadaire' },
+        { id: 'redaction-procedures', label: 'Rédaction/mise à jour des procédures', frequency: 'Mensuelle' },
+        { id: 'etudes-realisees', label: 'Études réalisées', frequency: 'Mensuelle' },
+        { id: 'autres-activites', label: 'Autres activités', frequency: 'Hebdomadaire' },
       ]
     },
     {
@@ -143,15 +228,6 @@ const FALLBACK_CATEGORIES: Record<'DA' | 'DSE' | 'DPNP', CategoryData[]> = {
         { id: 'actions-recouvrement', label: 'Enregistrer actions de recouvrement', frequency: 'Journalière' },
       ]
     },
-    {
-      id: 'activites-annexes',
-      name: 'Activités annexes',
-      icon: '📎',
-      activities: [
-        { id: 'visites', label: 'Visites terrain', frequency: 'Hebdomadaire' },
-        { id: 'formations', label: 'Formations', frequency: 'Mensuelle' },
-      ]
-    }
   ]
 };
 
@@ -232,19 +308,13 @@ export async function loadDepartments(): Promise<void> {
       };
     }
     
-    if (hasDSEData) {
-      DEPARTMENTS_MAP.DSE = {
-        ...DEPARTMENTS_MAP.DSE,
-        categories: convertCategories(departments.DSE.categories)
-      };
-    }
+    // DSE: Forcer utilisation des données locales (fallback)
+    console.log('🔧 DSE: Utilisation forcée des données locales (fallback)');
+    // Les données de fallback sont déjà en place dans DEPARTMENTS_MAP.DSE
     
-    if (hasDPNPData) {
-      DEPARTMENTS_MAP.DPNP = {
-        ...DEPARTMENTS_MAP.DPNP,
-        categories: convertCategories(departments.DPNP.categories)
-      };
-    }
+    // DPNP: Forcer utilisation des données locales (fallback)
+    console.log('🔧 DPNP: Utilisation forcée des données locales (fallback)');
+    // Les données de fallback sont déjà en place dans DEPARTMENTS_MAP.DPNP
     
     console.log('✅ Départements chargés:');
     console.log(`  DA: ${DEPARTMENTS_MAP.DA.categories.length} catégories, ${DEPARTMENTS_MAP.DA.categories.reduce((sum, cat) => sum + cat.activities.length, 0)} activités ${!hasDAData ? '(fallback)' : ''}`);

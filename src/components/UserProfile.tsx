@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Office365UsersService } from '../services/Office365UsersService';
+import { debugLog } from '../utils/logger';
 
 interface UserProfileProps {
   user: {
@@ -27,16 +28,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
     setError(null);
     
     try {
-      console.log('🔐 Tentative de connexion à Office 365...');
+      debugLog('🔐 Tentative de connexion à Office 365...');
       const profileResult = await Office365UsersService.MyProfile();
       
-      console.log('📊 Résultat de MyProfile:', profileResult);
+      debugLog('📊 Résultat de MyProfile:', profileResult);
       
       // Le SDK retourne { data: {...}, success: true }
       const profile = profileResult?.data || profileResult?.result || profileResult;
       
       if (profile && onProfileRefresh) {
-        console.log('✅ Profil récupéré avec succès:', profile);
+        debugLog('✅ Profil récupéré avec succès:', profile);
         onProfileRefresh(profileResult);
       }
       setError(null);
@@ -55,47 +56,27 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
       <h1 className="page-title">👤 Mon Profil</h1>
       <p className="page-subtitle">Informations de votre compte utilisateur</p>
       
-      <div style={{
-        marginTop: '2rem',
-        maxWidth: '800px'
-      }}>
+      <div className="mt-8 max-w-[800px]">
         {/* Message d'alerte si données par défaut */}
         {isDefaultData && (
-          <div style={{
-            background: 'rgba(255, 193, 7, 0.1)',
-            border: '1px solid rgba(255, 193, 7, 0.3)',
-            borderRadius: '12px',
-            padding: '1rem',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem'
-          }}>
-            <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: '600', color: '#1A1A1A', marginBottom: '0.25rem' }}>
+          <div className="bg-amber-100/50 border border-amber-400/40 rounded-xl p-4 mb-6 flex items-center gap-4">
+            <span className="text-2xl">⚠️</span>
+            <div className="flex-1">
+              <div className="font-semibold text-neutral-900 mb-1">
                 Connexion Office 365 requise
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6B7280' }}>
+              <div className="text-sm text-neutral-500">
                 Cliquez sur le bouton ci-dessous pour autoriser l'accès à vos informations Office 365
               </div>
             </div>
             <button
               onClick={handleConnectOffice365}
               disabled={isLoading}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: isLoading ? '#9CA3AF' : 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: '600',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                fontSize: '0.875rem',
-                transition: 'all 0.2s',
-                boxShadow: isLoading ? 'none' : '0 2px 8px rgba(204, 0, 0, 0.2)',
-                whiteSpace: 'nowrap'
-              }}
+              className={`px-6 py-3 text-sm font-semibold rounded-lg text-white whitespace-nowrap transition-all ${
+                isLoading
+                  ? 'bg-neutral-400 cursor-not-allowed'
+                  : 'bg-linear-to-br from-red-700 to-red-900 hover:opacity-95 shadow-md'
+              }`}
             >
               {isLoading ? '🔄 Connexion...' : '🔐 Se connecter à Office 365'}
             </button>
@@ -104,95 +85,38 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
 
         {/* Message d'erreur */}
         {error && (
-          <div style={{
-            background: 'rgba(220, 38, 38, 0.1)',
-            border: '1px solid rgba(220, 38, 38, 0.3)',
-            borderRadius: '12px',
-            padding: '1rem',
-            marginBottom: '1.5rem',
-            color: '#991B1B',
-            fontSize: '0.875rem'
-          }}>
+          <div className="bg-red-100/60 border border-red-300 rounded-xl p-4 mb-6 text-red-800 text-sm">
             ❌ {error}
           </div>
         )}
 
         {/* Carte profil principal */}
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '2rem',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-          marginBottom: '1.5rem'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1.5rem',
-            marginBottom: '2rem',
-            paddingBottom: '2rem',
-            borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
-          }}>
+        <div className="bg-white rounded-2xl p-8 shadow-md mb-6">
+          <div className="flex items-center gap-6 mb-8 pb-8 border-b border-black/10">
             {/* Avatar */}
-            <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #CC0000 0%, #990000 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              flexShrink: 0
-            }}>
+            <div className="w-20 h-20 rounded-full bg-linear-to-br from-red-700 to-red-900 flex items-center justify-center text-2xl font-bold text-white shrink-0">
               {user.name.charAt(0).toUpperCase()}
             </div>
             
             {/* Nom et titre */}
-            <div style={{ flex: 1 }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#1A1A1A',
-                marginBottom: '0.25rem'
-              }}>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-1">
                 {user.name}
               </h2>
-              <p style={{
-                fontSize: '1rem',
-                color: '#6B7280',
-                fontWeight: '500'
-              }}>
+              <p className="text-base text-neutral-500 font-medium">
                 {user.role}
               </p>
             </div>
           </div>
 
           {/* Informations détaillées */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1.5rem'
-          }}>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
             {user.mail && (
               <div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
-                }}>
+                <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
                   📧 Email
                 </div>
-                <div style={{
-                  fontSize: '0.9375rem',
-                  color: '#1A1A1A',
-                  fontWeight: '500'
-                }}>
+                <div className="text-[0.9375rem] text-neutral-900 font-medium">
                   {user.mail}
                 </div>
               </div>
@@ -200,21 +124,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
 
             {user.phone && (
               <div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
-                }}>
+                <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
                   📱 Téléphone
                 </div>
-                <div style={{
-                  fontSize: '0.9375rem',
-                  color: '#1A1A1A',
-                  fontWeight: '500'
-                }}>
+                <div className="text-[0.9375rem] text-neutral-900 font-medium">
                   {user.phone}
                 </div>
               </div>
@@ -222,21 +135,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
 
             {user.department && (
               <div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
-                }}>
+                <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
                   🏢 Département
                 </div>
-                <div style={{
-                  fontSize: '0.9375rem',
-                  color: '#1A1A1A',
-                  fontWeight: '500'
-                }}>
+                <div className="text-[0.9375rem] text-neutral-900 font-medium">
                   {user.department}
                 </div>
               </div>
@@ -244,21 +146,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
 
             {user.location && (
               <div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: '#6B7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
-                }}>
+                <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
                   📍 Localisation
                 </div>
-                <div style={{
-                  fontSize: '0.9375rem',
-                  color: '#1A1A1A',
-                  fontWeight: '500'
-                }}>
+                <div className="text-[0.9375rem] text-neutral-900 font-medium">
                   {user.location}
                 </div>
               </div>
@@ -267,19 +158,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onProfileRefresh, initi
         </div>
 
         {/* Informations système */}
-        <div style={{
-          background: 'rgba(204, 0, 0, 0.05)',
-          borderRadius: '12px',
-          padding: '1rem',
-          border: '1px solid rgba(204, 0, 0, 0.1)'
-        }}>
-          <div style={{
-            fontSize: '0.8125rem',
-            color: '#6B7280',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
+        <div className="bg-red-900/5 rounded-xl p-4 border border-red-900/10">
+          <div className="text-[0.8125rem] text-neutral-500 flex items-center gap-2">
             <span>ℹ️</span>
             <span>
               Environnement: <strong>{window.parent !== window ? 'Power Apps (Production)' : 'Développement Local'}</strong>

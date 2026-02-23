@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RechercherClientAnomalieService } from '../../services/RechercherClientAnomalieService';
+import { DetailsDossiersService } from '../../services/DetailsDossiersService';
+import { AgenceResauService } from '../../services/AgenceResauService';
+import NotificationModal from '../NotificationModal';
+import { useNotification } from '../../hooks/useNotification';
 import '../../styles/forms.css';
 
 
@@ -10,328 +14,138 @@ interface Props {
   onSave: () => void; 
 }
 
+const EMPTY_CLIENT = {
+  Matricule: '',
+  NomClient: '',
+  Agence: '',
+  PaysResidence: '',
+  Employeur: '',
+  MontantGlobalEngagements: 0,
+  VolumeAnomalies: 0,
+  Statut: '',
+  PropositionClient: '',
+};
+
 const FormRechercherClientAnomalie: React.FC<Props> = ({ 
   activityName, 
   specificType,
   onClose,
   onSave 
 }) => {
+  const { notification, showSuccess, showError, closeNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    NbreClientAnomalie: 0,
-    NbreClientRetrouve: 0,
-    NbreClientContacte: 0,
-    NbreClientAyantRepondu: 0,
-    NbreClientCooperatif: 0,
-    DateVersement: '',
-    MontantVersement: 0,
-    NbreClientAyantDemandeRestructur: 0,
-    MontantGlobalEngagement: 0,
-    VolumeAnomalie: 0,
-  });
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [agences, setAgences] = useState<string[]>([]);
+  const [loadingAgences, setLoadingAgences] = useState(false);
+  const [client, setClient] = useState({ ...EMPTY_CLIENT });
+
+  const isAyantRepondu = specificType === 'clients-ayant-repondu';
+  const typeLabel = isAyantRepondu ? 'Clients ayant répondu' : 'Clients contactés';
+
+  useEffect(() => {
+    (async () => {
+      setLoadingAgences(true);
+      try {
+        const result = await AgenceResauService.getAll();
+        const data: any[] = result?.data || result?.value || [];
+        setAgences(Array.from(new Set(data.map((d: any) => d.Title).filter(Boolean))).sort() as string[]);
+      } catch { /* silent */ } finally { setLoadingAgences(false); }
+    })();
+  }, []);
+
+  const change = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setClient(p => ({ ...p, [name]: e.target.type === 'number' ? parseFloat(value) || 0 : value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    const today = new Date().toISOString().split('T')[0];
+    const ref = `RECH-${today.replace(/-/g,'')}-${client.Matricule || Math.random().toString(36).substring(2,6).toUpperCase()}`;
     try {
-      const record = {
+      await RechercherClientAnomalieService.create({
         Title: activityName,
-        NbreClientAnomalie: formData.NbreClientAnomalie,
-        NbreClientRetrouve: formData.NbreClientRetrouve,
-        NbreClientContacte: formData.NbreClientContacte,
-        NbreClientAyantRepondu: formData.NbreClientAyantRepondu,
-        NbreClientCooperatif: formData.NbreClientCooperatif,
-        DateVersement: formData.DateVersement || undefined,
-        MontantVersement: formData.MontantVersement,
-        NbreClientAyantDemandeRestructur: formData.NbreClientAyantDemandeRestructur,
-        MontantGlobalEngagement: formData.MontantGlobalEngagement,
-        VolumeAnomalie: formData.VolumeAnomalie,
-      };
-
-      console.log('📤 Envoi RechercherClientAnomalie vers SharePoint:', record);
-
-      await RechercherClientAnomalieService.create(record);
-      setShowSuccess(true);
-      
-      setTimeout(() => {
-        setShowSuccess(false);
-        onSave();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement:', error);
-      alert('Erreur lors de l\'enregistrement');
-    } finally {
-      setLoading(false);
-    }
+        NbreClientAnomalie: 1,
+        NbreClientRetrouve: 1,
+        NbreClientContacte: 1,
+        NbreClientAyantRepondu: isAyantRepondu ? 1 : 0,
+        NbreClientCooperatif: isAyantRepondu && client.Statut === 'coopératif' ? 1 : 0,
+        NbreClientAyantDemandeRestructur: 0,
+        MontantGlobalEngagement: client.MontantGlobalEngagements,
+        VolumeAnomalie: client.VolumeAnomalies,
+        MontantVersement: 0,
+        DateVersement: today,
+      });
+      await DetailsDossiersService.create({
+        Title: activityName,
+        NomClient: client.NomClient,
+        Matricule: client.Matricule,
+        MontantSollicite: client.MontantGlobalEngagements,
+        Decision: isAyantRepondu ? `ayant-repondu-${client.Statut}` : 'client-contacte',
+        ObjetCommentaire: isAyantRepondu ? client.PropositionClient : `Pays:${client.PaysResidence}|Employeur:${client.Employeur}`,
+        Commentaire: `Pays:${client.PaysResidence}|Employeur:${client.Employeur}|Agence:${client.Agence}`,
+        Reference: ref,
+        Date: today,
+      });
+      showSuccess('Enregistrement réussi', `${typeLabel} — ${client.NomClient} enregistré.`);
+      setTimeout(() => onSave(), 1500);
+    } catch (err: any) {
+      showError('Erreur', err.message || 'Une erreur est survenue');
+    } finally { setLoading(false); }
   };
-
-  if (showSuccess) {
-    return (
-      <div className="success-message">
-        <div className="success-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-        </div>
-        <h3>Enregistrement réussi</h3>
-        <p>Recherche client anomalie enregistrée</p>
-      </div>
-    );
-  }
 
   return (
     <div className="form-container">
-      <button className="close-button" onClick={onClose} aria-label="Fermer">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
-
       <div className="form-header">
-        <div className="form-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
-            <path d="M11 8v6" />
-            <path d="M8 11h6" />
-          </svg>
-        </div>
         <div className="form-title-group">
           <h2 className="form-title">{activityName}</h2>
-          <div className="form-badge">{specificType}</div>
+          <span className="form-badge">{typeLabel}</span>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="form-body">
-        
-        {/* Section: Statistiques clients */}
-        <div className="form-section" style={{ backgroundColor: '#F9FAFB', padding: '1.5rem', borderRadius: '10px', border: '2px solid #E5E7EB' }}>
-          <h3 className="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            Statistiques clients
-          </h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+        <div className="form-section">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group"><label>Matricule client <span className="required">*</span></label><input type="text" name="Matricule" value={client.Matricule} onChange={change} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" /></div>
+            <div className="form-group"><label>Nom complet du client <span className="required">*</span></label><input type="text" name="NomClient" value={client.NomClient} onChange={change} required /></div>
             <div className="form-group">
-              <label className="form-label">Nombre de clients en anomalies *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientAnomalie === 0 ? '' : formData.NbreClientAnomalie}
-                onChange={(e) => setFormData({ ...formData, NbreClientAnomalie: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
+              <label>Agence <span className="required">*</span></label>
+              {loadingAgences ? <div className="loading">Chargement...</div> : agences.length > 0 ? (
+                <select name="Agence" value={client.Agence} onChange={change} required>
+                  <option value="">-- Sélectionner --</option>
+                  {agences.map(a => <option key={a} value={a}>{a}</option>)}
+                </select>
+              ) : (
+                <input type="text" name="Agence" value={client.Agence} onChange={change} required />
+              )}
             </div>
+            <div className="form-group"><label>Pays de résidence <span className="required">*</span></label><input type="text" name="PaysResidence" value={client.PaysResidence} onChange={change} required /></div>
+            <div className="form-group"><label>Employeur / Entreprise</label><input type="text" name="Employeur" value={client.Employeur} onChange={change} /></div>
+            <div className="form-group"><label>Montant global des engagements (FCFA) <span className="required">*</span></label><input type="number" name="MontantGlobalEngagements" value={client.MontantGlobalEngagements || ''} onChange={change} required /></div>
+            <div className="form-group"><label>Volume anomalies — impayé + agios (FCFA) <span className="required">*</span></label><input type="number" name="VolumeAnomalies" value={client.VolumeAnomalies || ''} onChange={change} required /></div>
 
-            <div className="form-group">
-              <label className="form-label">Nombre de clients retrouvés *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientRetrouve === 0 ? '' : formData.NbreClientRetrouve}
-                onChange={(e) => setFormData({ ...formData, NbreClientRetrouve: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nombre de clients contactés *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientContacte === 0 ? '' : formData.NbreClientContacte}
-                onChange={(e) => setFormData({ ...formData, NbreClientContacte: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nombre de clients ayant répondu *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientAyantRepondu === 0 ? '' : formData.NbreClientAyantRepondu}
-                onChange={(e) => setFormData({ ...formData, NbreClientAyantRepondu: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">
-                Nombre de clients coopératifs *
-                <span className="field-hint">(lettre d'engagement signée)</span>
-              </label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientCooperatif === 0 ? '' : formData.NbreClientCooperatif}
-                onChange={(e) => setFormData({ ...formData, NbreClientCooperatif: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Demandes de restructuration *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.NbreClientAyantDemandeRestructur === 0 ? '' : formData.NbreClientAyantDemandeRestructur}
-                onChange={(e) => setFormData({ ...formData, NbreClientAyantDemandeRestructur: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
+            {isAyantRepondu && (<>
+              <div className="form-group">
+                <label>Statut du client <span className="required">*</span></label>
+                <select name="Statut" value={client.Statut} onChange={change} required>
+                  <option value="">-- Sélectionner --</option>
+                  <option value="coopératif">Coopératif</option>
+                  <option value="non coopératif">Non coopératif</option>
+                </select>
+              </div>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label>Proposition du client</label>
+                <textarea name="PropositionClient" value={client.PropositionClient} onChange={change} rows={3} placeholder="Proposition de régularisation, plan de remboursement..." />
+              </div>
+            </>)}
           </div>
         </div>
 
-        {/* Section: Informations financières */}
-        <div className="form-section" style={{ backgroundColor: '#F9FAFB', padding: '1.5rem', borderRadius: '10px', border: '2px solid #E5E7EB' }}>
-          <h3 className="section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-            Informations financières
-          </h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Date de versement</label>
-              <input
-                type="date"
-                className="form-input"
-                value={formData.DateVersement}
-                onChange={(e) => setFormData({ ...formData, DateVersement: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Montant versement (FCFA) *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.MontantVersement === 0 ? '' : formData.MontantVersement}
-                onChange={(e) => setFormData({ ...formData, MontantVersement: parseFloat(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Montant global des engagements (FCFA) *</label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.MontantGlobalEngagement === 0 ? '' : formData.MontantGlobalEngagement}
-                onChange={(e) => setFormData({ ...formData, MontantGlobalEngagement: parseFloat(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">
-                Volume des anomalies (FCFA) *
-                <span className="field-hint">(agios + impayés)</span>
-              </label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.VolumeAnomalie === 0 ? '' : formData.VolumeAnomalie}
-                onChange={(e) => setFormData({ ...formData, VolumeAnomalie: parseFloat(e.target.value) || 0 })}
-                placeholder="0"
-                required
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Résumé */}
-        <div className="card">
-          <div className="card-header">RÉSUMÉ DES DONNÉES</div>
-          <div className="card-content">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', fontSize: '0.8rem' }}>
-              <div>
-                <span>Clients anomalies:</span>
-                <strong>{formData.NbreClientAnomalie}</strong>
-              </div>
-              <div>
-                <span>Retrouvés:</span>
-                <strong>{formData.NbreClientRetrouve}</strong>
-              </div>
-              <div>
-                <span>Contactés:</span>
-                <strong>{formData.NbreClientContacte}</strong>
-              </div>
-              <div>
-                <span>Ont répondu:</span>
-                <strong>{formData.NbreClientAyantRepondu}</strong>
-              </div>
-              <div>
-                <span>Coopératifs:</span>
-                <strong>{formData.NbreClientCooperatif}</strong>
-              </div>
-              <div>
-                <span>Restructurations:</span>
-                <strong>{formData.NbreClientAyantDemandeRestructur}</strong>
-              </div>
-              <div>
-                <span>Versement:</span>
-                <strong>{formData.MontantVersement.toLocaleString()} FCFA</strong>
-              </div>
-              <div>
-                <span>Engagements:</span>
-                <strong>{formData.MontantGlobalEngagement.toLocaleString()} FCFA</strong>
-              </div>
-              <div>
-                <span>Volume anomalies:</span>
-                <strong>{formData.VolumeAnomalie.toLocaleString()} FCFA</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Boutons d'action */}
         <div className="form-actions">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="btn-secondary"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary"
-          >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
-          </button>
+          <button type="button" onClick={onClose} disabled={loading} className="btn-secondary">Annuler</button>
+          <button type="submit" disabled={loading} className="btn-primary">{loading ? 'Enregistrement...' : 'Enregistrer'}</button>
         </div>
       </form>
+      <NotificationModal isOpen={notification.isOpen} type={notification.type} title={notification.title} message={notification.message} onClose={closeNotification} />
     </div>
   );
 };

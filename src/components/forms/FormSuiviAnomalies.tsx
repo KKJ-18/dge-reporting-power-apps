@@ -1,288 +1,185 @@
 import React, { useState, useEffect } from 'react';
 import { SuiviAnomaliesService } from '../../services/SuiviAnomaliesService';
-import { AgenceResauService } from '../../services/AgenceResauService';
+import { ActivitesTransversalesService } from '../../services/ActivitesTransversalesService';
 import { DetailsDossiersService } from '../../services/DetailsDossiersService';
-import DossiersDetailsInput, { DossierDetail } from './DossiersDetailsInput';
+import { AgenceResauService } from '../../services/AgenceResauService';
+import NotificationModal from '../NotificationModal';
+import { useNotification } from '../../hooks/useNotification';
 import '../../styles/forms.css';
 
+type AnomaliesSpecificType = 'anomalies-leasing' | 'parc-auto' | 'tracking' | 'anomalies-proximite';
 
 interface FormSuiviAnomaliesProps {
   activityName: string;
-  specificType: 'anomalies-tresorerie' | 'anomalies-leasing';
+  specificType: AnomaliesSpecificType;
   departmentColor?: string;
   onClose: () => void;
   onSave: () => void;
 }
 
-const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({ 
-  activityName,
-  specificType,
-  onClose,
-  onSave
-}) => {
+const FormSuiviAnomalies: React.FC<FormSuiviAnomaliesProps> = ({activityName, specificType, onClose, onSave}) => {
+  const { notification, showSuccess, showError, closeNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [loadingAgences, setLoadingAgences] = useState(false);
   const [agences, setAgences] = useState<string[]>([]);
-  const [formData, setFormData] = useState({
-    NombreCompte: 0,
-    MontantGlobal: 0,
-    Agence: '',
-    details: [] as DossierDetail[]
-  });
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [reseaux, setReseaux] = useState<string[]>([]);
+  const [loadingAgences, setLoadingAgences] = useState(false);
+
+  // anomalies-leasing (per-client nominative)
+  const [leasingData, setLeasingData] = useState({ matricule: '', nomClient: '', agence: '', reseau: '', volumeEngagements: 0, volumeAnomalies: 0, origineAnomalie: '' });
+  // parc-auto
+  const [parcData, setParcData] = useState({ numeroChassis: '', typeVehicule: '', nomClient: '', agence: '', reseau: '', matricule: '', valeurMateriel: 0 });
+  // tracking
+  const [trackingData, setTrackingData] = useState({ nomClient: '', agence: '', reseau: '', matricule: '', entrepriseTracking: '', etatTracking: '' });
+  // anomalies-proximite
+  const [proxData, setProxData] = useState({ matricule: '', nomClient: '', agence: '', reseau: '', volumeEngagements: 0, volumeAnomalies: 0, origineAnomalie: '' });
 
   useEffect(() => {
-    loadAgences();
+    (async () => {
+      setLoadingAgences(true);
+      try {
+        const result = await AgenceResauService.getAll();
+        const data: any[] = result?.data || result?.value || [];
+        setAgences(Array.from(new Set(data.map((d: any) => d.Title).filter(Boolean))).sort() as string[]);
+        setReseaux(Array.from(new Set(data.map((d: any) => d.NomResau).filter(Boolean))).sort() as string[]);
+      } catch { /* silent */ } finally { setLoadingAgences(false); }
+    })();
   }, []);
 
-  const loadAgences = async () => {
-    setLoadingAgences(true);
-    try {
-      const result = await AgenceResauService.getAll();
-      const data = result?.data || result?.value || [];
-      const uniqueAgences = Array.from(
-        new Set(data.map((item: any) => item.Title).filter(Boolean))
-      ).sort() as string[];
-      setAgences(uniqueAgences);
-    } catch (err) {
-      console.error('Erreur chargement agences:', err);
-      setAgences([]);
-    } finally {
-      setLoadingAgences(false);
-    }
-  };
+  const change = (setter: React.Dispatch<React.SetStateAction<any>>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setter((p: any) => ({ ...p, [name]: e.target.type === 'number' ? parseFloat(value) || 0 : value }));
+    };
 
-  const handleDetailsChange = (details: DossierDetail[], montantTotal: number) => {
-    setFormData(prev => ({
-      ...prev,
-      details,
-      MontantGlobal: montantTotal
-    }));
-  };
+  const generateRef = () => `ANOM-${new Date().toISOString().split('T')[0].replace(/-/g,'')}-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
 
-  const generateReference = (): string => {
-    const now = new Date();
-    const date = now.toISOString().split('T')[0].replace(/-/g, '');
-    const time = now.toTimeString().split(' ')[0].replace(/:/g, '');
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `ANOM-${date}-${time}-${random}`;
-  };
+  const SelectField = ({ label, name, value, onChange, list, req = false }: any) => (
+    <div className="form-group">
+      <label>{label}{req && <span className="required"> *</span>}</label>
+      {loadingAgences ? <div className="loading">Chargement...</div> : list.length > 0 ? (
+        <select name={name} value={value} onChange={onChange} required={req}>
+          <option value="">-- Sélectionner --</option>
+          {list.map((v: string) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      ) : (
+        <input type="text" name={name} value={value} onChange={onChange} placeholder={label} required={req} />
+      )}
+    </div>
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    const ref = generateRef();
+    const today = new Date().toISOString().split('T')[0];
     try {
-      const reference = generateReference();
-
-      const record = {
-        Title: activityName,
-        NombreCompte: formData.NombreCompte,
-        MontantGlobal: formData.MontantGlobal,
-        Agence: formData.Agence,
-        Reference: reference
-      };
-
-      console.log('📤 Envoi FormSuiviAnomalies:', record);
-
-      await SuiviAnomaliesService.create(record);
-
-      // Si des détails sont saisis, les sauvegarder
-      if (formData.details && formData.details.length > 0) {
-        for (const detail of formData.details) {
-          await DetailsDossiersService.create({
-            Title: activityName,
-            NomClient: detail.nomClient,
-            Matricule: detail.matricule,
-            MontantSollicite: detail.montantSollicite,
-            Decision: detail.Decision || '',
-            Commentaire: detail.commentaire || '',
-            Comite: formData.Agence, // Utiliser l'agence comme référence
-            Reference: reference,
-            Date: new Date().toISOString().split('T')[0]
-          });
-        }
+      if (specificType === 'anomalies-leasing') {
+        await SuiviAnomaliesService.create({ Title: activityName, NombreClient: 1, VolumeGlobalEngagement: leasingData.volumeEngagements, VolumeAnomalie: leasingData.volumeAnomalies, Agence: leasingData.agence, OrigineAnomalie: leasingData.origineAnomalie });
+        await DetailsDossiersService.create({ Title: activityName, NomClient: leasingData.nomClient, Matricule: leasingData.matricule, MontantSollicite: leasingData.volumeEngagements, Decision: 'anomalie-leasing', ObjetCommentaire: leasingData.origineAnomalie, Commentaire: `VolumeAnomalies:${leasingData.volumeAnomalies}|Réseau:${leasingData.reseau}`, Reference: ref, Date: today });
+      } else if (specificType === 'parc-auto') {
+        await ActivitesTransversalesService.create({ Title: activityName, TitreOuTheme: `Parc auto|${parcData.nomClient}|Chassis:${parcData.numeroChassis}|${parcData.typeVehicule}`, Resultat: `Agence:${parcData.agence}|Réseau:${parcData.reseau}|Valeur:${parcData.valeurMateriel}`, DateValidation: today });
+        if (parcData.matricule) await DetailsDossiersService.create({ Title: activityName, NomClient: parcData.nomClient, Matricule: parcData.matricule, MontantSollicite: parcData.valeurMateriel, Decision: 'suivi-parc-auto', ObjetCommentaire: `Chassis:${parcData.numeroChassis}|Type:${parcData.typeVehicule}`, Commentaire: `Agence:${parcData.agence}|Réseau:${parcData.reseau}`, Reference: ref, Date: today });
+      } else if (specificType === 'tracking') {
+        await ActivitesTransversalesService.create({ Title: activityName, TitreOuTheme: `Tracking|${trackingData.nomClient}|${trackingData.entrepriseTracking}`, Resultat: `État:${trackingData.etatTracking}|Agence:${trackingData.agence}|Réseau:${trackingData.reseau}`, DateValidation: today });
+        if (trackingData.matricule) await DetailsDossiersService.create({ Title: activityName, NomClient: trackingData.nomClient, Matricule: trackingData.matricule, Decision: 'tracking', ObjetCommentaire: `Entreprise:${trackingData.entrepriseTracking}|État:${trackingData.etatTracking}`, Commentaire: `${trackingData.agence}|${trackingData.reseau}`, Reference: ref, Date: today });
+      } else if (specificType === 'anomalies-proximite') {
+        await SuiviAnomaliesService.create({ Title: activityName, NombreClient: 1, VolumeAnomalie: proxData.volumeAnomalies, Agence: proxData.agence, OrigineAnomalie: proxData.origineAnomalie });
+        await DetailsDossiersService.create({ Title: activityName, NomClient: proxData.nomClient, Matricule: proxData.matricule, MontantSollicite: proxData.volumeEngagements, Decision: 'anomalie-proximite', ObjetCommentaire: proxData.origineAnomalie, Commentaire: `Volume anomalies:${proxData.volumeAnomalies}|Réseau:${proxData.reseau}`, Reference: ref, Date: today });
       }
-
-      setShowSuccess(true);
-      
-      setTimeout(() => {
-        setShowSuccess(false);
-        onSave();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement:', error);
-      alert('Erreur lors de l\'enregistrement');
-    } finally {
-      setLoading(false);
-    }
+      showSuccess('Enregistrement réussi', 'Données synchronisées avec SharePoint.');
+      setTimeout(() => onSave(), 1500);
+    } catch (err: any) {
+      showError('Erreur', err.message || 'Une erreur est survenue');
+    } finally { setLoading(false); }
   };
 
-  const getTypeLabel = () => {
-    return specificType === 'anomalies-tresorerie' 
-      ? 'Anomalies Trésorerie' 
-      : 'Anomalies Leasing';
+  const typeLabels: Record<AnomaliesSpecificType, string> = {
+    'anomalies-leasing': 'Anomalies leasing',
+    'parc-auto': 'Suivi du parc automobile',
+    'tracking': 'Tracking',
+    'anomalies-proximite': 'Origine anomalies (proximité)',
   };
-
-  if (showSuccess) {
-    return (
-      <div className="success-message">
-        <div className="success-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-        </div>
-        <h3>Enregistrement réussi</h3>
-        <p>Les données ont été synchronisées</p>
-      </div>
-    );
-  }
 
   return (
     <div className="form-container">
-      <button className="close-button" onClick={onClose} aria-label="Fermer">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
-
       <div className="form-header">
-        <div className="form-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        </div>
         <div className="form-title-group">
           <h2 className="form-title">{activityName}</h2>
-          <span className="form-badge">{getTypeLabel()}</span>
+          <span className="form-badge">{typeLabels[specificType]}</span>
         </div>
       </div>
-
       <form onSubmit={handleSubmit} className="form-body">
-        <div className="form-section">
-          
-          <div className="form-group">
-            <label>Nombre de comptes *</label>
-            <input
-              type="number"
-              value={formData.NombreCompte === 0 ? '' : formData.NombreCompte}
-              onChange={(e) => setFormData({ ...formData, NombreCompte: parseInt(e.target.value) || 0 })}
-              placeholder="0"
-              required
-            />
-          </div>
 
-          <div className="form-group">
-            <label>Montant global (FCFA) {formData.details?.length > 0 && '(calculé auto)'} *</label>
-            <input
-              type="number"
-              value={formData.MontantGlobal === 0 ? '' : formData.MontantGlobal}
-              onChange={(e) => setFormData({ ...formData, MontantGlobal: parseFloat(e.target.value) || 0 })}
-              placeholder="0"
-              required
-              disabled={formData.details?.length > 0}
-              style={formData.details?.length > 0 ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Agence *</label>
-            {loadingAgences ? (
-              <div className="loading">Chargement des agences...</div>
-            ) : agences.length > 0 ? (
-              <select
-                value={formData.Agence}
-                onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
-                required
-              >
-                <option value="">-- Sélectionner une agence --</option>
-                {agences.map((agence, index) => (
-                  <option key={index} value={agence}>
-                    {agence}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                value={formData.Agence}
-                onChange={(e) => setFormData({ ...formData, Agence: e.target.value })}
-                placeholder="Nom de l'agence"
-                required
-              />
-            )}
-          </div>
-
-        </div>
-
-        {/* Détails des comptes (optionnel) */}
-        {formData.NombreCompte > 0 && (
-          <details style={{ marginBottom: '20px' }}>
-            <summary style={{ 
-              cursor: 'pointer', 
-              fontWeight: 600, 
-              color: '#2563eb',
-              padding: '12px 16px',
-              background: '#f8f9fa',
-              borderRadius: '8px',
-              border: '1px solid #e9ecef'
-            }}>
-              📝 Saisir les détails de chaque compte (optionnel)
-            </summary>
-            <div style={{ marginTop: '12px' }}>
-              <DossiersDetailsInput
-                nombreDossiers={formData.NombreCompte}
-                activityType="analyse"
-                initialDetails={formData.details}
-                onDetailsChange={handleDetailsChange}
-              />
+        {/* ── Anomalies Leasing ── */}
+        {specificType === 'anomalies-leasing' && (
+          <div className="form-section">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group"><label>Matricule client <span className="required">*</span></label><input type="text" name="matricule" value={leasingData.matricule} onChange={change(setLeasingData)} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" /></div>
+              <div className="form-group"><label>Nom du client <span className="required">*</span></label><input type="text" name="nomClient" value={leasingData.nomClient} onChange={change(setLeasingData)} required /></div>
+              <SelectField label="Agence" name="agence" value={leasingData.agence} onChange={change(setLeasingData)} list={agences} req />
+              <SelectField label="Réseau" name="reseau" value={leasingData.reseau} onChange={change(setLeasingData)} list={reseaux} req />
+              <div className="form-group"><label>Volume global des engagements (FCFA) <span className="required">*</span></label><input type="number" name="volumeEngagements" value={leasingData.volumeEngagements||''} onChange={change(setLeasingData)} required /></div>
+              <div className="form-group"><label>Volume anomalies — impayé + agios (FCFA) <span className="required">*</span></label><input type="number" name="volumeAnomalies" value={leasingData.volumeAnomalies||''} onChange={change(setLeasingData)} required /></div>
             </div>
-          </details>
+            <div className="form-group" style={{marginTop:'1rem'}}><label>Origine de l'anomalie <span className="required">*</span></label><textarea name="origineAnomalie" value={leasingData.origineAnomalie} onChange={change(setLeasingData)} rows={3} required placeholder="Ex: impayé, dépassement non régularisé..." /></div>
+          </div>
         )}
 
-        <div className="card">
-          <div className="card-header">
-            <h4>RÉSUMÉ DES DONNÉES</h4>
-          </div>
-          <div className="card-content">
-            <div className="form-row">
-              <div>
-                <span>Nombre de comptes:</span>
-                <strong>{formData.NombreCompte}</strong>
-              </div>
-              <div>
-                <span>Montant global:</span>
-                <strong>{formData.MontantGlobal.toLocaleString()} FCFA</strong>
-              </div>
-            </div>
-            <div className="form-row">
-              <div>
-                <span>Agence:</span>
-                <strong>{formData.Agence || '-'}</strong>
-              </div>
+        {/* ── Parc Automobile ── */}
+        {specificType === 'parc-auto' && (
+          <div className="form-section">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group"><label>Numéro de chassis <span className="required">*</span></label><input type="text" name="numeroChassis" value={parcData.numeroChassis} onChange={change(setParcData)} placeholder="Ex: WBA12345..." required /></div>
+              <div className="form-group"><label>Type de véhicule <span className="required">*</span></label><input type="text" name="typeVehicule" value={parcData.typeVehicule} onChange={change(setParcData)} placeholder="Berline, SUV..." required /></div>
+              <div className="form-group"><label>Nom du client <span className="required">*</span></label><input type="text" name="nomClient" value={parcData.nomClient} onChange={change(setParcData)} required /></div>
+              <div className="form-group"><label>Matricule client <span className="required">*</span></label><input type="text" name="matricule" value={parcData.matricule} onChange={change(setParcData)} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" /></div>
+              <SelectField label="Agence" name="agence" value={parcData.agence} onChange={change(setParcData)} list={agences} req />
+              <SelectField label="Réseau" name="reseau" value={parcData.reseau} onChange={change(setParcData)} list={reseaux} req />
+              <div className="form-group"><label>Valeur du matériel (FCFA) <span className="required">*</span></label><input type="number" name="valeurMateriel" value={parcData.valeurMateriel||''} onChange={change(setParcData)} required /></div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* ── Tracking ── */}
+        {specificType === 'tracking' && (
+          <div className="form-section">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group"><label>Nom du client <span className="required">*</span></label><input type="text" name="nomClient" value={trackingData.nomClient} onChange={change(setTrackingData)} required /></div>
+              <div className="form-group"><label>Matricule client <span className="required">*</span></label><input type="text" name="matricule" value={trackingData.matricule} onChange={change(setTrackingData)} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" /></div>
+              <SelectField label="Agence" name="agence" value={trackingData.agence} onChange={change(setTrackingData)} list={agences} req />
+              <SelectField label="Réseau" name="reseau" value={trackingData.reseau} onChange={change(setTrackingData)} list={reseaux} req />
+              <div className="form-group"><label>Entreprise de tracking <span className="required">*</span></label><input type="text" name="entrepriseTracking" value={trackingData.entrepriseTracking} onChange={change(setTrackingData)} required /></div>
+              <div className="form-group"><label>État du tracking <span className="required">*</span></label>
+                <select name="etatTracking" value={trackingData.etatTracking} onChange={change(setTrackingData)} required>
+                  <option value="">-- Sélectionner --</option>
+                  <option>Actif</option><option>Suspendu</option><option>Résilié</option><option>En cours d'installation</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Anomalies Proximité ── */}
+        {specificType === 'anomalies-proximite' && (
+          <div className="form-section">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group"><label>Matricule client <span className="required">*</span></label><input type="text" name="matricule" value={proxData.matricule} onChange={change(setProxData)} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" /></div>
+              <div className="form-group"><label>Nom du client <span className="required">*</span></label><input type="text" name="nomClient" value={proxData.nomClient} onChange={change(setProxData)} required /></div>
+              <SelectField label="Agence" name="agence" value={proxData.agence} onChange={change(setProxData)} list={agences} req />
+              <SelectField label="Réseau" name="reseau" value={proxData.reseau} onChange={change(setProxData)} list={reseaux} req />
+              <div className="form-group"><label>Volume global des engagements (FCFA) <span className="required">*</span></label><input type="number" name="volumeEngagements" value={proxData.volumeEngagements||''} onChange={change(setProxData)} required /></div>
+              <div className="form-group"><label>Volume anomalies — impayé + agios (FCFA) <span className="required">*</span></label><input type="number" name="volumeAnomalies" value={proxData.volumeAnomalies||''} onChange={change(setProxData)} required /></div>
+            </div>
+            <div className="form-group" style={{marginTop:'1rem'}}><label>Origine de l'anomalie <span className="required">*</span></label><textarea name="origineAnomalie" value={proxData.origineAnomalie} onChange={change(setProxData)} rows={3} required placeholder="Ex: impayé, dépassement non régularisé..." /></div>
+          </div>
+        )}
 
         <div className="form-actions">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="btn-secondary"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary"
-          >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
-          </button>
+          <button type="button" onClick={onClose} disabled={loading} className="btn-secondary">Annuler</button>
+          <button type="submit" disabled={loading} className="btn-primary">{loading ? 'Enregistrement...' : 'Enregistrer'}</button>
         </div>
       </form>
+      <NotificationModal isOpen={notification.isOpen} type={notification.type} title={notification.title} message={notification.message} onClose={closeNotification} />
     </div>
   );
 };

@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+  BarChart3, CheckCircle, FolderOpen, Target, Search, Download,
+  Calendar, TrendingUp, Activity, FileText, LayoutDashboard,
+  Building2, Eye, PenSquare, AlertTriangle, Info, ChevronRight,
+} from 'lucide-react';
 import { VisiteClienteleService } from '../services/VisiteClienteleService';
 import { ObjectifService } from '../services/ObjectifService';
 import { ActionRecouvrementService } from '../services/ActionRecouvrementService';
@@ -6,6 +11,13 @@ import { AccordsService } from '../services/AccordsService';
 import { ContratsService } from '../services/ContratsService';
 import { SituationMEPService } from '../services/SituationMEPService';
 import { UserProfileService, type UserProfile } from '../services/UserProfileService';
+import { canAccessModule } from '../config/navigationAccess';
+import { exportTypedExcel } from '../utils/exportUtils';
+import { useToast } from './ui/Toast';
+import { useNotifications } from '../hooks/useNotifications';
+import { NotificationPanel } from './ui/NotificationPanel';
+import StatCard from './ui/StatCard';
+import { ChartCard, LineChart, DoughnutChart } from './charts';
 import ModernLoader from './ModernLoader';
 import './DashboardModern.css';
 
@@ -13,7 +25,6 @@ interface DashboardModernProps {
   onModuleSelect?: (moduleId: string) => void;
 }
 
-// Types pour les données
 interface DashboardStats {
   visitesPlanned: number;
   visitesChange: number;
@@ -54,493 +65,32 @@ interface PieDataPoint {
 
 type PeriodFilter = 'week' | 'month' | 'quarter';
 
-// Styles inline
-const styles = {
-  container: {
-    padding: '32px',
-    background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
-    minHeight: '100vh',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '32px',
-    background: 'white',
-    padding: '24px 28px',
-    borderRadius: '16px',
-    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
-    border: '1px solid #E5E7EB',
-    flexWrap: 'wrap' as const,
-    gap: '20px',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  breadcrumb: {
-    fontSize: '13px',
-    color: '#6B7280',
-    marginBottom: '8px',
-  },
-  breadcrumbLink: {
-    color: '#6B7280',
-    textDecoration: 'none',
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: 700,
-    color: '#1F2937',
-    margin: 0,
-    letterSpacing: '-0.5px',
-  },
-  subtitle: {
-    fontSize: '14px',
-    color: '#6B7280',
-    margin: '8px 0 0 0',
-  },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '14px',
-    flexWrap: 'wrap' as const,
-  },
-  searchBox: {
-    display: 'flex',
-    alignItems: 'center',
-    background: '#F9FAFB',
-    border: '1.5px solid #E5E7EB',
-    borderRadius: '10px',
-    padding: '10px 16px',
-    gap: '10px',
-    minWidth: '280px',
-    transition: 'all 0.2s ease',
-  },
-  searchInput: {
-    border: 'none',
-    outline: 'none',
-    fontSize: '14px',
-    color: '#374151',
-    width: '100%',
-    background: 'transparent',
-    fontWeight: 500,
-  },
-  searchIcon: {
-    color: '#9CA3AF',
-    fontSize: '18px',
-  },
-  notificationBtn: {
-    position: 'relative' as const,
-    background: '#F9FAFB',
-    border: '1.5px solid #E5E7EB',
-    borderRadius: '10px',
-    padding: '10px 12px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all 0.2s ease',
-  },
-  notificationBadge: {
-    position: 'absolute' as const,
-    top: '-6px',
-    right: '-6px',
-    background: '#DC2626',
-    color: 'white',
-    fontSize: '10px',
-    fontWeight: 700,
-    borderRadius: '50%',
-    width: '20px',
-    height: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '2px solid white',
-  },
-  filterBar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '14px',
-    marginBottom: '28px',
-    flexWrap: 'wrap' as const,
-    background: 'white',
-    padding: '16px 20px',
-    borderRadius: '12px',
-    border: '1px solid #E5E7EB',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-  },
-  select: {
-    background: '#F9FAFB',
-    border: '1.5px solid #E5E7EB',
-    borderRadius: '10px',
-    padding: '10px 14px',
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#374151',
-    cursor: 'pointer',
-    minWidth: '180px',
-    transition: 'all 0.2s ease',
-  },
-  periodTabs: {
-    display: 'flex',
-    background: '#F9FAFB',
-    border: '1.5px solid #E5E7EB',
-    borderRadius: '10px',
-    overflow: 'hidden',
-  },
-  periodTab: {
-    padding: '10px 20px',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    border: 'none',
-    background: 'transparent',
-    color: '#6B7280',
-    transition: 'all 0.2s ease',
-  },
-  periodTabActive: {
-    background: '#DC2626',
-    color: 'white',
-  },
-  exportButton: {
-    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-    color: 'white',
-    border: 'none',
-    borderRadius: '10px',
-    padding: '10px 20px',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginLeft: 'auto',
-    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
-    transition: 'all 0.2s ease',
-  },
-  metricsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: '20px',
-    marginBottom: '28px',
-  },
-  metricCard: {
-    background: 'white',
-    borderRadius: '14px',
-    padding: '24px',
-    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
-    border: '1px solid #E5E7EB',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  },
-  metricLabel: {
-    fontSize: '13px',
-    color: '#6B7280',
-    marginBottom: '10px',
-    fontWeight: 500,
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-  },
-  metricValue: {
-    fontSize: '36px',
-    fontWeight: 700,
-    color: '#1F2937',
-    lineHeight: 1,
-  },
-  metricChange: {
-    fontSize: '13px',
-    marginTop: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    fontWeight: 600,
-  },
-  metricChangePositive: {
-    color: '#10B981',
-  },
-  metricChangeNegative: {
-    color: '#EF4444',
-  },
-  metricIcon: {
-    width: '52px',
-    height: '52px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '26px',
-  },
-  chartsRow: {
-    display: 'grid',
-    gridTemplateColumns: '2fr 1fr',
-    gap: '20px',
-    marginBottom: '28px',
-  },
-  card: {
-    background: 'white',
-    borderRadius: '14px',
-    padding: '24px',
-    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
-    border: '1px solid #E5E7EB',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-  },
-  cardHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  cardTitle: {
-    fontSize: '18px',
-    fontWeight: 700,
-    color: '#1F2937',
-    margin: 0,
-  },
-  chartTabs: {
-    display: 'flex',
-    gap: '8px',
-  },
-  chartTab: {
-    padding: '6px 14px',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    border: '1.5px solid #E5E7EB',
-    borderRadius: '8px',
-    background: '#F9FAFB',
-    color: '#6B7280',
-    transition: 'all 0.2s ease',
-  },
-  chartTabActive: {
-    background: '#FEF2F2',
-    borderColor: '#DC2626',
-    color: '#DC2626',
-  },
-  lineChart: {
-    height: '220px',
-    position: 'relative' as const,
-    padding: '20px 0',
-  },
-  lineChartSvg: {
-    width: '100%',
-    height: '180px',
-  },
-  lineChartLabels: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingTop: '8px',
-    borderTop: '1px solid #E5E7EB',
-  },
-  lineChartLabel: {
-    fontSize: '11px',
-    color: '#6B7280',
-    textAlign: 'center' as const,
-  },
-  barChart: {
-    height: '250px',
-    display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'space-around',
-    padding: '20px 0',
-    borderBottom: '1px solid #E5E7EB',
-  },
-  barGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    gap: '8px',
-    flex: 1,
-  },
-  barContainer: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: '4px',
-    height: '180px',
-  },
-  bar: {
-    width: '24px',
-    borderRadius: '4px 4px 0 0',
-    transition: 'height 0.3s ease',
-  },
-  barLabel: {
-    fontSize: '11px',
-    color: '#6B7280',
-    textAlign: 'center' as const,
-  },
-  legend: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '24px',
-    marginTop: '16px',
-  },
-  legendItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '12px',
-    color: '#6B7280',
-  },
-  legendDot: {
-    width: '12px',
-    height: '12px',
-    borderRadius: '2px',
-  },
-  pieContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px',
-  },
-  pieChart: {
-    width: '160px',
-    height: '160px',
-    borderRadius: '50%',
-    position: 'relative' as const,
-  },
-  pieCenter: {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '80px',
-    height: '80px',
-    background: 'white',
-    borderRadius: '50%',
-  },
-  pieLegend: {
-    flex: 1,
-  },
-  pieLegendItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '8px 0',
-    borderBottom: '1px solid #F3F4F6',
-  },
-  pieLegendLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '13px',
-    color: '#374151',
-  },
-  pieLegendDot: {
-    width: '10px',
-    height: '10px',
-    borderRadius: '2px',
-  },
-  pieLegendValue: {
-    fontSize: '13px',
-    fontWeight: 600,
-    color: '#1F2937',
-  },
-  bottomRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
-  },
-  listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 0',
-    borderBottom: '1px solid #F3F4F6',
-  },
-  listItemLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  statusDot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-  },
-  listItemInfo: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-  },
-  listItemTitle: {
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#1F2937',
-  },
-  listItemSubtitle: {
-    fontSize: '12px',
-    color: '#9CA3AF',
-  },
-  statusBadge: {
-    padding: '4px 10px',
-    borderRadius: '20px',
-    fontSize: '11px',
-    fontWeight: 600,
-  },
-  viewAllLink: {
-    color: '#DC2626',
-    fontSize: '13px',
-    fontWeight: 500,
-    textDecoration: 'none',
-    cursor: 'pointer',
-  },
-  alertItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '12px',
-    padding: '12px 0',
-    borderBottom: '1px solid #F3F4F6',
-  },
-  alertIcon: {
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '14px',
-    flexShrink: 0,
-  },
-  alertContent: {
-    flex: 1,
-  },
-  alertTitle: {
-    fontSize: '14px',
-    fontWeight: 500,
-    color: '#1F2937',
-    marginBottom: '2px',
-  },
-  alertDescription: {
-    fontSize: '12px',
-    color: '#9CA3AF',
-  },
-  alertTime: {
-    fontSize: '11px',
-    color: '#9CA3AF',
-    whiteSpace: 'nowrap' as const,
-  },
-  loadingOverlay: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px',
-    color: '#6B7280',
-  },
-  emptyState: {
-    textAlign: 'center' as const,
-    padding: '40px',
-    color: '#9CA3AF',
-  },
-};
+// === Quick Access Card Config ===
+interface QuickAccessItem {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  description: string;
+  gradient: string;
+  module: string;
+}
 
-// Couleurs pour les métriques
-const metricColors = {
-  blue: { bg: '#EFF6FF', icon: '#3B82F6' },
-  green: { bg: '#ECFDF5', icon: '#10B981' },
-  yellow: { bg: '#FFFBEB', icon: '#F59E0B' },
-  purple: { bg: '#F5F3FF', icon: '#8B5CF6' },
-};
+const agentQuickAccess: QuickAccessItem[] = [
+  { id: 'qa-saisie', icon: PenSquare, label: 'Nouvelle Saisie', description: 'Enregistrer une activité', gradient: 'from-red-600 to-red-800', module: 'activities' },
+  { id: 'qa-synthese', icon: BarChart3, label: 'Synthèse', description: 'Vue d\'ensemble des activités', gradient: 'from-blue-600 to-blue-800', module: 'synthesis' },
+  { id: 'qa-rapports', icon: TrendingUp, label: 'Rapports', description: 'Analyses et statistiques', gradient: 'from-green-700 to-green-900', module: 'reports' },
+];
 
+const directorQuickAccess: QuickAccessItem[] = [
+  { id: 'qa-da', icon: BarChart3, label: 'Département DA', description: 'Direction de l\'Analyse', gradient: 'from-blue-600 to-blue-800', module: 'department-DA' },
+  { id: 'qa-dse', icon: Building2, label: 'Département DSE', description: 'Surveillance des Engagements', gradient: 'from-green-700 to-green-900', module: 'department-DSE' },
+  { id: 'qa-dpnp', icon: FileText, label: 'Département DPNP', description: 'Prêts Non Performants', gradient: 'from-orange-600 to-orange-800', module: 'department-DPNP' },
+];
+
+// === Component ===
 const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => {
+  const { showToast } = useToast();
+
   // États
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -548,45 +98,28 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
   const [searchText, setSearchText] = useState('');
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('month');
   const [chartView, setChartView] = useState<'monthly' | 'weekly'>('weekly');
-  const [departementFilter, setDepartementFilter] = useState<'all' | 'DA' | 'DSE' | 'DPNP'>('all'); // Pour le Directeur
-  
+  const [departementFilter, setDepartementFilter] = useState<'all' | 'DA' | 'DSE' | 'DPNP'>('all');
+
   // Données
-  const [stats, setStats] = useState<DashboardStats>({
-    visitesPlanned: 0,
-    visitesChange: 0,
-    tauxRecouvrement: 0,
-    tauxChange: 0,
-    dossiersEnCours: 0,
-    dossiersChange: 0,
-    objectifMensuel: 0,
-  });
+  const [stats, setStats] = useState<DashboardStats>({ visitesPlanned: 0, visitesChange: 0, tauxRecouvrement: 0, tauxChange: 0, dossiersEnCours: 0, dossiersChange: 0, objectifMensuel: 0 });
   const [visitesRecentes, setVisitesRecentes] = useState<VisiteRecente[]>([]);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [pieData, setPieData] = useState<PieDataPoint[]>([]);
-  const [allRawData, setAllRawData] = useState<any[]>([]); // Pour l'export
+
+  // Notifications dynamiques
+  const { notifications, unreadCount, refresh: refreshNotifications } = useNotifications(userProfile?.email);
 
   // Calcul des dates de filtre
   const getDateRange = useCallback(() => {
     const now = new Date();
     let startDate: Date;
-    let endDate = new Date(now);
-    
+    const endDate = new Date(now);
     switch (periodFilter) {
-      case 'week':
-        startDate = new Date(now);
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case 'quarter':
-        startDate = new Date(now);
-        startDate.setMonth(now.getMonth() - 3);
-        break;
-      case 'month':
-      default:
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        break;
+      case 'week': startDate = new Date(now); startDate.setDate(now.getDate() - 7); break;
+      case 'quarter': startDate = new Date(now); startDate.setMonth(now.getMonth() - 3); break;
+      default: startDate = new Date(now.getFullYear(), now.getMonth(), 1); break;
     }
-    
     return { startDate, endDate };
   }, [periodFilter]);
 
@@ -595,422 +128,143 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
     const loadData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // 1. Charger le profil utilisateur
         const profile = await UserProfileService.getCurrentUserProfile();
         setUserProfile(profile);
-
         const { startDate, endDate } = getDateRange();
-
-        // **FILTRAGE SELON LE RÔLE**
-        // Directeur : Toutes les données
-        // Chef de département : Données de son département
-        // Agent : Ses propres données uniquement
-        
         const isDirecteur = profile.isDirecteur;
         const isChef = profile.fonction?.toLowerCase().includes('chef') || false;
         const userDepartement = profile.departement;
         const userEmail = profile.email;
 
-        // 2. Charger les visites clientèle
-        const visitesResult = await VisiteClienteleService.getAll();
-        let visites = visitesResult?.data || visitesResult?.value || [];
-        
-        // Filtrer selon le rôle
-        if (!isDirecteur) {
-          if (isChef && userDepartement) {
-            // Chef : Voir toutes les visites de son département
-            visites = visites.filter((v: any) => 
-              v.Departement?.Value === userDepartement || 
-              v.Departement === userDepartement
-            );
-          } else {
-            // Agent : Voir uniquement ses propres visites
-            visites = visites.filter((v: any) => 
-              v.Author?.EMail === userEmail || 
-              v.CreatedBy?.EMail === userEmail ||
-              v.Author?.Email === userEmail
-            );
+        // Helper: filtrer par rôle
+        const filterByRole = (items: any[], emailField = 'Author') => {
+          if (!isDirecteur) {
+            if (isChef && userDepartement) {
+              return items.filter((v: any) => v.Departement?.Value === userDepartement || v.Departement === userDepartement);
+            }
+            return items.filter((v: any) => v[emailField]?.EMail === userEmail || v.CreatedBy?.EMail === userEmail || v[emailField]?.Email === userEmail);
           }
-        } else if (departementFilter !== 'all') {
-          // Directeur avec filtre de département
-          visites = visites.filter((v: any) => 
-            v.Departement?.Value === departementFilter || 
-            v.Departement === departementFilter
-          );
-        }
-        
-        // Filtrer par période et transformer
+          if (departementFilter !== 'all') {
+            return items.filter((v: any) => v.Departement?.Value === departementFilter || v.Departement === departementFilter);
+          }
+          return items;
+        };
+
+        // Charger en parallèle
+        const [visitesResult, objectifsResult, recouvrementResult, accordsResult, contratsResult, mepResult] = await Promise.all([
+          VisiteClienteleService.getAll(),
+          ObjectifService.getAll(),
+          ActionRecouvrementService.getAll(),
+          AccordsService.getAll(),
+          ContratsService.getAll(),
+          SituationMEPService.getAll(),
+        ]);
+
+        let visites = filterByRole(visitesResult?.data || visitesResult?.value || []);
+        let objectifs = filterByRole(objectifsResult?.data || objectifsResult?.value || []);
+        let recouvrements = filterByRole(recouvrementResult?.data || recouvrementResult?.value || []);
+        let accords = filterByRole(accordsResult?.data || accordsResult?.value || []);
+        const _contrats = contratsResult?.data || contratsResult?.value || [];
+        const _meps = mepResult?.data || mepResult?.value || [];
+        void _contrats; void _meps;
+
+        // Filtrer visites par période
         const visitesFiltered = visites.filter((v: any) => {
-          const dateVisite = v.DateVisite ? new Date(v.DateVisite) : null;
-          return dateVisite && dateVisite >= startDate && dateVisite <= endDate;
-        });
-
-        // Transformer en visites récentes
-        const recentVisites: VisiteRecente[] = visitesFiltered
-          .sort((a: any, b: any) => {
-            const dateA = a.DateVisite ? new Date(a.DateVisite).getTime() : 0;
-            const dateB = b.DateVisite ? new Date(b.DateVisite).getTime() : 0;
-            return dateB - dateA;
-          })
-          .slice(0, 10)
-          .map((v: any) => ({
-            id: String(v.ID || Math.random()),
-            client: v.NomClient || v.Title || 'Client inconnu',
-            date: v.DateVisite 
-              ? new Date(v.DateVisite).toLocaleDateString('fr-FR', { 
-                  weekday: 'short', 
-                  day: 'numeric', 
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })
-              : 'Date inconnue',
-            statut: getVisiteStatus(v),
-          }));
-        setVisitesRecentes(recentVisites);
-
-        // 3. Charger les objectifs
-        const objectifsResult = await ObjectifService.getAll();
-        let objectifs = objectifsResult?.data || objectifsResult?.value || [];
-        
-        // Filtrer selon le rôle
-        if (!isDirecteur) {
-          if (isChef && userDepartement) {
-            objectifs = objectifs.filter((o: any) => 
-              o.Departement?.Value === userDepartement || 
-              o.Departement === userDepartement
-            );
-          } else {
-            objectifs = objectifs.filter((o: any) => 
-              o.Author?.EMail === userEmail || 
-              o.CreatedBy?.EMail === userEmail ||
-              o.Author?.Email === userEmail
-            );
-          }
-        } else if (departementFilter !== 'all') {
-          // Directeur avec filtre de département
-          objectifs = objectifs.filter((o: any) => 
-            o.Departement?.Value === departementFilter || 
-            o.Departement === departementFilter
-          );
-        }
-        
-        // Calculer l'objectif mensuel (somme des objectifs du mois)
-        const objectifsMois = objectifs.filter((o: any) => {
-          const dateObj = o.Date ? new Date(o.Date) : null;
-          return dateObj && dateObj >= startDate && dateObj <= endDate;
-        });
-        const totalObjectif = objectifsMois.reduce((sum: number, o: any) => sum + (o.Nombre || 0), 0);
-
-        // 4. Charger les actions de recouvrement
-        const recouvrementResult = await ActionRecouvrementService.getAll();
-        let recouvrements = recouvrementResult?.data || recouvrementResult?.value || [];
-        
-        // Filtrer selon le rôle
-        if (!isDirecteur) {
-          if (isChef && userDepartement) {
-            recouvrements = recouvrements.filter((r: any) => 
-              r.Departement?.Value === userDepartement || 
-              r.Departement === userDepartement
-            );
-          } else {
-            recouvrements = recouvrements.filter((r: any) => 
-              r.Author?.EMail === userEmail || 
-              r.CreatedBy?.EMail === userEmail ||
-              r.Author?.Email === userEmail
-            );
-          }
-        } else if (departementFilter !== 'all') {
-          // Directeur avec filtre de département
-          recouvrements = recouvrements.filter((r: any) => 
-            r.Departement?.Value === departementFilter || 
-            r.Departement === departementFilter
-          );
-        }
-        
-        // Calculer le taux de recouvrement
-        const recouvrementsPeriode = recouvrements.filter((r: any) => {
-          const dateAction = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
-          return dateAction && dateAction >= startDate && dateAction <= endDate;
-        });
-        const recouvrementComplete = recouvrementsPeriode.filter((r: any) => 
-          r.Statut?.Value === 'Terminé' || r.Statut?.Value === 'Complété' || r.Statut?.Value === 'Exécuté'
-        ).length;
-        const tauxRecouvrement = recouvrementsPeriode.length > 0 
-          ? Math.round((recouvrementComplete / recouvrementsPeriode.length) * 100)
-          : 0;
-
-        // 5. Charger les accords (dossiers en cours)
-        const accordsResult = await AccordsService.getAll();
-        let accords = accordsResult?.data || accordsResult?.value || [];
-        
-        // Filtrer selon le rôle
-        if (!isDirecteur) {
-          if (isChef && userDepartement) {
-            accords = accords.filter((a: any) => 
-              a.Departement?.Value === userDepartement || 
-              a.Departement === userDepartement
-            );
-          } else {
-            accords = accords.filter((a: any) => 
-              a.Author?.EMail === userEmail || 
-              a.CreatedBy?.EMail === userEmail ||
-              a.Author?.Email === userEmail
-            );
-          }
-        } else if (departementFilter !== 'all') {
-          // Directeur avec filtre de département
-          accords = accords.filter((a: any) => 
-            a.Departement?.Value === departementFilter || 
-            a.Departement === departementFilter
-          );
-        }
-        const accordsEnCours = accords.filter((a: any) => 
-          a.Statut?.Value === 'En cours' || a.Statut?.Value === 'En attente' || !a.Statut
-        ).length;
-
-        // Stocker les données brutes pour l'export
-        setAllRawData([...visitesFiltered, ...recouvrementsPeriode, ...accords]);
-
-        // 6. Charger les contrats (pour stats futures)
-        const contratsResult = await ContratsService.getAll();
-        const contrats = contratsResult?.data || contratsResult?.value || [];
-        // Utiliser contrats pour des statistiques futures si nécessaire
-        console.log(`Contrats chargés: ${contrats.length}`);
-
-        // 7. Charger les situations MEP (pour stats futures)
-        const mepResult = await SituationMEPService.getAll();
-        const meps = mepResult?.data || mepResult?.value || [];
-        // Utiliser meps pour des statistiques futures si nécessaire
-        console.log(`MEPs chargées: ${meps.length}`);
-
-        // 8. Calculer les alertes
-        const newAlerts: AlertItem[] = [];
-        
-        // Alertes sur les dossiers en retard
-        const dossierRetard = accords.filter((a: any) => {
-          const dateAccord = a.Date ? new Date(a.Date) : null;
-          if (!dateAccord) return false;
-          const daysSince = Math.floor((new Date().getTime() - dateAccord.getTime()) / (1000 * 60 * 60 * 24));
-          return daysSince > 7 && a.Statut?.Value !== 'Terminé' && a.Statut?.Value !== 'Validé';
-        }).length;
-        
-        if (dossierRetard > 0) {
-          newAlerts.push({
-            id: '1',
-            type: 'warning',
-            title: `${dossierRetard} dossiers en retard`,
-            description: 'Action requise sur les rapatriements',
-            time: '2h',
-          });
-        }
-
-        // Alerte objectif
-        const progressObjectif = totalObjectif > 0 
-          ? Math.round((visitesFiltered.length / totalObjectif) * 100) 
-          : 0;
-        
-        if (progressObjectif > 0 && progressObjectif < 100) {
-          const joursRestants = Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-          newAlerts.push({
-            id: '2',
-            type: 'info',
-            title: 'Objectif hebdomadaire',
-            description: `À ${progressObjectif}% - Reste ${Math.max(0, joursRestants)} jours`,
-            time: '5h',
-          });
-        }
-
-        // Info template
-        newAlerts.push({
-          id: '3',
-          type: 'success',
-          title: 'Nouveau template disponible',
-          description: 'Template rapport mensuel v2',
-          time: '1j',
-        });
-
-        setAlerts(newAlerts);
-
-        // 9. Préparer les données du graphique en ligne - Activité sur la période filtrée
-        // Utiliser les données FILTRÉES (visites, recouvrements, accords déjà filtrés ci-dessus)
-        const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-        const today = endDate; // Utiliser la fin de période filtrée
-        const periodStart = startDate; // Utiliser le début de période filtrée
-        const chartDataPoints: ChartDataPoint[] = [];
-        
-        // Calculer le nombre de jours dans la période
-        const daysDiff = Math.ceil((today.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
-        const numPoints = Math.min(daysDiff, 30); // Max 30 points pour la lisibilité
-        
-        for (let i = numPoints - 1; i >= 0; i--) {
-          const date = new Date(today);
-          date.setDate(today.getDate() - i);
-          const dayIndex = date.getDay();
-          const dayName = jours[dayIndex === 0 ? 6 : dayIndex - 1];
-          
-          // Compter les activités créées ce jour (utiliser les données FILTRÉES)
-          const dayStart = new Date(date);
-          dayStart.setHours(0, 0, 0, 0);
-          const dayEnd = new Date(date);
-          dayEnd.setHours(23, 59, 59, 999);
-          
-          const visitesJour = visitesFiltered.filter((v: any) => {
-            const d = v.DateVisite ? new Date(v.DateVisite) : (v.Created ? new Date(v.Created) : null);
-            return d && d >= dayStart && d <= dayEnd;
-          }).length;
-          
-          const recouvrementsJour = recouvrementsPeriode.filter((r: any) => {
-            const d = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
-            return d && d >= dayStart && d <= dayEnd;
-          }).length;
-          
-          const accordsJour = accords.filter((a: any) => {
-            const d = a.Created ? new Date(a.Created) : null;
-            return d && d >= dayStart && d <= dayEnd;
-          }).length;
-          
-          chartDataPoints.push({
-            label: dayName,
-            value: visitesJour + recouvrementsJour + accordsJour,
-            date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
-          });
-        }
-        setChartData(chartDataPoints);
-
-        // 10. Préparer les données du donut - Statut des dossiers (FILTRÉS par période)
-        // Filtrer les accords dans la période actuelle
-        const accordsPeriode = accords.filter((a: any) => {
-          const d = a.Created ? new Date(a.Created) : null;
+          const d = v.DateVisite ? new Date(v.DateVisite) : null;
           return d && d >= startDate && d <= endDate;
         });
-        
-        // Compter les statuts des accords dans la période
-        // Support des deux formats: Statut.Value et Statut direct
-        const getStatut = (a: any) => a.Statut?.Value || a.Statut || '';
-        
-        const statutEnCours = accordsPeriode.filter((a: any) => {
-          const statut = getStatut(a).toLowerCase();
-          return statut === 'en cours' || statut === '' || !statut;
+
+        // Visites récentes
+        setVisitesRecentes(
+          visitesFiltered
+            .sort((a: any, b: any) => new Date(b.DateVisite || 0).getTime() - new Date(a.DateVisite || 0).getTime())
+            .slice(0, 10)
+            .map((v: any) => ({
+              id: String(v.ID || Math.random()),
+              client: v.NomClient || v.Title || 'Client inconnu',
+              date: v.DateVisite ? new Date(v.DateVisite).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : '—',
+              statut: getVisiteStatus(v),
+            }))
+        );
+
+        // Objectif mensuel
+        const objectifsMois = objectifs.filter((o: any) => { const d = o.Date ? new Date(o.Date) : null; return d && d >= startDate && d <= endDate; });
+        const totalObjectif = objectifsMois.reduce((s: number, o: any) => s + (o.Nombre || 0), 0);
+        const progressObjectif = totalObjectif > 0 ? Math.round((visitesFiltered.length / totalObjectif) * 100) : 0;
+
+        // Taux de recouvrement
+        const recouvrementsPeriode = recouvrements.filter((r: any) => {
+          const d = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
+          return d && d >= startDate && d <= endDate;
+        });
+        const recouvrementComplete = recouvrementsPeriode.filter((r: any) => ['Terminé','Complété','Exécuté'].includes(r.Statut?.Value)).length;
+        const tauxRecouvrement = recouvrementsPeriode.length > 0 ? Math.round((recouvrementComplete / recouvrementsPeriode.length) * 100) : 0;
+
+        // Dossiers en cours
+        const accordsEnCours = accords.filter((a: any) => ['En cours','En attente'].includes(a.Statut?.Value) || !a.Statut).length;
+
+        // Alertes
+        const newAlerts: AlertItem[] = [];
+        const dossierRetard = accords.filter((a: any) => {
+          const d = a.Date ? new Date(a.Date) : null;
+          if (!d) return false;
+          return (Date.now() - d.getTime()) / 86400000 > 7 && !['Terminé','Validé'].includes(a.Statut?.Value);
         }).length;
-        
-        const statutValide = accordsPeriode.filter((a: any) => {
-          const statut = getStatut(a).toLowerCase();
-          return statut === 'validé' || statut === 'approuvé' || statut === 'validé' || statut === 'approuve';
-        }).length;
-        
-        const statutEnAttente = accordsPeriode.filter((a: any) => {
-          const statut = getStatut(a).toLowerCase();
-          return statut === 'en attente' || statut === 'pending' || statut === 'attente';
-        }).length;
-        
-        const statutTermine = accordsPeriode.filter((a: any) => {
-          const statut = getStatut(a).toLowerCase();
-          return statut === 'terminé' || statut === 'clôturé' || statut === 'termine' || statut === 'cloture';
-        }).length;
-        
-        const statutRejete = accordsPeriode.filter((a: any) => {
-          const statut = getStatut(a).toLowerCase();
-          return statut === 'rejeté' || statut === 'refusé' || statut === 'rejete' || statut === 'refuse';
-        }).length;
-        
-        const totalStatuts = statutEnCours + statutValide + statutEnAttente + statutTermine + statutRejete;
-        
-        const newPieData: PieDataPoint[] = totalStatuts > 0 ? [
-          { 
-            label: 'En cours', 
-            value: Math.round((statutEnCours / totalStatuts) * 100) || 0, 
-            color: '#3B82F6', // Bleu
-            count: statutEnCours
-          },
-          { 
-            label: 'Validé', 
-            value: Math.round((statutValide / totalStatuts) * 100) || 0, 
-            color: '#10B981', // Vert
-            count: statutValide
-          },
-          { 
-            label: 'En attente', 
-            value: Math.round((statutEnAttente / totalStatuts) * 100) || 0, 
-            color: '#F59E0B', // Orange
-            count: statutEnAttente
-          },
-          { 
-            label: 'Terminé', 
-            value: Math.round((statutTermine / totalStatuts) * 100) || 0, 
-            color: '#8B5CF6', // Violet
-            count: statutTermine
-          },
-          { 
-            label: 'Rejeté', 
-            value: Math.round((statutRejete / totalStatuts) * 100) || 0, 
-            color: '#EF4444', // Rouge
-            count: statutRejete
-          },
-        ].filter(item => item.value > 0) : [
-          { label: 'En cours', value: 35, color: '#3B82F6', count: 35 },
-          { label: 'Validé', value: 28, color: '#10B981', count: 28 },
-          { label: 'En attente', value: 20, color: '#F59E0B', count: 20 },
-          { label: 'Terminé', value: 12, color: '#8B5CF6', count: 12 },
-          { label: 'Rejeté', value: 5, color: '#EF4444', count: 5 },
+        if (dossierRetard > 0) newAlerts.push({ id: '1', type: 'warning', title: `${dossierRetard} dossiers en retard`, description: 'Action requise', time: '2h' });
+        if (progressObjectif > 0 && progressObjectif < 100) {
+          const joursRestants = Math.max(0, Math.ceil((endDate.getTime() - Date.now()) / 86400000));
+          newAlerts.push({ id: '2', type: 'info', title: 'Objectif mensuel', description: `À ${progressObjectif}% — Reste ${joursRestants} jours`, time: '5h' });
+        }
+        setAlerts(newAlerts);
+
+        // Chart data - activité par jour
+        const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / 86400000);
+        const numPoints = Math.min(daysDiff, 30);
+        const chartPts: ChartDataPoint[] = [];
+        for (let i = numPoints - 1; i >= 0; i--) {
+          const date = new Date(endDate); date.setDate(endDate.getDate() - i);
+          const dayStart = new Date(date); dayStart.setHours(0, 0, 0, 0);
+          const dayEnd = new Date(date); dayEnd.setHours(23, 59, 59, 999);
+          const countDay = (items: any[], field: string) => items.filter((x: any) => { const d = x[field] || x.Created ? new Date(x[field] || x.Created) : null; return d && d >= dayStart && d <= dayEnd; }).length;
+          chartPts.push({
+            label: jours[(date.getDay() || 7) - 1],
+            value: countDay(visitesFiltered, 'DateVisite') + countDay(recouvrementsPeriode, 'DateExc_x00e9_cution') + countDay(accords, 'Created'),
+            date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          });
+        }
+        setChartData(chartPts);
+
+        // Pie data - statut dossiers
+        const getStatut = (a: any) => (a.Statut?.Value || a.Statut || '').toLowerCase();
+        const accordsPeriode = accords.filter((a: any) => { const d = a.Created ? new Date(a.Created) : null; return d && d >= startDate && d <= endDate; });
+        const countStatut = (keywords: string[]) => accordsPeriode.filter((a: any) => keywords.includes(getStatut(a)) || (keywords.includes('') && !getStatut(a))).length;
+        const rawPie = [
+          { label: 'En cours', count: countStatut(['en cours', '']), color: '#3B82F6' },
+          { label: 'Validé', count: countStatut(['validé', 'approuvé', 'approuve']), color: '#10B981' },
+          { label: 'En attente', count: countStatut(['en attente', 'pending', 'attente']), color: '#F59E0B' },
+          { label: 'Terminé', count: countStatut(['terminé', 'clôturé', 'termine', 'cloture']), color: '#8B5CF6' },
+          { label: 'Rejeté', count: countStatut(['rejeté', 'refusé', 'rejete', 'refuse']), color: '#EF4444' },
         ];
-        setPieData(newPieData);
+        const total = rawPie.reduce((s, i) => s + i.count, 0) || 1;
+        setPieData(rawPie.filter(i => i.count > 0).map(i => ({ ...i, value: Math.round((i.count / total) * 100) })));
 
-        // 11. Calculer les variations par rapport à la période précédente
-        // Période précédente (même durée que la période actuelle)
+        // Variations période précédente
         const periodDuration = endDate.getTime() - startDate.getTime();
-        const prevStartDate = new Date(startDate.getTime() - periodDuration);
-        const prevEndDate = new Date(startDate.getTime() - 1); // Jour avant la période actuelle
-        
-        // Visites période précédente
-        const visitesPrev = visites.filter((v: any) => {
-          const dateVisite = v.DateVisite ? new Date(v.DateVisite) : null;
-          return dateVisite && dateVisite >= prevStartDate && dateVisite <= prevEndDate;
-        }).length;
-        const visitesChange = visitesPrev > 0 
-          ? Math.round(((visitesFiltered.length - visitesPrev) / visitesPrev) * 100)
-          : visitesFiltered.length > 0 ? 100 : 0;
-        
-        // Taux recouvrement période précédente
-        const recouvrementsPrev = recouvrements.filter((r: any) => {
-          const dateAction = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null;
-          return dateAction && dateAction >= prevStartDate && dateAction <= prevEndDate;
-        });
-        const recouvrementCompletePrev = recouvrementsPrev.filter((r: any) => 
-          r.Statut?.Value === 'Terminé' || r.Statut?.Value === 'Complété' || r.Statut?.Value === 'Exécuté'
-        ).length;
-        const tauxRecouvrementPrev = recouvrementsPrev.length > 0 
-          ? Math.round((recouvrementCompletePrev / recouvrementsPrev.length) * 100)
-          : 0;
-        const tauxChange = tauxRecouvrementPrev > 0
-          ? Math.round(tauxRecouvrement - tauxRecouvrementPrev)
-          : tauxRecouvrement;
-        
-        // Dossiers en cours - comparer avec période précédente
-        const accordsPrev = accords.filter((a: any) => {
-          const dateCreation = a.Created ? new Date(a.Created) : null;
-          return dateCreation && dateCreation <= prevEndDate;
-        });
-        const accordsEnCoursPrev = accordsPrev.filter((a: any) => 
-          a.Statut?.Value === 'En cours' || a.Statut?.Value === 'En attente' || !a.Statut
-        ).length;
-        const dossiersChange = accordsEnCoursPrev > 0
-          ? Math.round(((accordsEnCours - accordsEnCoursPrev) / accordsEnCoursPrev) * 100)
-          : accordsEnCours > 0 ? 100 : 0;
+        const prevStart = new Date(startDate.getTime() - periodDuration);
+        const prevEnd = new Date(startDate.getTime() - 1);
+        const visitesPrev = visites.filter((v: any) => { const d = v.DateVisite ? new Date(v.DateVisite) : null; return d && d >= prevStart && d <= prevEnd; }).length;
+        const visitesChange = visitesPrev > 0 ? Math.round(((visitesFiltered.length - visitesPrev) / visitesPrev) * 100) : (visitesFiltered.length > 0 ? 100 : 0);
+        const recPrev = recouvrements.filter((r: any) => { const d = r.DateExc_x00e9_cution || r.Created ? new Date(r.DateExc_x00e9_cution || r.Created) : null; return d && d >= prevStart && d <= prevEnd; });
+        const recCompPrev = recPrev.filter((r: any) => ['Terminé','Complété','Exécuté'].includes(r.Statut?.Value)).length;
+        const tauxPrev = recPrev.length > 0 ? Math.round((recCompPrev / recPrev.length) * 100) : 0;
+        const tauxChange = tauxPrev > 0 ? tauxRecouvrement - tauxPrev : tauxRecouvrement;
+        const accPrev = accords.filter((a: any) => { const d = a.Created ? new Date(a.Created) : null; return d && d <= prevEnd; });
+        const accEnCoursPrev = accPrev.filter((a: any) => ['En cours','En attente'].includes(a.Statut?.Value) || !a.Statut).length;
+        const dossiersChange = accEnCoursPrev > 0 ? Math.round(((accordsEnCours - accEnCoursPrev) / accEnCoursPrev) * 100) : (accordsEnCours > 0 ? 100 : 0);
 
-        // 12. Mettre à jour les stats avec les vraies valeurs calculées
-        setStats({
-          visitesPlanned: visitesFiltered.length,
-          visitesChange,
-          tauxRecouvrement,
-          tauxChange,
-          dossiersEnCours: accordsEnCours,
-          dossiersChange,
-          objectifMensuel: progressObjectif || 0,
-        });
-
+        setStats({ visitesPlanned: visitesFiltered.length, visitesChange, tauxRecouvrement, tauxChange, dossiersEnCours: accordsEnCours, dossiersChange, objectifMensuel: progressObjectif || 0 });
       } catch (err) {
         console.error('Erreur chargement dashboard:', err);
         setError('Erreur lors du chargement des données');
@@ -1018,745 +272,288 @@ const DashboardModern: React.FC<DashboardModernProps> = ({ onModuleSelect }) => 
         setLoading(false);
       }
     };
-
     loadData();
   }, [periodFilter, departementFilter, getDateRange]);
 
-  // Fonction pour déterminer le statut d'une visite
-  const getVisiteStatus = (visite: any): 'Complétée' | 'Planifiée' | 'En attente' => {
-    const dateVisite = visite.DateVisite ? new Date(visite.DateVisite) : null;
-    const now = new Date();
-    
-    if (!dateVisite) return 'En attente';
-    if (dateVisite < now && visite.CompteRendu) return 'Complétée';
-    if (dateVisite > now) return 'Planifiée';
+  const getVisiteStatus = (v: any): 'Complétée' | 'Planifiée' | 'En attente' => {
+    const d = v.DateVisite ? new Date(v.DateVisite) : null;
+    if (!d) return 'En attente';
+    if (d < new Date() && v.CompteRendu) return 'Complétée';
+    if (d > new Date()) return 'Planifiée';
     return 'En attente';
   };
 
-  // Filtrage par recherche
   const filteredVisites = useMemo(() => {
-    let result = visitesRecentes;
-    
-    // Filtrer par département (pour Directeur) - déjà filtré au niveau du chargement
-    // Le filtre est déjà appliqué dans loadData(), donc pas besoin ici
-    
-    // Filtrer par recherche
-    if (!searchText) return result;
-    const search = searchText.toLowerCase();
-    return result.filter(v => 
-      v.client.toLowerCase().includes(search) ||
-      v.date.toLowerCase().includes(search) ||
-      v.statut.toLowerCase().includes(search)
-    );
+    if (!searchText) return visitesRecentes;
+    const s = searchText.toLowerCase();
+    return visitesRecentes.filter(v => v.client.toLowerCase().includes(s) || v.date.toLowerCase().includes(s) || v.statut.toLowerCase().includes(s));
   }, [visitesRecentes, searchText]);
 
-  // Fonction d'export CSV améliorée
+  // Export
   const handleExport = () => {
-    if (allRawData.length === 0 && filteredVisites.length === 0) {
-      alert('Aucune donnée à exporter');
-      return;
-    }
-
     try {
-      const dateStr = new Date().toISOString().split('T')[0];
       const period = periodFilter === 'week' ? 'semaine' : periodFilter === 'month' ? 'mois' : 'trimestre';
-      
-      // Données des KPIs
-      const kpiData = [
-        ['INDICATEURS CLÉS', ''],
-        ['Total activités', stats.visitesPlanned.toString()],
-        ['Variation', `${stats.visitesChange > 0 ? '+' : ''}${stats.visitesChange}%`],
-        ['Taux de réalisation', `${stats.tauxRecouvrement}%`],
-        ['Variation taux', `${stats.tauxChange > 0 ? '+' : ''}${stats.tauxChange}%`],
-        ['Dossiers en cours', stats.dossiersEnCours.toString()],
-        ['Variation dossiers', `${stats.dossiersChange > 0 ? '+' : ''}${stats.dossiersChange}%`],
-        ['Objectif mensuel', `${stats.objectifMensuel}%`],
-        ['', ''],
-      ];
-
-      // Données du graphique d'activités
-      const chartDataExport = [
-        ['ACTIVITÉ HEBDOMADAIRE', ''],
-        ['Date', 'Nombre d\'activités'],
-        ...chartData.map(d => [d.date || d.label, d.value.toString()])
-      ];
-
-      // Données du donut (statuts)
-      const pieDataExport = [
-        ['', ''],
-        ['STATUT DES DOSSIERS', ''],
-        ['Statut', 'Nombre', 'Pourcentage'],
-        ...pieData.map(d => [d.label, (d.count || 0).toString(), `${d.value}%`])
-      ];
-
-      // Données des visites récentes
-      const visitesExport = [
-        ['', ''],
-        ['ACTIVITÉS RÉCENTES', ''],
-        ['Client', 'Date', 'Statut'],
-        ...filteredVisites.map(v => [v.client, v.date, v.statut])
-      ];
-
-      // Combiner toutes les données
-      const allData = [
-        ['TABLEAU DE BORD - EXPORT', ''],
-        ['Période', period],
-        ['Date export', new Date().toLocaleDateString('fr-FR')],
-        ['Utilisateur', userProfile?.email || ''],
-        ['Département', departementFilter === 'all' ? 'Tous' : departementFilter],
-        ['', ''],
-        ...kpiData,
-        ...chartDataExport,
-        ...pieDataExport,
-        ...visitesExport
-      ];
-
-      // Générer le CSV
-      const csvContent = allData.map(row => 
-        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';')
-      ).join('\n');
-
-      // Télécharger le fichier
-      const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `dashboard-export-${period}-${dateStr}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      alert(`✅ Export réussi: dashboard-export-${period}-${dateStr}.csv`);
-    } catch (error) {
-      console.error('Erreur export:', error);
-      alert('❌ Erreur lors de l\'export');
+      exportTypedExcel({
+        fileName: `dashboard-export-${period}`,
+        sheetName: 'Dashboard',
+        columns: [
+          { header: 'Client', key: 'client' },
+          { header: 'Date', key: 'date' },
+          { header: 'Statut', key: 'statut' },
+        ],
+        data: filteredVisites,
+      });
+      showToast('Export CSV généré avec succès', 'success');
+    } catch {
+      showToast('Erreur lors de l\'export', 'error');
     }
   };
 
-  // Calcul du gradient pour le camembert
-  const pieGradient = useMemo(() => {
-    let currentAngle = 0;
-    const segments = pieData.map(item => {
-      const start = currentAngle;
-      currentAngle += (item.value / 100) * 360;
-      return `${item.color} ${start}deg ${currentAngle}deg`;
-    });
-    return `conic-gradient(${segments.join(', ')})`;
-  }, [pieData]);
+  // Chart.js data
+  const lineChartData = useMemo(() => ({
+    labels: chartData.map(d => d.date || d.label),
+    datasets: [{
+      label: 'Activités',
+      data: chartData.map(d => d.value),
+      borderColor: '#DC2626',
+      backgroundColor: 'rgba(220, 38, 38, 0.1)',
+      fill: true,
+      tension: 0.4,
+    }],
+  }), [chartData]);
 
-  // Rendu des badges de statut
-  const getStatusBadgeStyle = (statut: string) => {
-    switch (statut) {
-      case 'Complétée':
-        return { background: '#ECFDF5', color: '#059669' };
-      case 'Planifiée':
-        return { background: '#EFF6FF', color: '#2563EB' };
-      case 'En attente':
-        return { background: '#FEF3C7', color: '#D97706' };
-      default:
-        return { background: '#F3F4F6', color: '#6B7280' };
-    }
+  const doughnutData = useMemo(() => ({
+    labels: pieData.map(d => d.label),
+    datasets: [{
+      data: pieData.map(d => d.count || d.value),
+      backgroundColor: pieData.map(d => d.color),
+      borderWidth: 0,
+    }],
+  }), [pieData]);
+
+  // Metric config by role
+  const getMetricLabel = (idx: number) => {
+    const dept = userProfile?.departement;
+    const isDir = userProfile?.isDirecteur;
+    if (idx === 0) return dept === 'DA' ? 'Analyses réalisées' : dept === 'DSE' ? 'Contrôles effectués' : dept === 'DPNP' ? 'Recouvrements' : isDir ? 'Total activités' : 'Visites planifiées';
+    if (idx === 1) return dept === 'DPNP' ? 'Taux de recouvrement' : 'Taux de réalisation';
+    if (idx === 2) return dept === 'DA' ? 'Dossiers en analyse' : dept === 'DSE' ? 'Dossiers surveillés' : dept === 'DPNP' ? 'Créances en cours' : 'Dossiers en cours';
+    return isDir ? 'Performance globale' : 'Objectif mensuel';
   };
 
-  // Rendu des icônes d'alerte
-  const getAlertIconStyle = (type: string) => {
-    switch (type) {
-      case 'warning':
-        return { background: '#FEF2F2', color: '#DC2626' };
-      case 'info':
-        return { background: '#FEF3C7', color: '#D97706' };
-      case 'success':
-        return { background: '#ECFDF5', color: '#059669' };
-      default:
-        return { background: '#F3F4F6', color: '#6B7280' };
+  // Quick access cards
+  const quickAccess = useMemo(() => {
+    const items = userProfile?.isDirecteur ? [...directorQuickAccess] : [...agentQuickAccess];
+    if (userProfile?.isDirecteur && canAccessModule(userProfile, 'assistant-dce')) {
+      items.push({ id: 'qa-dce', icon: FolderOpen, label: 'Assistant DCE', description: 'Suivi et structuration DCE', gradient: 'from-purple-700 to-purple-900', module: 'assistant-dce' });
     }
-  };
+    return items;
+  }, [userProfile]);
 
-  if (loading) {
-    return <ModernLoader message="Chargement de votre tableau de bord..." />;
-  }
+  // === RENDER ===
+  if (loading) return <ModernLoader message="Chargement de votre tableau de bord..." />;
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={{ ...styles.card, textAlign: 'center', padding: '40px', color: '#DC2626' }}>
-          <p>❌ {error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            style={{ ...styles.exportButton, margin: '16px auto' }}
-          >
-            Réessayer
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 flex items-center justify-center p-6">
+        <div className="bg-white rounded-2xl shadow-modal p-8 text-center max-w-md animate-scale-in">
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+          </div>
+          <p className="text-red-600 font-medium mb-4">{error}</p>
+          <button className="btn-primary" onClick={() => window.location.reload()}>Réessayer</button>
         </div>
       </div>
     );
   }
 
+  const titleText = userProfile?.isDirecteur ? 'Vue Globale — Direction' : userProfile?.fonction?.toLowerCase().includes('chef') ? `Département ${userProfile.departement}` : 'Mes Activités';
+  const subtitleText = userProfile?.isDirecteur ? 'Vue consolidée de tous les départements' : userProfile?.fonction?.toLowerCase().includes('chef') ? 'Gestion et suivi de votre département' : 'Suivi de vos activités personnelles';
+
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerLeft}>
-          <div style={styles.breadcrumb}>
-            <span style={styles.breadcrumbLink}>Accueil</span>
-            <span> › </span>
-            <span>
-              {userProfile?.isDirecteur 
-                ? 'Tableau de bord - Direction' 
-                : userProfile?.fonction?.toLowerCase().includes('chef')
-                ? `Tableau de bord - ${userProfile.departement || 'Chef de département'}`
-                : `Tableau de bord - ${userProfile?.departement || 'Mes activités'}`
-              }
-            </span>
-          </div>
-          <h1 style={styles.title}>
-            {userProfile?.isDirecteur 
-              ? '📊 Vue Globale - Direction' 
-              : userProfile?.fonction?.toLowerCase().includes('chef')
-              ? `📋 Département ${userProfile.departement}`
-              : '📝 Mes Activités'
-            }
+    <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-neutral-50 to-neutral-100 min-h-screen space-y-6 animate-fade-in">
+      {/* ===== HEADER ===== */}
+      <div className="bg-white rounded-2xl shadow-soft border border-neutral-200 p-5 sm:p-6 flex flex-wrap items-start justify-between gap-4 transition-all hover:shadow-card-hover">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-neutral-400 mb-1">
+            Accueil <ChevronRight size={12} className="inline" /> {titleText}
+          </p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+            <LayoutDashboard className="w-7 h-7 text-red-600 hidden sm:block" />
+            {titleText}
           </h1>
-          <p style={styles.subtitle}>
-            {userProfile?.isDirecteur 
-              ? 'Vue consolidée de tous les départements'
-              : userProfile?.fonction?.toLowerCase().includes('chef')
-              ? `Gestion et suivi de votre département`
-              : 'Suivi de vos activités personnelles'
-            } - {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+          <p className="text-sm text-neutral-500 mt-1">
+            {subtitleText} — {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
           </p>
         </div>
-        
-        <div style={styles.headerRight}>
-          <div style={styles.searchBox} className="dashboard-searchbox">
-            <span style={styles.searchIcon}>🔍</span>
+
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Search */}
+          <div className="relative hidden md:block">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input
               type="text"
-              placeholder="Rechercher des activités..."
-              style={styles.searchInput}
+              placeholder="Rechercher..."
+              className="pl-9 pr-4 py-2 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all w-48 lg:w-64"
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={e => setSearchText(e.target.value)}
             />
           </div>
-          
-          <button style={styles.notificationBtn} className="dashboard-notification-btn">
-            <span>🔔</span>
-            {alerts.length > 0 && (
-              <span style={styles.notificationBadge}>{alerts.length}</span>
-            )}
-          </button>
+          {/* Notifications */}
+          <NotificationPanel
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onRefresh={refreshNotifications}
+          />
         </div>
       </div>
 
-      {/* Filtres - Adaptés selon le rôle */}
-      <div style={styles.filterBar}>
-        {/* Sélecteur de département (uniquement pour Directeur) */}
+      {/* ===== FILTER BAR ===== */}
+      <div className="bg-white rounded-xl shadow-soft border border-neutral-200 px-4 py-3 flex flex-wrap items-center gap-3">
         {userProfile?.isDirecteur && (
-          <select 
-            style={styles.select}
-            className="dashboard-select"
+          <select
+            className="text-sm bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-2 font-medium text-neutral-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/20 min-w-[180px]"
             value={departementFilter}
-            onChange={(e) => setDepartementFilter(e.target.value as any)}
+            onChange={e => setDepartementFilter(e.target.value as any)}
           >
-            <option value="all">🌍 Tous les départements</option>
-            <option value="DA">📊 DA - Département Analyse</option>
-            <option value="DSE">✅ DSE - Surveillance Engagements</option>
-            <option value="DPNP">💰 DPNP - Prêts Non Performants</option>
+            <option value="all">Tous les départements</option>
+            <option value="DA">DA — Département Analyse</option>
+            <option value="DSE">DSE — Surveillance Engagements</option>
+            <option value="DPNP">DPNP — Prêts Non Performants</option>
           </select>
         )}
 
-        <div style={styles.periodTabs}>
-          <button
-            style={{
-              ...styles.periodTab,
-              ...(periodFilter === 'week' ? styles.periodTabActive : {}),
-            }}
-            className={`dashboard-period-tab ${periodFilter === 'week' ? 'active' : ''}`}
-            onClick={() => setPeriodFilter('week')}
-          >
-            Cette semaine
-          </button>
-          <button
-            style={{
-              ...styles.periodTab,
-              ...(periodFilter === 'month' ? styles.periodTabActive : {}),
-            }}
-            className={`dashboard-period-tab ${periodFilter === 'month' ? 'active' : ''}`}
-            onClick={() => setPeriodFilter('month')}
-          >
-            Ce mois
-          </button>
-          <button
-            style={{
-              ...styles.periodTab,
-              ...(periodFilter === 'quarter' ? styles.periodTabActive : {}),
-            }}
-            className={`dashboard-period-tab ${periodFilter === 'quarter' ? 'active' : ''}`}
-            onClick={() => setPeriodFilter('quarter')}
-          >
-            Trimestre
-          </button>
+        <div className="inline-flex bg-neutral-50 border border-neutral-200 rounded-lg overflow-hidden">
+          {(['week', 'month', 'quarter'] as PeriodFilter[]).map(p => (
+            <button
+              key={p}
+              className={`px-4 py-2 text-sm font-semibold transition-all ${periodFilter === p ? 'bg-red-600 text-white' : 'text-neutral-500 hover:bg-neutral-100'}`}
+              onClick={() => setPeriodFilter(p)}
+            >
+              {p === 'week' ? 'Semaine' : p === 'month' ? 'Mois' : 'Trimestre'}
+            </button>
+          ))}
         </div>
 
-        {/* Bouton Exporter - Visible pour tous */}
-        <button style={styles.exportButton} className="dashboard-export-btn" onClick={handleExport}>
-          <span>📥</span>
-          <span>Exporter</span>
+        <button
+          className="ml-auto flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+          onClick={handleExport}
+        >
+          <Download size={16} />
+          Exporter
         </button>
       </div>
 
-      {/* Métriques - Adaptées selon le rôle */}
-      <div style={styles.metricsGrid}>
-        {/* Métrique 1 - Adaptée selon département */}
-        <div style={styles.metricCard} className="dashboard-metric-card">
-          <div>
-            <p style={styles.metricLabel}>
-              {userProfile?.departement === 'DA' ? 'Analyses réalisées' :
-               userProfile?.departement === 'DSE' ? 'Contrôles effectués' :
-               userProfile?.departement === 'DPNP' ? 'Recouvrements' :
-               userProfile?.isDirecteur ? 'Total activités' : 'Visites planifiées'}
-            </p>
-            <p style={styles.metricValue}>{stats.visitesPlanned}</p>
-            <p style={{ ...styles.metricChange, ...styles.metricChangePositive }}>
-              ↑ +{stats.visitesChange}% vs mois dernier
-            </p>
-          </div>
-          <div style={{ ...styles.metricIcon, background: metricColors.blue.bg }}>
-            {userProfile?.departement === 'DA' ? '📊' :
-             userProfile?.departement === 'DSE' ? '🔍' :
-             userProfile?.departement === 'DPNP' ? '💰' :
-             userProfile?.isDirecteur ? '📈' : '📅'}
-          </div>
-        </div>
-
-        {/* Métrique 2 - Taux de réalisation */}
-        <div style={styles.metricCard} className="dashboard-metric-card">
-          <div>
-            <p style={styles.metricLabel}>
-              {userProfile?.departement === 'DPNP' ? 'Taux de recouvrement' : 'Taux de réalisation'}
-            </p>
-            <p style={styles.metricValue}>{stats.tauxRecouvrement}%</p>
-            <p style={{ ...styles.metricChange, ...styles.metricChangePositive }}>
-              ↑ +{stats.tauxChange}% vs objectif
-            </p>
-          </div>
-          <div style={{ ...styles.metricIcon, background: metricColors.green.bg }}>
-            {userProfile?.departement === 'DPNP' ? '💵' : '✅'}
-          </div>
-        </div>
-
-        {/* Métrique 3 - Dossiers */}
-        <div style={styles.metricCard} className="dashboard-metric-card">
-          <div>
-            <p style={styles.metricLabel}>
-              {userProfile?.departement === 'DA' ? 'Dossiers en analyse' :
-               userProfile?.departement === 'DSE' ? 'Dossiers surveillés' :
-               userProfile?.departement === 'DPNP' ? 'Créances en cours' :
-               'Dossiers en cours'}
-            </p>
-            <p style={styles.metricValue}>{stats.dossiersEnCours}</p>
-            <p style={{ ...styles.metricChange, ...styles.metricChangeNegative }}>
-              ↓ {stats.dossiersChange}% vs semaine dernière
-            </p>
-          </div>
-          <div style={{ ...styles.metricIcon, background: metricColors.yellow.bg }}>
-            📁
-          </div>
-        </div>
-
-        {/* Métrique 4 - Objectif */}
-        <div style={styles.metricCard} className="dashboard-metric-card">
-          <div>
-            <p style={styles.metricLabel}>
-              {userProfile?.isDirecteur ? 'Performance globale' : 'Objectif mensuel'}
-            </p>
-            <p style={styles.metricValue}>{stats.objectifMensuel}%</p>
-            <p style={{ ...styles.metricChange, color: '#6B7280' }}>
-              En progression
-            </p>
-          </div>
-          <div style={{ ...styles.metricIcon, background: metricColors.purple.bg }}>
-            🎯
-          </div>
-        </div>
+      {/* ===== METRICS ===== */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatCard icon={Activity} iconColor="blue" value={stats.visitesPlanned} label={getMetricLabel(0)}
+          trend={{ value: Math.abs(stats.visitesChange), isPositive: stats.visitesChange >= 0 }} />
+        <StatCard icon={CheckCircle} iconColor="green" value={`${stats.tauxRecouvrement}%`} label={getMetricLabel(1)}
+          trend={{ value: Math.abs(stats.tauxChange), isPositive: stats.tauxChange >= 0 }} />
+        <StatCard icon={FolderOpen} iconColor="orange" value={stats.dossiersEnCours} label={getMetricLabel(2)}
+          trend={{ value: Math.abs(stats.dossiersChange), isPositive: stats.dossiersChange <= 0 }} />
+        <StatCard icon={Target} iconColor="purple" value={`${stats.objectifMensuel}%`} label={getMetricLabel(3)}
+          progress={stats.objectifMensuel} />
       </div>
 
-      {/* Graphiques - Activité et Statuts */}
-      <div style={styles.chartsRow}>
-        {/* Graphique d'activité hebdomadaire */}
-        <div style={styles.card} className="dashboard-chart-card">
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>📈 Activité hebdomadaire</h3>
-          </div>
-          {/* Contenu du graphique sera ici */}
-        </div>
+      {/* ===== CHARTS ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <ChartCard
+          title="Activité hebdomadaire"
+          className="lg:col-span-2"
+          actions={
+            <div className="inline-flex bg-neutral-50 border border-neutral-200 rounded-lg overflow-hidden">
+              <button className={`px-3 py-1 text-xs font-semibold transition-all ${chartView === 'weekly' ? 'bg-red-50 text-red-600 border-red-200' : 'text-neutral-500'}`} onClick={() => setChartView('weekly')}>7 jours</button>
+              <button className={`px-3 py-1 text-xs font-semibold transition-all ${chartView === 'monthly' ? 'bg-red-50 text-red-600 border-red-200' : 'text-neutral-500'}`} onClick={() => setChartView('monthly')}>30 jours</button>
+            </div>
+          }
+        >
+          <LineChart data={lineChartData} />
+        </ChartCard>
 
-        {/* Graphique statuts */}
-        <div style={styles.card} className="dashboard-chart-card">
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>📊 Statut des dossiers</h3>
-          </div>
-          {/* Contenu du pie chart sera ici */}
-        </div>
+        <ChartCard title="Statut des dossiers">
+          <DoughnutChart data={doughnutData} />
+        </ChartCard>
       </div>
 
-      {/* Accès Rapides aux Activités */}
-      <div style={styles.card} className="dashboard-chart-card">
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>🚀 Accès Rapides</h3>
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: '16px',
-          padding: '20px'
-        }}>
-          {/* Cartes communes - Uniquement pour Chef/Agent (pas pour Directeur) */}
-          {!userProfile?.isDirecteur && (
-            <>
-              {/* Carte - Saisie d'Activités */}
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-                }}
-                onClick={() => onModuleSelect?.('activities')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Nouvelle Saisie
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Enregistrer une activité
-                </div>
-              </button>
-
-              {/* Carte - Synthèse */}
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
-                }}
-                onClick={() => onModuleSelect?.('synthesis')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Synthèse
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Vue d'ensemble des activités
-                </div>
-              </button>
-
-              {/* Carte - Rapports */}
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
-                }}
-                onClick={() => onModuleSelect?.('reports')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📈</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Rapports
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Analyses et statistiques
-                </div>
-              </button>
-            </>
-          )}
-
-          {/* Cartes Départements - Pour le Directeur uniquement */}
-          {userProfile?.isDirecteur && (
-            <>
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #0078d4 0%, #005a9e 100%)',
-                }}
-                onClick={() => onModuleSelect?.('department-DA')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Département DA
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Direction de l'Analyse
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #107c10 0%, #0b5a0b 100%)',
-                }}
-                onClick={() => onModuleSelect?.('department-DSE')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🏦</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Département DSE
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Surveillance des Engagements
-                </div>
-              </button>
-
-              <button
-                className="quick-access-card"
-                style={{
-                  background: 'linear-gradient(135deg, #d83b01 0%, #a52c00 100%)',
-                }}
-                onClick={() => onModuleSelect?.('department-DPNP')}
-              >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🏛️</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '4px' }}>
-                  Département DPNP
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)' }}>
-                  Prêts Non Performants
-                </div>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Graphiques */}
-      <div style={styles.chartsRow}>
-        {/* Graphique en ligne - Activité hebdomadaire */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>Activité hebdomadaire</h3>
-            <div style={styles.chartTabs}>
-              <button
-                style={{
-                  ...styles.chartTab,
-                  ...(chartView === 'weekly' ? styles.chartTabActive : {}),
-                }}
-                onClick={() => setChartView('weekly')}
-              >
-                7 jours
-              </button>
-              <button
-                style={{
-                  ...styles.chartTab,
-                  ...(chartView === 'monthly' ? styles.chartTabActive : {}),
-                }}
-                onClick={() => setChartView('monthly')}
-              >
-                30 jours
-              </button>
-            </div>
-          </div>
-
-          <div style={styles.lineChart}>
-            <svg style={styles.lineChartSvg} viewBox="0 0 600 180">
-              {/* Grille horizontale */}
-              {[0, 45, 90, 135].map((y, i) => (
-                <g key={i}>
-                  <line x1="40" y1={y + 10} x2="580" y2={y + 10} stroke="#F3F4F6" strokeWidth="1" />
-                  <text x="30" y={y + 14} fill="#9CA3AF" fontSize="10" textAnchor="end">
-                    {Math.round((4 - i) * (Math.max(...chartData.map(d => d.value), 10) / 4))}
-                  </text>
-                </g>
-              ))}
-              
-              {/* Zone remplie sous la courbe */}
-              <defs>
-                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#DC2626" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#DC2626" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-              
-              {chartData.length > 0 && (
-                <>
-                  {/* Area */}
-                  <path
-                    d={`
-                      M ${40 + 0 * (540 / (chartData.length - 1 || 1))} ${150 - (chartData[0]?.value / Math.max(...chartData.map(d => d.value), 1)) * 130}
-                      ${chartData.map((d, i) => {
-                        const x = 40 + i * (540 / (chartData.length - 1 || 1));
-                        const y = 150 - (d.value / Math.max(...chartData.map(d => d.value), 1)) * 130;
-                        return `L ${x} ${y}`;
-                      }).join(' ')}
-                      L ${40 + (chartData.length - 1) * (540 / (chartData.length - 1 || 1))} 150
-                      L 40 150 Z
-                    `}
-                    fill="url(#areaGradient)"
-                  />
-                  
-                  {/* Ligne */}
-                  <polyline
-                    points={chartData.map((d, i) => {
-                      const x = 40 + i * (540 / (chartData.length - 1 || 1));
-                      const y = 150 - (d.value / Math.max(...chartData.map(d => d.value), 1)) * 130;
-                      return `${x},${y}`;
-                    }).join(' ')}
-                    fill="none"
-                    stroke="#DC2626"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  
-                  {/* Points */}
-                  {chartData.map((d, i) => {
-                    const x = 40 + i * (540 / (chartData.length - 1 || 1));
-                    const y = 150 - (d.value / Math.max(...chartData.map(d => d.value), 1)) * 130;
-                    return (
-                      <g key={i}>
-                        <circle cx={x} cy={y} r="6" fill="white" stroke="#DC2626" strokeWidth="3" />
-                        <title>{`${d.label}: ${d.value} activités`}</title>
-                      </g>
-                    );
-                  })}
-                </>
-              )}
-            </svg>
-            
-            {/* Labels des jours */}
-            <div style={styles.lineChartLabels}>
-              {chartData.map((d, i) => (
-                <div key={i} style={{ ...styles.lineChartLabel, flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: '#374151' }}>{d.label}</div>
-                  <div style={{ fontSize: '10px' }}>{d.date}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={styles.legend}>
-            <div style={styles.legendItem}>
-              <div style={{ ...styles.legendDot, background: '#DC2626' }} />
-              <span>Activités enregistrées</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Donut Chart - Statut des dossiers */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>Statut des dossiers</h3>
-          </div>
-
-          <div style={styles.pieContainer}>
-            <div
-              style={{
-                ...styles.pieChart,
-                background: pieGradient,
-              }}
+      {/* ===== QUICK ACCESS ===== */}
+      <div className="bg-white rounded-xl shadow-soft border border-neutral-200 p-5">
+        <h3 className="font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+          <Calendar size={18} className="text-red-500" /> Accès Rapides
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {quickAccess.map(item => (
+            <button
+              key={item.id}
+              className={`quick-access-card bg-gradient-to-br ${item.gradient} !border-transparent`}
+              onClick={() => onModuleSelect?.(item.module)}
             >
-              <div style={{ 
-                ...styles.pieCenter,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span style={{ fontSize: '24px', fontWeight: 700, color: '#1F2937' }}>
-                  {pieData.reduce((sum, item) => sum + (item.count || 0), 0)}
-                </span>
-                <span style={{ fontSize: '11px', color: '#6B7280' }}>Total</span>
-              </div>
-            </div>
+              <item.icon className="w-8 h-8 text-white/90 mb-3" />
+              <span className="text-base font-semibold text-white">{item.label}</span>
+              <span className="text-xs text-white/80 mt-1">{item.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-            <div style={styles.pieLegend}>
-              {pieData.map((item, index) => (
-                <div key={index} style={styles.pieLegendItem}>
-                  <div style={styles.pieLegendLabel}>
-                    <div style={{ ...styles.pieLegendDot, background: item.color }} />
-                    <span>{item.label}</span>
+      {/* ===== BOTTOM: RECENT + ALERTS ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Visites récentes */}
+        <div className="bg-white rounded-xl shadow-soft border border-neutral-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-neutral-800 flex items-center gap-2">
+              <Eye size={18} className="text-blue-500" /> Visites récentes
+            </h3>
+            <button className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors" onClick={() => onModuleSelect?.('activities')}>
+              Voir tout
+            </button>
+          </div>
+          {filteredVisites.length === 0 ? (
+            <p className="text-center text-neutral-400 py-8 text-sm">Aucune visite trouvée</p>
+          ) : (
+            <div className="divide-y divide-neutral-100">
+              {filteredVisites.slice(0, 5).map(v => (
+                <div key={v.id} className="flex items-center justify-between py-3 group">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${v.statut === 'Complétée' ? 'bg-green-500' : v.statut === 'Planifiée' ? 'bg-blue-500' : 'bg-yellow-500'}`} />
+                    <div>
+                      <span className="text-sm font-medium text-neutral-800 group-hover:text-red-600 transition-colors">{v.client}</span>
+                      <span className="text-xs text-neutral-400 block">{v.date}</span>
+                    </div>
                   </div>
-                  <span style={styles.pieLegendValue}>
-                    {item.count || 0} <span style={{ color: '#9CA3AF', fontWeight: 400 }}>({item.value}%)</span>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${v.statut === 'Complétée' ? 'bg-green-50 text-green-700' : v.statut === 'Planifiée' ? 'bg-blue-50 text-blue-700' : 'bg-yellow-50 text-yellow-700'}`}>
+                    {v.statut}
                   </span>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section du bas */}
-      <div style={styles.bottomRow}>
-        {/* Visites récentes */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>Visites récentes</h3>
-            <span 
-              style={styles.viewAllLink}
-              onClick={() => onModuleSelect?.('activities')}
-            >
-              Voir tout
-            </span>
-          </div>
-
-          {filteredVisites.length === 0 ? (
-            <div style={styles.emptyState}>
-              <p>Aucune visite trouvée</p>
-            </div>
-          ) : (
-            filteredVisites.slice(0, 5).map((visite) => (
-              <div key={visite.id} style={styles.listItem}>
-                <div style={styles.listItemLeft}>
-                  <div
-                    style={{
-                      ...styles.statusDot,
-                      background: visite.statut === 'Complétée' ? '#10B981' 
-                        : visite.statut === 'Planifiée' ? '#3B82F6' 
-                        : '#F59E0B',
-                    }}
-                  />
-                  <div style={styles.listItemInfo}>
-                    <span style={styles.listItemTitle}>{visite.client}</span>
-                    <span style={styles.listItemSubtitle}>{visite.date}</span>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    ...styles.statusBadge,
-                    ...getStatusBadgeStyle(visite.statut),
-                  }}
-                >
-                  {visite.statut}
-                </span>
-              </div>
-            ))
           )}
         </div>
 
-        {/* Alertes & Notifications */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>Alertes & Notifications</h3>
-            <span style={{ color: '#9CA3AF', cursor: 'pointer' }}>⋮</span>
+        {/* Alertes */}
+        <div className="bg-white rounded-xl shadow-soft border border-neutral-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-neutral-800 flex items-center gap-2">
+              <AlertTriangle size={18} className="text-orange-500" /> Alertes & Notifications
+            </h3>
           </div>
-
           {alerts.length === 0 ? (
-            <div style={styles.emptyState}>
-              <p>Aucune alerte</p>
-            </div>
+            <p className="text-center text-neutral-400 py-8 text-sm">Aucune alerte</p>
           ) : (
-            alerts.map((alert) => (
-              <div key={alert.id} style={styles.alertItem}>
-                <div
-                  style={{
-                    ...styles.alertIcon,
-                    ...getAlertIconStyle(alert.type),
-                  }}
-                >
-                  {alert.type === 'warning' ? '⚠️' : alert.type === 'info' ? '📊' : '✅'}
+            <div className="divide-y divide-neutral-100">
+              {alerts.map(a => (
+                <div key={a.id} className="flex items-start gap-3 py-3">
+                  <div className={`mt-0.5 p-2 rounded-lg flex-shrink-0 ${a.type === 'warning' ? 'bg-red-50' : a.type === 'info' ? 'bg-yellow-50' : 'bg-green-50'}`}>
+                    {a.type === 'warning' ? <AlertTriangle size={14} className="text-red-500" /> : a.type === 'info' ? <Info size={14} className="text-yellow-600" /> : <CheckCircle size={14} className="text-green-600" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-neutral-800">{a.title}</p>
+                    <p className="text-xs text-neutral-400">{a.description}</p>
+                  </div>
+                  <span className="text-xs text-neutral-400 whitespace-nowrap">{a.time}</span>
                 </div>
-                <div style={styles.alertContent}>
-                  <p style={styles.alertTitle}>{alert.title}</p>
-                  <p style={styles.alertDescription}>{alert.description}</p>
-                </div>
-                <span style={styles.alertTime}>{alert.time}</span>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>

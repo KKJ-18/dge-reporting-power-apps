@@ -149,25 +149,31 @@ const FormAdminEngagementsAnalyse: React.FC<FormAdminEngagementsAnalyseProps> = 
   };
 
   return (
-    <div className="admin-engagements-analyse-form-container">
+    <div className="form-container">
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={closeNotification}
+      />
       <div className="form-header">
-        <h2>{activityName}</h2>
-        <button className="close-btn" onClick={onCancel} type="button">
-          ✕
-        </button>
+        <div className="form-title-group">
+          <h2 className="form-title">🏦 {activityName}</h2>
+          <span className="form-badge">Administration des engagements</span>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="admin-engagements-analyse-form">
+      <form onSubmit={handleSubmit} className="form-body">
         {error && (
-          <div className="error-message">
+          <div style={{ padding: '12px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', marginBottom: '1rem', color: '#c00' }}>
             <span>⚠️ {error}</span>
           </div>
         )}
 
         <div className="form-section">
-          <h3>🏦 Informations de l'Engagement</h3>
-
-          <div className="form-row">
+          <h3 className="section-title">🏦 Informations de l'Engagement</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
               <label htmlFor="reseau">
                 Réseau <span className="required">*</span>
@@ -213,9 +219,7 @@ const FormAdminEngagementsAnalyse: React.FC<FormAdminEngagementsAnalyseProps> = 
                 ))}
               </select>
             </div>
-          </div>
 
-          <div className="form-row">
             <div className="form-group">
               <label htmlFor="segment">
                 Segment <span className="required">*</span>
@@ -234,12 +238,11 @@ const FormAdminEngagementsAnalyse: React.FC<FormAdminEngagementsAnalyseProps> = 
                   </option>
                 ))}
               </select>
-              <small>Particulier ou Entreprise</small>
             </div>
 
             <div className="form-group">
               <label htmlFor="montant">
-                Montant (en millions) <span className="required">*</span>
+                Montant (FCFA) <span className="required">*</span>
               </label>
               <input
                 type="number"
@@ -249,45 +252,27 @@ const FormAdminEngagementsAnalyse: React.FC<FormAdminEngagementsAnalyseProps> = 
                 onChange={handleInputChange}
                 min="0"
                 step="0.01"
+                placeholder="Montant en FCFA"
                 required
               />
             </div>
           </div>
         </div>
 
-        <div className="info-box">
-          <h4>ℹ️ À propos de cet engagement</h4>
-          <p>
-            <strong>Activité :</strong> {activityName}
-          </p>
-          <p>
-            Cet enregistrement sera associé au mois en cours (
-            {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}).
-          </p>
-        </div>
-
         <div className="form-actions">
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn-secondary"
             onClick={onCancel}
             disabled={loading}
           >
             Annuler
           </button>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? '⏳ Enregistrement...' : '💾 Enregistrer'}
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </form>
-      
-      <NotificationModal
-        isOpen={notification.isOpen}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-        onClose={closeNotification}
-      />
     </div>
   );
 };

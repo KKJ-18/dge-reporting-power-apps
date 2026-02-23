@@ -4,820 +4,338 @@ import { DetailsDossiersService } from '../../services/DetailsDossiersService';
 import { AgenceResauService } from '../../services/AgenceResauService';
 import NotificationModal from '../NotificationModal';
 import { useNotification } from '../../hooks/useNotification';
+import '../../styles/forms.css';
+
+type RestructurationType =
+  | 'reception-dossiers'
+  | 'dossiers-complements'
+  | 'dossiers-elements-recus'
+  | 'dossier-analyse'
+  | 'dossier-attente-comite'
+  | 'dossier-attente-decision'
+  | 'dossier-accord'
+  | 'dossier-rejete';
 
 interface FormDossiersRestructurationV2Props {
   activityName: string;
+  specificType?: string;
   onClose: () => void;
   onSave: () => void;
+  departmentColor?: string;
 }
 
-interface DossierClient {
-  id: string;
-  matricule: string;
-  nomClient: string;
-  volumeAnomalie: number;
-  statut: string;
-  commentaire: string;
-}
+const TYPE_LABELS: Record<RestructurationType, string> = {
+  'reception-dossiers': 'Réception des dossiers',
+  'dossiers-complements': 'Envoi pour compléments d\'informations',
+  'dossiers-elements-recus': 'Éléments reçus de l\'unité',
+  'dossier-analyse': 'Dossier en cours d\'analyse',
+  'dossier-attente-comite': 'Dossier en attente de comité',
+  'dossier-attente-decision': 'Dossier en attente de décision',
+  'dossier-accord': 'Accord (comité + PV)',
+  'dossier-rejete': 'Dossier rejeté',
+};
 
 const FormDossiersRestructurationV2: React.FC<FormDossiersRestructurationV2Props> = ({
   activityName,
+  specificType,
   onClose,
   onSave,
 }) => {
+  const subType = (specificType || 'reception-dossiers') as RestructurationType;
   const { notification, showSuccess, showError, closeNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [loadingAgences, setLoadingAgences] = useState(false);
   const [agences, setAgences] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [reseaux, setReseaux] = useState<string[]>([]);
+  const [loadingAgences, setLoadingAgences] = useState(false);
 
-  const statutOptions = [
-    'réception',
-    'attente complément d\'observation',
-    'en cours d\'analyse',
-    'attente décision',
-    'accord comité',
-    'renvoi comité',
-    'attente avis conformité',
-    'attente comité crédit',
-  ];
-
-  const getDefaultStatut = (): string => {
-    return 'réception';
-  };
-
-  const [formData, setFormData] = useState({
-    dateEntree: new Date().toISOString().split('T')[0],
+  const today = new Date().toISOString().split('T')[0];
+  const [form, setForm] = useState({
+    dateField: today,
+    volumeEngagements: 0,
+    volumeAnomalies: 0,
+    montantSollicite: 0,
+    montantAccorde: 0,
+    volumeProvisions: 0,
     agence: '',
-  });
-
-  const [dossiers, setDossiers] = useState<DossierClient[]>([]);
-  const [currentDossier, setCurrentDossier] = useState<DossierClient>({
-    id: '',
+    reseau: '',
     matricule: '',
     nomClient: '',
-    volumeAnomalie: 0,
-    statut: getDefaultStatut(),
-    commentaire: '',
+    nomGestionnaire: '',
+    mailGestionnaire: '',
+    infosSollicitees: '',
+    statutDossier: '',
+    statAnalyse: '',
+    dateFinAnalyse: '',
+    etapeRejet: '',
   });
 
   useEffect(() => {
-    loadAgences();
+    (async () => {
+      setLoadingAgences(true);
+      try {
+        const result = await AgenceResauService.getAll();
+        const data: any[] = result?.data || result?.value || [];
+        setAgences(Array.from(new Set(data.map((d: any) => d.Title).filter(Boolean))).sort() as string[]);
+        setReseaux(Array.from(new Set(data.map((d: any) => d.NomResau).filter(Boolean))).sort() as string[]);
+      } catch { /* silent */ } finally { setLoadingAgences(false); }
+    })();
   }, []);
 
-  const loadAgences = async () => {
-    setLoadingAgences(true);
-    try {
-      const result = await AgenceResauService.getAll();
-      const data = result?.data || result?.value || [];
-      const uniqueAgences = Array.from(
-        new Set(data.map((item: any) => item.Title).filter(Boolean))
-      ).sort() as string[];
-      setAgences(uniqueAgences);
-    } catch (err) {
-      console.error('Erreur chargement agences:', err);
-      setAgences([]);
-    } finally {
-      setLoadingAgences(false);
-    }
-  };
-
-  const generateReference = (): string => {
-    const now = new Date();
-    const date = now.toISOString().split('T')[0].replace(/-/g, '');
-    const time = now.toTimeString().split(' ')[0].replace(/:/g, '');
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `RESTR-${date}-${time}-${random}`;
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const change = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm(p => ({ ...p, [name]: e.target.type === 'number' ? parseFloat(value) || 0 : value }));
   };
 
-  const handleDossierChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setCurrentDossier((prev) => ({
-      ...prev,
-      [name]: name === 'volumeAnomalie' ? Number(value) : value,
-    }));
+  const generateRef = () => `RESTR-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+  const SelectField = ({ label, name, value, list, req = false }: { label: string; name: string; value: string; list: string[]; req?: boolean }) => (
+    <div className="form-group">
+      <label>{label}{req && <span className="required"> *</span>}</label>
+      {loadingAgences ? <div className="loading">Chargement...</div> : list.length > 0 ? (
+        <select name={name} value={value} onChange={change} required={req}>
+          <option value="">-- Sélectionner --</option>
+          {list.map((v: string) => <option key={v} value={v}>{v}</option>)}
+        </select>
+      ) : (
+        <input type="text" name={name} value={value} onChange={change} required={req} placeholder={label} />
+      )}
+    </div>
+  );
+
+  const getDateLabel = (): string => {
+    switch (subType) {
+      case 'reception-dossiers': return 'Date d\'entrée du dossier';
+      case 'dossiers-complements': return 'Date d\'envoi à l\'unité';
+      case 'dossiers-elements-recus': return 'Date de réception de l\'unité';
+      case 'dossier-analyse': return 'Date d\'entrée du dossier complet';
+      case 'dossier-attente-comite': return 'Date de convocation du comité';
+      case 'dossier-attente-decision': return 'Date de transmission à la 1ère décision';
+      case 'dossier-accord': return 'Date de réception de la décision';
+      case 'dossier-rejete': return 'Date du rejet';
+      default: return 'Date';
+    }
   };
 
-  const addDossier = () => {
-    if (!currentDossier.matricule.trim()) {
-      setError('Le matricule client est obligatoire');
-      return;
-    }
-
-    if (!currentDossier.nomClient.trim()) {
-      setError('L\'intitulé client est obligatoire');
-      return;
-    }
-
-    if (currentDossier.volumeAnomalie <= 0) {
-      setError('Le volume anomalie doit être supérieur à 0');
-      return;
-    }
-
-    const newDossier = {
-      ...currentDossier,
-      id: `temp-${Date.now()}`,
-    };
-
-    setDossiers((prev) => [...prev, newDossier]);
-    setCurrentDossier({
-      id: '',
-      matricule: '',
-      nomClient: '',
-      volumeAnomalie: 0,
-      statut: getDefaultStatut(),
-      commentaire: '',
-    });
-    setError(null);
-  };
-
-  const removeDossier = (id: string) => {
-    setDossiers((prev) => prev.filter((d) => d.id !== id));
-  };
-
-  const calculateTotals = () => {
-    const volumeGlobal = dossiers.reduce((sum, d) => sum + d.volumeAnomalie, 0);
-    const volumeAnomalies = volumeGlobal; // Peut être ajusté selon la logique métier
-    return { volumeGlobal, volumeAnomalies };
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.dateEntree) {
-      setError('La date d\'entrée est obligatoire');
-      return false;
-    }
-
-    if (!formData.agence) {
-      setError('L\'agence est obligatoire');
-      return false;
-    }
-
-    if (dossiers.length === 0) {
-      setError('Vous devez ajouter au moins un dossier client');
-      return false;
-    }
-
-    return true;
-  };
+  // Sub-type field visibility flags
+  const hasClient = ['reception-dossiers', 'dossiers-complements', 'dossiers-elements-recus', 'dossier-analyse'].includes(subType);
+  const hasGestionnaire = ['reception-dossiers', 'dossiers-complements', 'dossiers-elements-recus', 'dossier-analyse'].includes(subType);
+  const hasMailGestionnaire = subType === 'reception-dossiers';
+  const hasProvisions = ['reception-dossiers', 'dossiers-complements', 'dossiers-elements-recus', 'dossier-analyse'].includes(subType);
+  const hasInfosSollicitees = ['dossiers-complements', 'dossiers-elements-recus'].includes(subType);
+  const hasStatutDossier = subType === 'dossiers-elements-recus';
+  const hasStatAnalyse = subType === 'dossier-analyse';
+  const hasMontantSollicite = ['dossier-attente-comite', 'dossier-attente-decision', 'dossier-accord', 'dossier-rejete'].includes(subType);
+  const hasMontantAccorde = subType === 'dossier-accord';
+  const hasEtapeRejet = subType === 'dossier-rejete';
+  const hasMatriculeRejete = subType === 'dossier-rejete';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    if (!validateForm()) {
-      return;
-    }
-
     setLoading(true);
-
+    const ref = generateRef();
     try {
-      // Générer un ID de référence unique
-      const reference = generateReference();
-      const totals = calculateTotals();
-
-      // 1. Créer l'enregistrement principal dans SuiviDossiersRestructuration
-      const mainData = {
+      await SuiviDossiersRestructurationService.create({
         Title: activityName,
-        DateEntree: formData.dateEntree,
-        Agence: formData.agence,
-        VolumeGlobalEngagements: totals.volumeGlobal,
-        VolumeAnomalies: totals.volumeAnomalies,
-        MontantSollicite: totals.volumeGlobal,
-        Date: formData.dateEntree,
-        Reference: reference,
-      };
+        DateEntree: form.dateField,
+        Agence: form.agence,
+        VolumeGlobalEngagements: form.volumeEngagements,
+        VolumeAnomalies: form.volumeAnomalies,
+        MontantSollicite: hasMontantSollicite ? form.montantSollicite : form.volumeEngagements,
+        Date: form.dateField,
+        Reference: ref,
+      });
 
-      console.log('💾 Sauvegarde principale:', mainData);
-      const mainResult = await SuiviDossiersRestructurationService.create(mainData);
-
-      if (!mainResult.success) {
-        throw new Error(mainResult.error?.message || 'Échec de la sauvegarde principale');
-      }
-
-      // 2. Créer les détails dans DetailsDossiers
-      for (const dossier of dossiers) {
-        const detailData = {
-          Title: activityName,
-          NomClient: dossier.nomClient,
-          Matricule: dossier.matricule,
-          MontantSollicite: dossier.volumeAnomalie,
-          Decision: dossier.statut,
-          Commentaire: dossier.commentaire,
-          Comite: formData.agence,
-          Reference: reference, // Lien via référence unique
-          DetailDecision: dossier.statut, // Statut actuel du dossier
-          Date: formData.dateEntree,
-        };
-
-        console.log('💾 Sauvegarde détail:', detailData);
-        const detailResult = await DetailsDossiersService.create(detailData);
-
-        if (!detailResult.success) {
-          console.error('Erreur sauvegarde détail:', detailResult.error);
-          // Continue avec les autres même si un échoue
+      if (hasClient || hasGestionnaire || hasMatriculeRejete) {
+        const commentParts: string[] = [];
+        if (form.reseau) commentParts.push(`Réseau:${form.reseau}`);
+        if (hasProvisions) commentParts.push(`Provisions:${form.volumeProvisions}`);
+        if (hasMontantAccorde) commentParts.push(`MontantAccordé:${form.montantAccorde}`);
+        if (hasInfosSollicitees && form.infosSollicitees) commentParts.push(`Infos:${form.infosSollicitees}`);
+        if (hasStatutDossier && form.statutDossier) commentParts.push(`Statut:${form.statutDossier}`);
+        if (hasStatAnalyse) {
+          commentParts.push(`StatAnalyse:${form.statAnalyse}`);
+          if (form.dateFinAnalyse) commentParts.push(`FinAnalyse:${form.dateFinAnalyse}`);
         }
+        if (hasEtapeRejet && form.etapeRejet) commentParts.push(`ÉtapeRejet:${form.etapeRejet}`);
+        if (hasMailGestionnaire && form.mailGestionnaire) commentParts.push(`Mail:${form.mailGestionnaire}`);
+
+        await DetailsDossiersService.create({
+          Title: activityName,
+          NomClient: hasClient ? form.nomClient : (hasMatriculeRejete ? form.nomGestionnaire : ''),
+          Matricule: hasClient ? form.matricule : (hasMatriculeRejete ? form.matricule : ''),
+          MontantSollicite: hasMontantSollicite ? form.montantSollicite : form.volumeEngagements,
+          Decision: subType,
+          DetailDecision: `Étape: ${TYPE_LABELS[subType]}`,
+          ObjetCommentaire: hasGestionnaire ? `Gestionnaire:${form.nomGestionnaire}` : activityName,
+          Commentaire: commentParts.join('|'),
+          Comite: form.agence,
+          Reference: ref,
+          Date: form.dateField,
+        });
       }
 
-      showSuccess(
-        'Enregistrement réussi',
-        `Référence: ${reference}\n${dossiers.length} dossier(s) enregistré(s)\nVolume total: ${totals.volumeGlobal.toLocaleString('fr-FR')} FCFA`
-      );
-
+      showSuccess('Enregistrement réussi', `${TYPE_LABELS[subType]} — Réf: ${ref}`);
       setTimeout(() => onSave(), 1500);
     } catch (err: any) {
-      console.error('Erreur lors de la sauvegarde:', err);
-      showError(
-        'Erreur d\'enregistrement',
-        err.message || 'Une erreur est survenue lors de la sauvegarde'
-      );
-    } finally {
-      setLoading(false);
-    }
+      showError('Erreur', err.message || 'Une erreur est survenue');
+    } finally { setLoading(false); }
   };
 
-  const totals = calculateTotals();
-
   return (
-    <div className="form-restructuration-v2-container">
+    <div className="form-container">
       <div className="form-header">
-        <h2>🔄 {activityName}</h2>
-        <button className="close-btn" onClick={onClose} type="button">
-          ✕
-        </button>
+        <div className="form-title-group">
+          <h2 className="form-title">{activityName}</h2>
+          <span className="form-badge">{TYPE_LABELS[subType]}</span>
+        </div>
       </div>
 
-      <div className="form-subtitle">
-        <span className="status-badge">Analyse des dossiers de restructuration</span>
-      </div>
-
-      <form onSubmit={handleSubmit} className="form-restructuration-v2">
-        {error && (
-          <div className="error-message">
-            <span>⚠️ {error}</span>
-          </div>
-        )}
-
-        {/* Section 1: Informations générales */}
+      <form onSubmit={handleSubmit} className="form-body">
         <div className="form-section">
-          <h3>📋 Informations Générales</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
 
-          <div className="form-row">
+            {/* Date (always) */}
             <div className="form-group">
-              <label htmlFor="dateEntree">
-                Date d'entrée <span className="required">*</span>
-              </label>
-              <input
-                type="date"
-                id="dateEntree"
-                name="dateEntree"
-                value={formData.dateEntree}
-                onChange={handleInputChange}
-                required
-              />
+              <label>{getDateLabel()} <span className="required">*</span></label>
+              <input type="date" name="dateField" value={form.dateField} onChange={change} required />
             </div>
 
+            {/* Agence & Réseau (always) */}
+            <SelectField label="Agence" name="agence" value={form.agence} list={agences} req />
+            <SelectField label="Réseau" name="reseau" value={form.reseau} list={reseaux} req />
+
+            {/* Volume engagements & anomalies (always) */}
             <div className="form-group">
-              <label htmlFor="agence">
-                Agence <span className="required">*</span>
-              </label>
-              <select
-                id="agence"
-                name="agence"
-                value={formData.agence}
-                onChange={handleInputChange}
-                required
-                disabled={loadingAgences}
-              >
-                <option value="">
-                  {loadingAgences ? 'Chargement...' : 'Sélectionner une agence'}
-                </option>
-                {agences.map((agence) => (
-                  <option key={agence} value={agence}>
-                    {agence}
-                  </option>
-                ))}
-              </select>
+              <label>Volume global des engagements (FCFA) <span className="required">*</span></label>
+              <input type="number" name="volumeEngagements" value={form.volumeEngagements || ''} onChange={change} required />
             </div>
-          </div>
-        </div>
-
-        {/* Section 2: Ajout de dossier client */}
-        <div className="form-section">
-          <h3>👤 Ajouter un Dossier Client</h3>
-
-          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="matricule">Matricule client</label>
-              <input
-                type="text"
-                id="matricule"
-                name="matricule"
-                value={currentDossier.matricule}
-                onChange={handleDossierChange}
-                placeholder="Ex: CLT123456"
-              />
+              <label>Volume des anomalies — agios + impayés (FCFA) <span className="required">*</span></label>
+              <input type="number" name="volumeAnomalies" value={form.volumeAnomalies || ''} onChange={change} required />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="nomClient">Intitulé client</label>
-              <input
-                type="text"
-                id="nomClient"
-                name="nomClient"
-                value={currentDossier.nomClient}
-                onChange={handleDossierChange}
-                placeholder="Ex: ENTREPRISE ABC SARL"
-              />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="volumeAnomalie">Volume anomalie (FCFA)</label>
-              <input
-                type="number"
-                id="volumeAnomalie"
-                name="volumeAnomalie"
-                value={currentDossier.volumeAnomalie}
-                onChange={handleDossierChange}
-                min="0"
-                step="0.01"
-                placeholder="Ex: 5000000"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="statut">Statut</label>
-              <select
-                id="statut"
-                name="statut"
-                value={currentDossier.statut}
-                onChange={handleDossierChange}
-              >
-                {statutOptions.map((statut) => (
-                  <option key={statut} value={statut}>
-                    {statut}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group full-width">
-              <label htmlFor="commentaire">Commentaire</label>
-              <textarea
-                id="commentaire"
-                name="commentaire"
-                value={currentDossier.commentaire}
-                onChange={handleDossierChange}
-                rows={2}
-                placeholder="Ajoutez un commentaire..."
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-add"
-            onClick={addDossier}
-          >
-            ➕ Ajouter ce dossier
-          </button>
-        </div>
-
-        {/* Section 3: Liste des dossiers */}
-        {dossiers.length > 0 && (
-          <div className="form-section">
-            <h3>📑 Dossiers Ajoutés ({dossiers.length})</h3>
-
-            <div className="dossiers-list">
-              {dossiers.map((dossier) => (
-                <div key={dossier.id} className="dossier-card">
-                  <div className="dossier-header">
-                    <div className="dossier-title">
-                      <strong>{dossier.nomClient}</strong>
-                      <span className="dossier-matricule">({dossier.matricule})</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="btn-remove"
-                      onClick={() => removeDossier(dossier.id)}
-                      title="Supprimer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <div className="dossier-details">
-                    <div className="dossier-detail-item">
-                      <span className="label">Volume:</span>
-                      <span className="value">
-                        {dossier.volumeAnomalie.toLocaleString('fr-FR')} FCFA
-                      </span>
-                    </div>
-                    {dossier.commentaire && (
-                      <div className="dossier-detail-item full-width">
-                        <span className="label">Commentaire:</span>
-                        <span className="value">{dossier.commentaire}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Section 4: Totaux */}
-        {dossiers.length > 0 && (
-          <div className="form-section totals-section">
-            <h3>💰 Totaux</h3>
-            <div className="totals-grid">
-              <div className="total-item">
-                <span className="total-label">Nombre de dossiers:</span>
-                <span className="total-value">{dossiers.length}</span>
+            {/* Client (réception, compléments, éléments reçus, analyse) */}
+            {hasClient && (<>
+              <div className="form-group">
+                <label>Matricule client <span className="required">*</span></label>
+                <input type="text" name="matricule" value={form.matricule} onChange={change} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" />
               </div>
-              <div className="total-item">
-                <span className="total-label">Volume global engagements:</span>
-                <span className="total-value">
-                  {totals.volumeGlobal.toLocaleString('fr-FR')} FCFA
-                </span>
+              <div className="form-group">
+                <label>Nom du client <span className="required">*</span></label>
+                <input type="text" name="nomClient" value={form.nomClient} onChange={change} required />
               </div>
-              <div className="total-item">
-                <span className="total-label">Volume anomalies:</span>
-                <span className="total-value">
-                  {totals.volumeAnomalies.toLocaleString('fr-FR')} FCFA
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+            </>)}
 
-        {/* Actions */}
-        <div className="form-actions">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading || dossiers.length === 0}
-          >
-            {loading ? (
-              <>
-                <span className="spinner"></span> Enregistrement...
-              </>
-            ) : (
-              <>✓ Enregistrer ({dossiers.length} dossier{dossiers.length > 1 ? 's' : ''})</>
+            {/* Provisions (réception, compléments, éléments reçus, analyse) */}
+            {hasProvisions && (
+              <div className="form-group">
+                <label>Volume des provisions (FCFA) <span className="required">*</span></label>
+                <input type="number" name="volumeProvisions" value={form.volumeProvisions || ''} onChange={change} required />
+              </div>
             )}
-          </button>
+
+            {/* Gestionnaire (réception, compléments, éléments reçus, analyse) */}
+            {hasGestionnaire && (
+              <div className="form-group">
+                <label>Nom du gestionnaire <span className="required">*</span></label>
+                <input type="text" name="nomGestionnaire" value={form.nomGestionnaire} onChange={change} required />
+              </div>
+            )}
+
+            {/* Mail gestionnaire (réception uniquement) */}
+            {hasMailGestionnaire && (
+              <div className="form-group">
+                <label>Adresse mail du gestionnaire</label>
+                <input type="email" name="mailGestionnaire" value={form.mailGestionnaire} onChange={change} placeholder="email@exemple.com" />
+              </div>
+            )}
+
+            {/* Infos sollicitées (compléments, éléments reçus) */}
+            {hasInfosSollicitees && (
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label>Informations sollicitées de l'unité <span className="required">*</span></label>
+                <textarea name="infosSollicitees" value={form.infosSollicitees} onChange={change} rows={3} required placeholder="Détail des informations demandées..." />
+              </div>
+            )}
+
+            {/* Statut dossier (éléments reçus: complet/incomplet) */}
+            {hasStatutDossier && (
+              <div className="form-group">
+                <label>Statut du dossier <span className="required">*</span></label>
+                <select name="statutDossier" value={form.statutDossier} onChange={change} required>
+                  <option value="">-- Sélectionner --</option>
+                  <option value="complet">Complet</option>
+                  <option value="incomplet">Incomplet (retour compléments)</option>
+                </select>
+              </div>
+            )}
+
+            {/* Stat analyse (en cours d'analyse) */}
+            {hasStatAnalyse && (<>
+              <div className="form-group">
+                <label>Statut d'analyse <span className="required">*</span></label>
+                <select name="statAnalyse" value={form.statAnalyse} onChange={change} required>
+                  <option value="">-- Sélectionner --</option>
+                  <option value="attente comité">Dossier en attente de comité</option>
+                  <option value="monte PV">Dossier dont on monte le PV</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Date de fin d'analyse</label>
+                <input type="date" name="dateFinAnalyse" value={form.dateFinAnalyse} onChange={change} />
+              </div>
+            </>)}
+
+            {/* Montant sollicité (attente comité, attente décision, accord, rejeté) */}
+            {hasMontantSollicite && (
+              <div className="form-group">
+                <label>Montant sollicité (FCFA) <span className="required">*</span></label>
+                <input type="number" name="montantSollicite" value={form.montantSollicite || ''} onChange={change} required />
+              </div>
+            )}
+
+            {/* Montant accordé (accord uniquement) */}
+            {hasMontantAccorde && (
+              <div className="form-group">
+                <label>Montant accordé (FCFA) <span className="required">*</span></label>
+                <input type="number" name="montantAccorde" value={form.montantAccorde || ''} onChange={change} required />
+              </div>
+            )}
+
+            {/* Rejeté: Matricule, nom gestionnaire, étape du rejet */}
+            {hasMatriculeRejete && (<>
+              <div className="form-group">
+                <label>Matricule <span className="required">*</span></label>
+                <input type="text" name="matricule" value={form.matricule} onChange={change} required pattern="[0-9]{7}" maxLength={7} title="Le matricule doit contenir exactement 7 chiffres" placeholder="7 chiffres" />
+              </div>
+              <div className="form-group">
+                <label>Nom du gestionnaire <span className="required">*</span></label>
+                <input type="text" name="nomGestionnaire" value={form.nomGestionnaire} onChange={change} required />
+              </div>
+            </>)}
+
+            {hasEtapeRejet && (
+              <div className="form-group">
+                <label>Étape du rejet <span className="required">*</span></label>
+                <select name="etapeRejet" value={form.etapeRejet} onChange={change} required>
+                  <option value="">-- Sélectionner --</option>
+                  <option value="analyse">À l'analyse</option>
+                  <option value="premiere-decision">À la première décision</option>
+                  <option value="deuxieme-decision">À la deuxième décision</option>
+                </select>
+              </div>
+            )}
+
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button type="button" onClick={onClose} disabled={loading} className="btn-secondary">Annuler</button>
+          <button type="submit" disabled={loading} className="btn-primary">{loading ? 'Enregistrement...' : 'Enregistrer'}</button>
         </div>
       </form>
 
-      <NotificationModal
-        isOpen={notification.isOpen}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-        onClose={closeNotification}
-      />
-
-      <style>{`
-        .form-restructuration-v2-container {
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 2rem;
-        }
-
-        .form-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-
-        .form-header h2 {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #1f2937;
-          margin: 0;
-        }
-
-        .close-btn {
-          background: none;
-          border: none;
-          font-size: 1.5rem;
-          cursor: pointer;
-          color: #6b7280;
-          padding: 0.5rem;
-        }
-
-        .close-btn:hover {
-          color: #dc2626;
-        }
-
-        .form-subtitle {
-          margin-bottom: 2rem;
-        }
-
-        .status-badge {
-          background-color: #dbeafe;
-          color: #1e40af;
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          font-size: 0.875rem;
-          font-weight: 500;
-        }
-
-        .form-restructuration-v2 {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .form-section {
-          background: white;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          padding: 1.5rem;
-        }
-
-        .form-section h3 {
-          font-size: 1.125rem;
-          font-weight: 600;
-          color: #1f2937;
-          margin: 0 0 1rem 0;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .form-row:last-child {
-          margin-bottom: 0;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-group.full-width {
-          grid-column: 1 / -1;
-        }
-
-        .form-group label {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #374151;
-          margin-bottom: 0.5rem;
-        }
-
-        .required {
-          color: #dc2626;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-          padding: 0.625rem;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          font-size: 0.875rem;
-          transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-          outline: none;
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-group textarea {
-          resize: vertical;
-          font-family: inherit;
-        }
-
-        .error-message {
-          background-color: #fef2f2;
-          border: 1px solid #fecaca;
-          border-radius: 6px;
-          padding: 0.75rem;
-          color: #dc2626;
-          font-size: 0.875rem;
-        }
-
-        .btn-add {
-          background-color: #10b981;
-          color: white;
-          padding: 0.625rem 1.25rem;
-          border-radius: 6px;
-          border: none;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-          margin-top: 0.5rem;
-        }
-
-        .btn-add:hover {
-          background-color: #059669;
-        }
-
-        .dossiers-list {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .dossier-card {
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
-          border-radius: 6px;
-          padding: 1rem;
-        }
-
-        .dossier-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: start;
-          margin-bottom: 0.75rem;
-        }
-
-        .dossier-title {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .dossier-matricule {
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-
-        .btn-remove {
-          background: none;
-          border: none;
-          color: #dc2626;
-          cursor: pointer;
-          font-size: 1.25rem;
-          padding: 0.25rem;
-          line-height: 1;
-        }
-
-        .btn-remove:hover {
-          color: #991b1b;
-        }
-
-        .dossier-details {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 0.5rem;
-        }
-
-        .dossier-detail-item {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .dossier-detail-item.full-width {
-          grid-column: 1 / -1;
-        }
-
-        .dossier-detail-item .label {
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-
-        .dossier-detail-item .value {
-          font-size: 0.875rem;
-          color: #1f2937;
-          font-weight: 500;
-        }
-
-        .totals-section {
-          background-color: #f0fdf4;
-          border-color: #86efac;
-        }
-
-        .totals-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-        }
-
-        .total-item {
-          display: flex;
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .total-label {
-          font-size: 0.75rem;
-          color: #6b7280;
-          margin-bottom: 0.25rem;
-        }
-
-        .total-value {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #059669;
-        }
-
-        .form-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 1rem;
-          margin-top: 1.5rem;
-          padding-top: 1.5rem;
-          border-top: 1px solid #e5e7eb;
-        }
-
-        .btn {
-          padding: 0.625rem 1.5rem;
-          border-radius: 6px;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-          border: none;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .btn-secondary {
-          background-color: #f3f4f6;
-          color: #374151;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background-color: #e5e7eb;
-        }
-
-        .btn-primary {
-          background-color: #3b82f6;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background-color: #2563eb;
-        }
-
-        .spinner {
-          width: 14px;
-          height: 14px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @media (max-width: 768px) {
-          .form-restructuration-v2-container {
-            padding: 1rem;
-          }
-
-          .form-row,
-          .dossier-details,
-          .totals-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
+      <NotificationModal isOpen={notification.isOpen} type={notification.type} title={notification.title} message={notification.message} onClose={closeNotification} />
     </div>
   );
 };

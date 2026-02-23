@@ -125,20 +125,12 @@
 
 /* Cache la scrollbar mais garde la fonctionnalité */
 .sidebar-nav::-webkit-scrollbar {
-  width: 4px;
+  display: none;
 }
 
-.sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
-  border-radius: 4px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: #D1D5DB;
+.sidebar-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .sidebar.collapsed .sidebar-nav {
@@ -320,85 +312,40 @@
 }
 
 /* ========================================
-   THÈMES PAR DÉPARTEMENT - STYLE PROFESSIONNEL
+   COULEUR UNIFIÉE DGE — Rouge Corporate
    ======================================== */
 
-/* Direction des Affaires (DA) - Bleu */
+/* Tous les départements utilisent la même couleur */
 .sidebar.dept-da .sidebar-toggle,
-.sidebar.dept-da .sidebar-logo-icon {
-  background: var(--dept-da-primary, #1565C0);
-}
-
-.sidebar.dept-da .sidebar-item:hover {
-  background: var(--dept-da-bg-subtle, rgba(21, 101, 192, 0.06));
-  color: var(--dept-da-primary, #1565C0);
-}
-
-.sidebar.dept-da .sidebar-item.active {
-  background: var(--dept-da-bg-subtle, rgba(21, 101, 192, 0.08));
-  color: var(--dept-da-primary, #1565C0);
-}
-
-.sidebar.dept-da .sidebar-item.active::before {
-  background: var(--dept-da-primary, #1565C0);
-}
-
-/* Direction Stratégie Économique (DSE) - Vert */
+.sidebar.dept-da .sidebar-logo-icon,
 .sidebar.dept-dse .sidebar-toggle,
-.sidebar.dept-dse .sidebar-logo-icon {
-  background: var(--dept-dse-primary, #2E7D32);
-}
-
-.sidebar.dept-dse .sidebar-item:hover {
-  background: var(--dept-dse-bg-subtle, rgba(46, 125, 50, 0.06));
-  color: var(--dept-dse-primary, #2E7D32);
-}
-
-.sidebar.dept-dse .sidebar-item.active {
-  background: var(--dept-dse-bg-subtle, rgba(46, 125, 50, 0.08));
-  color: var(--dept-dse-primary, #2E7D32);
-}
-
-.sidebar.dept-dse .sidebar-item.active::before {
-  background: var(--dept-dse-primary, #2E7D32);
-}
-
-/* Direction Politique Numérique et Prospective (DPNP) - Orange Corporate */
+.sidebar.dept-dse .sidebar-logo-icon,
 .sidebar.dept-dpnp .sidebar-toggle,
-.sidebar.dept-dpnp .sidebar-logo-icon {
-  background: var(--dept-dpnp-primary, #E65100);
-}
-
-.sidebar.dept-dpnp .sidebar-item:hover {
-  background: var(--dept-dpnp-bg-subtle, rgba(230, 81, 0, 0.06));
-  color: var(--dept-dpnp-primary, #E65100);
-}
-
-.sidebar.dept-dpnp .sidebar-item.active {
-  background: var(--dept-dpnp-bg-subtle, rgba(230, 81, 0, 0.08));
-  color: var(--dept-dpnp-primary, #E65100);
-}
-
-.sidebar.dept-dpnp .sidebar-item.active::before {
-  background: var(--dept-dpnp-primary, #E65100);
-}
-
-/* Direction (Directeur) - Rouge DGE */
+.sidebar.dept-dpnp .sidebar-logo-icon,
 .sidebar.dept-direction .sidebar-toggle,
 .sidebar.dept-direction .sidebar-logo-icon {
-  background: var(--dept-direction-primary, #B71C1C);
+  background: #CC0000;
 }
 
+.sidebar.dept-da .sidebar-item:hover,
+.sidebar.dept-dse .sidebar-item:hover,
+.sidebar.dept-dpnp .sidebar-item:hover,
 .sidebar.dept-direction .sidebar-item:hover {
-  background: var(--dept-direction-bg-subtle, rgba(183, 28, 28, 0.06));
-  color: var(--dept-direction-primary, #B71C1C);
+  background: rgba(204, 0, 0, 0.06);
+  color: #CC0000;
 }
 
+.sidebar.dept-da .sidebar-item.active,
+.sidebar.dept-dse .sidebar-item.active,
+.sidebar.dept-dpnp .sidebar-item.active,
 .sidebar.dept-direction .sidebar-item.active {
-  background: var(--dept-direction-bg-subtle, rgba(183, 28, 28, 0.08));
-  color: var(--dept-direction-primary, #B71C1C);
+  background: rgba(204, 0, 0, 0.08);
+  color: #CC0000;
 }
 
+.sidebar.dept-da .sidebar-item.active::before,
+.sidebar.dept-dse .sidebar-item.active::before,
+.sidebar.dept-dpnp .sidebar-item.active::before,
 .sidebar.dept-direction .sidebar-item.active::before {
-  background: var(--dept-direction-primary, #B71C1C);
+  background: #CC0000;
 }

@@ -1,28 +1,34 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense, lazy } from 'react'
 import Sidebar from './components/SidebarModern'
-import HomePage from './components/HomePage'
-import CreditClassiqueForm from './components/forms/CreditClassiqueForm'
-import CreditProgrammeForm from './components/forms/CreditProgrammeForm'
-import AdminEngagementsForm from './components/forms/AdminEngagementsForm'
-import SuiviMEPForm from './components/forms/SuiviMEPForm'
-import ActivitesAnnexesForm from './components/forms/ActivitesAnnexesForm'
-import UserProfile from './components/UserProfile'
-import CategoryManager from './components/CategoryManager'
-import ActivityManagerModern from './components/ActivityManagerModern'
-import DepartmentDashboardAnalyse from './components/DepartmentDashboardAnalyseTailwind'
-import DepartmentDashboardDSE from './components/DepartmentDashboardDSETailwind'
-import DepartmentDashboardDPNP from './components/DepartmentDashboardDPNPTailwind'
-import DirectorDashboard from './components/DirectorDashboard'
-import ReportsDashboardModern from './components/ReportsDashboardModern'
-import ObjectifsManagement from './components/ObjectifsManagement'
-import DiagnosticPanel from './components/DiagnosticPanel'
-import CategoryActivitiesPage from './components/CategoryActivitiesPage'
-import HelpGuide from './components/HelpGuide'
-import SuiviRecouvrementGFC from './components/SuiviRecouvrementGFC'
-import DashboardModern from './components/DashboardModern'
+import AppShell from './components/ui/AppShell'
+import AnimatedLoader from './components/ui/AnimatedLoader'
 import { UserProfileService, type UserProfile as UserProfileType } from './services/UserProfileService'
 import { NotificationService } from './services/NotificationService'
 import { getDepartment, loadDepartments } from './config/departmentsData'
+import { canAccessModule, getDefaultModule } from './config/navigationAccess'
+import { debugLog, debugWarn } from './utils/logger'
+
+const HomePage = lazy(() => import('./components/HomePage'))
+const CreditClassiqueForm = lazy(() => import('./components/forms/CreditClassiqueForm'))
+const CreditProgrammeForm = lazy(() => import('./components/forms/CreditProgrammeForm'))
+const AdminEngagementsForm = lazy(() => import('./components/forms/AdminEngagementsForm'))
+const SuiviMEPForm = lazy(() => import('./components/forms/SuiviMEPForm'))
+const ActivitesAnnexesForm = lazy(() => import('./components/forms/ActivitesAnnexesForm'))
+const UserProfile = lazy(() => import('./components/UserProfile'))
+const CategoryManager = lazy(() => import('./components/CategoryManager'))
+const ActivityManagerModern = lazy(() => import('./components/ActivityManagerModern'))
+const DepartmentDashboardAnalyse = lazy(() => import('./components/DepartmentDashboardAnalyseTailwind'))
+const DepartmentDashboardDSE = lazy(() => import('./components/DepartmentDashboardDSETailwind'))
+const DepartmentDashboardDPNP = lazy(() => import('./components/DepartmentDashboardDPNPTailwind'))
+const DirectorDashboard = lazy(() => import('./components/DirectorDashboard'))
+const ReportsDashboardModern = lazy(() => import('./components/ReportsDashboardModern'))
+const ObjectifsManagement = lazy(() => import('./components/ObjectifsManagement'))
+const DiagnosticPanel = lazy(() => import('./components/DiagnosticPanel'))
+const CategoryActivitiesPage = lazy(() => import('./components/CategoryActivitiesPage'))
+const HelpGuide = lazy(() => import('./components/HelpGuide'))
+const SuiviRecouvrementGFC = lazy(() => import('./components/SuiviRecouvrementGFC'))
+const DashboardModern = lazy(() => import('./components/DashboardModern'))
+const AssistantDCEDashboard = lazy(() => import('./components/AssistantDCEDashboard'))
 
 function AppModern() {
   const [activeModule, setActiveModule] = useState('home')
@@ -30,6 +36,7 @@ function AppModern() {
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [profileError, setProfileError] = useState<string | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // 🎯 POINT D'ENTRÉE - Charger le profil utilisateur au démarrage
   useEffect(() => {
@@ -54,13 +61,7 @@ function AppModern() {
         }, 2000); // Attendre 2s après le chargement du profil
         
         // Redirection automatique basée sur le profil
-        if (profile.isDirecteur) {
-          setActiveModule('home'); // Directeur va au tableau de bord global
-        } else if (profile.departement) {
-          setActiveModule('home'); // Agent/Chef va à son tableau de bord
-        } else {
-          setActiveModule('home');
-        }
+        setActiveModule(getDefaultModule(profile));
       } catch (error) {
         console.error('❌ Erreur chargement profil:', error);
         setProfileError(error instanceof Error ? error.message : 'Erreur de chargement du profil');
@@ -72,11 +73,17 @@ function AppModern() {
   }, [])
 
   const handleModuleSelect = (moduleId: string) => {
+    if (!userProfile) return;
+    if (!canAccessModule(userProfile, moduleId)) {
+      debugWarn(`Accès refusé au module: ${moduleId}`);
+      setActiveModule(getDefaultModule(userProfile));
+      return;
+    }
     setActiveModule(moduleId)
   }
 
   const handleSaveForm = (data: any, isDraft: boolean) => {
-    console.log('Sauvegarde formulaire:', { data, isDraft })
+    debugLog('Sauvegarde formulaire:', { data, isDraft })
     
     if (!isDraft) {
       alert('✅ Rapport soumis avec succès !\n\nVotre rapport a été enregistré et sera traité automatiquement.')
@@ -98,48 +105,9 @@ function AppModern() {
     return null;
   }, [activeModule, userProfile]);
 
-  // Écran de chargement Tailwind - Centré sur toute la page
+  // Écran de chargement - AnimatedLoader V2
   if (loadingProfile) {
-    return (
-      <div className="fixed inset-0 min-h-screen w-full bg-gradient-to-br from-neutral-50 via-white to-neutral-100 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl shadow-modal p-8 flex flex-col items-center gap-6 max-w-sm w-full mx-4 animate-scale-in">
-          {/* Spinner moderne */}
-          <div className="relative w-20 h-20">
-            <div className="absolute inset-0 border-4 border-neutral-200 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-transparent border-t-primary-600 rounded-full animate-spin"></div>
-            <div className="absolute inset-2 border-4 border-transparent border-t-primary-400 rounded-full animate-spin" style={{ animationDuration: '0.8s', animationDirection: 'reverse' }}></div>
-            <div className="absolute inset-4 bg-primary-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-lg">📊</span>
-            </div>
-          </div>
-          
-          {/* Texte */}
-          <div className="text-center">
-            <h2 className="text-lg font-bold text-neutral-800 mb-1">Chargement en cours</h2>
-            <p className="text-sm text-neutral-500">Préparation de votre espace de travail...</p>
-          </div>
-          
-          {/* Barre de progression animée */}
-          <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full"
-              style={{ 
-                animation: 'progressBar 2s ease-in-out infinite',
-                width: '100%',
-                transformOrigin: 'left'
-              }}
-            ></div>
-          </div>
-          <style>{`
-            @keyframes progressBar {
-              0% { transform: scaleX(0); }
-              50% { transform: scaleX(0.7); }
-              100% { transform: scaleX(1); }
-            }
-          `}</style>
-        </div>
-      </div>
-    );
+    return <AnimatedLoader />;
   }
 
   // Écran d'erreur Tailwind
@@ -179,7 +147,7 @@ function AppModern() {
     // Route spéciale pour "Suivi des actions de recouvrement pour les GFC"
     if (activeModule === 'category-suivi-recouvrement-gfc' || 
         activeModule === 'category-suivi-des-actions-de-recouvrement-pour-les-gfc') {
-      return <SuiviRecouvrementGFC onClose={() => setActiveModule('home')} />;
+      return <SuiviRecouvrementGFC onClose={() => handleModuleSelect('home')} />;
     }
     
     // Route pour les catégories d'activités
@@ -190,8 +158,8 @@ function AppModern() {
           category={currentCategory}
           department={department}
           userProfile={userProfile}
-          onNavigateToObjectifs={() => setActiveModule('objectifs')}
-          onBack={() => setActiveModule('home')}
+          onNavigateToObjectifs={() => handleModuleSelect('objectifs')}
+          onBack={() => handleModuleSelect('home')}
         />
       );
     }
@@ -210,7 +178,7 @@ function AppModern() {
           <DepartmentDashboardAnalyse
             department={getDepartment('DA')}
             userProfile={userProfile}
-            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
+            onNavigateToObjectifs={() => handleModuleSelect('objectifs-management')}
           />
         );
       
@@ -219,7 +187,7 @@ function AppModern() {
           <DepartmentDashboardDSE
             department={getDepartment('DSE')}
             userProfile={userProfile}
-            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
+            onNavigateToObjectifs={() => handleModuleSelect('objectifs-management')}
           />
         );
 
@@ -228,7 +196,7 @@ function AppModern() {
           <DepartmentDashboardDPNP
             department={getDepartment('DPNP')}
             userProfile={userProfile}
-            onNavigateToObjectifs={() => setActiveModule('objectifs-management')}
+            onNavigateToObjectifs={() => handleModuleSelect('objectifs-management')}
           />
         );
       
@@ -287,9 +255,15 @@ function AppModern() {
 
       case 'objectifs':
         return <ObjectifsManagement />
+
+      case 'objectifs-management':
+        return <ObjectifsManagement />
       
       case 'team-monitoring':
         return <DirectorDashboard />
+
+      case 'assistant-dce':
+        return <AssistantDCEDashboard userProfile={userProfile} />
       
       case 'settings':
         return (
@@ -327,42 +301,40 @@ function AppModern() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
-      <Sidebar
-        activeModule={activeModule}
-        onModuleChange={setActiveModule}
-        userProfile={userProfile}
-      />
-      
-      {/* Main content */}
-      <div style={{ marginLeft: '180px', minHeight: '100vh' }}>
-        {renderMainContent()}
-        
-        {/* Zone de debug pour le développement */}
-        {import.meta.env.DEV && (
-          <div style={{ 
-            margin: '24px', 
-            padding: '16px', 
-            background: 'white', 
-            borderRadius: '8px', 
-            border: '1px solid #E2E8F0',
-            fontSize: '13px',
-            color: '#64748B'
-          }}>
-            <strong style={{ color: '#1E293B' }}>🛠️ Debug Info:</strong>
-            <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-              <span>Module: <strong style={{ color: '#E63946' }}>{activeModule}</strong></span>
-              <span>Période: <strong style={{ color: '#E63946' }}>{selectedPeriod || 'Non définie'}</strong></span>
-              <span>Département: <strong style={{ color: '#E63946' }}>{userProfile.departement || 'N/A'}</strong></span>
-              <span>Directeur: <strong style={{ color: '#E63946' }}>{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong></span>
+    <AppShell
+      sidebarCollapsed={sidebarCollapsed}
+      sidebar={
+        <Sidebar
+          activeModule={activeModule}
+          onModuleChange={handleModuleSelect}
+          userProfile={userProfile}
+          collapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
+        />
+      }
+      debugPanel={
+        import.meta.env.DEV ? (
+          <div className="ui-debug-card">
+            <strong className="ui-debug-title">🛠️ Debug Info:</strong>
+            <div className="ui-debug-row">
+              <span>Module: <strong className="ui-debug-value">{activeModule}</strong></span>
+              <span>Période: <strong className="ui-debug-value">{selectedPeriod || 'Non définie'}</strong></span>
+              <span>Département: <strong className="ui-debug-value">{userProfile.departement || 'N/A'}</strong></span>
+              <span>Directeur: <strong className="ui-debug-value">{userProfile.isDirecteur ? 'Oui' : 'Non'}</strong></span>
+              <span>Assistant DCE: <strong className="ui-debug-value">{userProfile.isAssistantDCE ? 'Oui' : 'Non'}</strong></span>
             </div>
           </div>
-        )}
-      </div>
-
+        ) : undefined
+      }
+    >
+      <Suspense fallback={<div className="p-6 text-sm text-neutral-500">Chargement du module...</div>}>
+        {renderMainContent()}
+      </Suspense>
       {/* 🔧 Panneau de diagnostic Power SDK */}
-      <DiagnosticPanel />
-    </div>
+      <Suspense fallback={null}>
+        <DiagnosticPanel />
+      </Suspense>
+    </AppShell>
   )
 }
 
